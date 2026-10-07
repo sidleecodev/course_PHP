@@ -1,16 +1,47 @@
+**兩個資料表**
+
 >>SELECT a.userId, a.userName, b.title FROM member AS a INNER JOIN edu AS b ON a.eduId = b.id;
 （資料表名稱.欄位名稱）
 >>SELECT a.userId, a.userName, b.title FROM member a INNER JOIN edu b ON a.eduId = b.id;
-INNER JOIN： INNER JOIN _資料表B_ ON 對應欄位
-此例是將edu資料表的"高中職"、"大學"對應到的id，跟member資料表的"eduId"對應到的id做對應
+INNER JOIN： _資料表A_ INNER JOIN _資料表B_ ON 對應欄位
+此例是將edu資料表的"title"對應到的id，跟member資料表的"eduId"對應到的id做對應
 ＊＊＊所以當資料兩邊都有對到，才會被顯示出來，如果沒有對到就不會顯示
 
 >>SELECT a.userId, a.userName, b.title FROM member a LEFT JOIN edu b ON a.eduId = b.id;
 LEFT JOIN：左邊資料表有，右邊資料表沒有
 ＊＊＊所以當左邊資料表有人學歷沒有填到，select後還是會顯示這筆
-＊＊＊以左邊資料表的欄位為準
+＊＊＊以左邊資料表的欄位為準，補上右邊的資料
 
 >>SELECT a.userId, a.userName, b.title FROM member a RIGHT JOIN edu b ON a.eduId = b.id;
 RIGHT JOIN：左邊資料表沒有，右邊資料表有
 ＊＊＊所以當右邊資料表有學歷沒有對到人，select後還是會顯示這筆
-＊＊＊以右邊資料表的欄位為準
+＊＊＊以右邊資料表的欄位為準，補上左邊的資料
+
+
+**三個資料表**
+
+>>SELECT a.id, a.userId, a.userName, b.title AS edu, c.title AS city
+FROM member a 
+INNER JOIN edu b ON a.eduId = b.id
+INNER JOIN city c ON a.cityId = c.id;
+＊＊＊有空值的列都不會顯示
+
+>>SELECT a.id, a.userId, a.userName, b.title AS edu, c.title AS city
+FROM member a 
+LEFT JOIN edu b ON a.eduId = b.id
+INNER JOIN city c ON a.cityId = c.id;
+＊＊＊先對city的id，把列篩選出來，再把member資料表含有空值的列顯示出來（不包含city為NULL）
+
+>>SELECT a.id, a.userId, a.userName, b.title AS edu, c.title AS city
+FROM member a 
+LEFT JOIN edu b ON a.eduId = b.id
+LEFT JOIN city c ON a.cityId = c.id;
+＊＊＊所有member資料表含有空值的列都取出來
+
+
+**多個資料表**
+
+>>SELECT d.userId, d.userName, a.orderId, a.totalAmount, c.productName
+FROM order_master a INNER JOIN order_detail b ON a.orderId = b.orderId
+INNER JOIN product c ON b.productId = c.id
+INNER JOIN member d ON a.memberId = d.id
