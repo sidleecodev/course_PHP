@@ -45,3 +45,15 @@ LEFT JOIN city c ON a.cityId = c.id;
 FROM order_master a INNER JOIN order_detail b ON a.orderId = b.orderId
 INNER JOIN product c ON b.productId = c.id
 INNER JOIN member d ON a.memberId = d.id
+
+顯示結果：
+userId    ｜userName｜orderId｜totalAmount｜productName
+A000000001｜測試一  ｜123    ｜100        ｜產品一
+A000000003｜測試三  ｜456    ｜200        ｜產品一
+A000000003｜測試三  ｜456    ｜200        ｜產品二
+
+資料表｜欄位
+(a)order_master訂單概況｜orderId訂單編號（對到b.orderId），memberId對應到哪位客人（對到d.id），totalAmount是總金額
+(b)order_detail訂單內容｜id流水號，orderId訂單編號，productId產品編號（對到c.id）
+(c)product     產品    ｜id流水號，productName產品名稱
+(d)member      成員    ｜id流水號，userId身分證，userName姓名，eduId學歷id，cityId城市id
