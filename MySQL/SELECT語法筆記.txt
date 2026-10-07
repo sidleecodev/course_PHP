@@ -1,0 +1,57 @@
+***SELECT查詢***（對應word CH6）
+
+>>SELECT * FROM member
+查詢member資料表所有欄位
+
+>>SELECT userId, userName FROM member
+查詢member資料表當中的userId, userName這兩個欄位（不會顯示其他欄位）
+
+>>SELECT userId, userName AS name FROM member
+>>SELECT userId, userName name FROM member m （可省略AS，通常省略）
+>>SELECT userId, userName '姓名' FROM member 
+AS：取別名，顯示的欄位會以別名顯示（此例即顯示name而非userName），欄位名稱、資料表都能取別名
+
+**WHERE**（對應word 6.3）
+>>SELECT userId, userName name FROM member WHERE id = 1;
+>>SELECT userId, userName name FROM member WHERE userId = 'A000000001';
+>>SELECT userId, userName name FROM member WHERE id > 1;
+使用WHERE篩選條件，數字不用單引號，文字需要單引號
+
+>>SELECT userId, userName name FROM member WHERE userId = 'A000000001' AND userName = '測試一';
+使用AND追加欄位
+>>SELECT userId, userName name FROM member WHERE id IN(1,2);
+>>SELECT userId, userName name FROM member WHERE id NOT IN(1,2);
+使用IN來指定值的範圍
+
+>>SELECT * FROM member WHERE userName LIKE '%一';
+使用LIKE來尋找關鍵字，'%一'表示"一"這個字前面有其他字，"一"是最後一個字
+
+-----
+>>SELECT DISTINCT userId FROM member;
+使用DISTINCT篩除重複資料，欄位名稱不可使用*（因為會優先查詢主鍵，而主鍵不可能重複）
+應選定欄位名稱（選定值有重複的欄位名稱）
+
+-----
+>>SELECT * FROM member ORDER BY id ASC; （由小到大排列，ASC可以省略不寫）
+>>SELECT * FROM member ORDER BY id DESC; （由大到小排列）
+>>SELECT * FROM member ORDER BY id DESC, userId ASC; （可以複合型排列）
+
+-----
+>>SELECT COUNT(id) AS total FROM member;
+使用COUNT()來計算有幾筆，通常會用主鍵；也建議取別名，因為沒有的話欄位會顯示count(id)
+
+**聚合函數**（對應CH7）
+>>SELECT userName, COUNT(id) total FROM member GROUP BY userName;
+使用GROUP BY來將指定欄位分組
+>>SELECT userName, COUNT(id) total FROM member GROUP BY userName HAVING COUNT(id)>1;
+使用HAVING COUNT(id)>1來看看有哪些資料被重複寫入
+
+-----
+>>SELECT * FROM member ORDER BY id DESC LIMIT 2;
+使用LIMIT來限制取幾筆，通常跟ORDER BY搭配，此例是取倒數兩筆資料
+
+-----
+>>SELECT SUM(id) AS total FROM member;
+使用SUM()將值加總幾來，此例是將id加總起來（比較沒有意義的加總）
+>>SELECT AVG(id) AS total FROM member;
+使用AVG()將值平均

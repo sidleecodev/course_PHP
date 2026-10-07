@@ -1,0 +1,20 @@
+！！語法請謹慎使用，此舉會修改資料，不確定可以複製資料表出來測試！！
+
+***UPDATE_(資料表)_SET_(指定的值) ：更新***（對應word 5.2）
+
+>>UPDATE member SET userName = 'test' WHERE id = 2;
+使用UPDATE SET來更新，建議使用WHERE限定指定欄位
+>>UPDATE member SET userName = 'test', userId = '3' WHERE id = 2;
+更新多個欄位
+
+-----
+***DELETE FROM_(資料表) ：刪除***（對應word 5.3）
+
+>>DELETE FROM member WHERE id = 2;
+使用DELETE FROM來刪除資料表當中某個值
+
+-----
+***INSERT INTO_資料表(欄位1,欄位2)_VALUES(值1,值2) ：插入***（對應word 5.1）
+
+>>INSERT INTO member (userID, userName) VALUES('A000000005', '測試五');
+使用INSERT INTO插入資料
