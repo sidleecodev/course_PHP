@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>網站設定 — 品牌名稱 管理系統</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@300;400;500;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+  <!-- 前台與後台共用同一份 CSS -->
+  <link rel="stylesheet" href="../css/style.css" />
+</head>
+<body class="admin-body">
+  <!-- ===== 側欄 ===== -->
+  <aside class="admin-sidebar">
+    <a href="index.html" class="admin-brand">
+      <div class="logo-box">B</div>
+      <div><span>品牌名稱</span><small>ADMIN</small></div>
+    </a>
+    <nav class="admin-nav">
+      <div class="nav-group">總覽</div>
+      <a href="index.html"><i class="fa fa-tachometer-alt"></i> 儀表板</a>
+      <div class="nav-group">網站內容</div>
+      <a href="banners.html"><i class="fa fa-images"></i> 首頁輪播</a>
+      <a href="features.html"><i class="fa fa-medal"></i> 特色 / 核心價值</a>
+      <a href="milestones.html"><i class="fa fa-history"></i> 大事記</a>
+      <a href="team-members.html"><i class="fa fa-users"></i> 核心團隊</a>
+      <a href="settings.html" class="active"><i class="fa fa-cog"></i> 網站設定</a>
+      <div class="nav-group">最新消息</div>
+      <a href="news.html"><i class="fa fa-newspaper"></i> 消息管理</a>
+      <a href="news-categories.html"><i class="fa fa-folder"></i> 消息分類</a>
+      <div class="nav-group">產品</div>
+      <a href="products.html"><i class="fa fa-box-open"></i> 產品管理</a>
+      <a href="product-categories.html"><i class="fa fa-folder-open"></i> 產品分類</a>
+      <div class="nav-group">會員與訂單</div>
+      <a href="orders.html"><i class="fa fa-receipt"></i> 訂單管理</a>
+      <a href="members.html"><i class="fa fa-user-friends"></i> 會員管理</a>
+      <a href="addresses.html"><i class="fa fa-map-marker-alt"></i> 會員地址</a>
+      <div class="nav-group">系統</div>
+      <a href="admins.html"><i class="fa fa-user-shield"></i> 管理員</a>
+    </nav>
+  </aside>
+
+  <div class="admin-main">
+    <!-- ===== 頂部列 ===== -->
+    <header class="admin-topbar">
+      <button class="admin-menu-toggle" aria-label="選單"><i class="fa fa-bars"></i></button>
+      <div class="page-name">網站設定管理</div>
+      <div class="admin-user">
+        <a href="../index.html" target="_blank"><i class="fa fa-external-link-alt"></i> 前台</a>
+        <span><i class="fa fa-user-circle"></i> 系統管理員</span>
+        <a href="login.html" data-logout><i class="fa fa-sign-out-alt"></i> 登出</a>
+      </div>
+    </header>
+
+    <main class="admin-content">
+      <div class="admin-card" data-crud-list>
+        <div class="admin-card-header">
+          <h2><i class="fa fa-cog"></i> 網站設定列表</h2>
+          <div class="admin-toolbar">
+            <!-- 關鍵字即時查詢：輸入時自動篩選並標示關鍵字 -->
+            <form class="search-box">
+              <i class="fa fa-search"></i>
+              <input type="search" name="keyword" class="form-control" placeholder="搜尋項目 / 代碼 / 內容" autocomplete="off" />
+            </form>
+            <button type="button" class="btn btn-light btn-sm" data-clear><i class="fa fa-times"></i> 清除</button>
+            <a href="settings-form.html" class="btn btn-gold btn-sm"><i class="fa fa-plus"></i> 新增網站設定</a>
+          </div>
+        </div>
+
+        <div class="table-wrap">
+          <table class="data-table admin-table">
+            <thead><tr><th>#</th><th>項目</th><th>代碼</th><th>內容</th><th>操作</th></tr></thead>
+            <tbody>
+            <tr data-row><td class="num text-muted">1</td><td data-mark>網站名稱</td><td data-mark>site_name</td><td data-mark>品牌名稱</td><td><div class="actions"><a href="settings-form.html?id=1" class="btn btn-outline btn-xs"><i class="fa fa-edit"></i> 修改</a><button type="button" class="btn btn-danger-outline btn-xs" data-delete data-name="網站名稱"><i class="fa fa-trash"></i> 刪除</button></div></td></tr>
+            <tr data-row><td class="num text-muted">2</td><td data-mark>LOGO 文字</td><td data-mark>site_logo_text</td><td data-mark>B</td><td><div class="actions"><a href="settings-form.html?id=2" class="btn btn-outline btn-xs"><i class="fa fa-edit"></i> 修改</a><button type="button" class="btn btn-danger-outline btn-xs" data-delete data-name="LOGO 文字"><i class="fa fa-trash"></i> 刪除</button></div></td></tr>
+            <tr data-row><td class="num text-muted">3</td><td data-mark>頁尾標語</td><td data-mark>site_slogan</td><td data-mark>提供優質產品與服務您的信賴之選</td><td><div class="actions"><a href="settings-form.html?id=3" class="btn btn-outline btn-xs"><i class="fa fa-edit"></i> 修改</a><button type="button" class="btn btn-danger-outline btn-xs" data-delete data-name="頁尾標語"><i class="fa fa-trash"></i> 刪除</button></div></td></tr>
+            <tr data-row><td class="num text-muted">4</td><td data-mark>聯絡電話</td><td data-mark>phone</td><td data-mark>02-1234-5678</td><td><div class="actions"><a href="settings-form.html?id=4" class="btn btn-outline btn-xs"><i class="fa fa-edit"></i> 修改</a><button type="button" class="btn btn-danger-outline btn-xs" data-delete data-name="聯絡電話"><i class="fa fa-trash"></i> 刪除</button></div></td></tr>
+            <tr data-row><td class="num text-muted">5</td><td data-mark>電子郵件</td><td data-mark>email</td><td data-mark>info@example.com</td><td><div class="actions"><a href="settings-form.html?id=5" class="btn btn-outline btn-xs"><i class="fa fa-edit"></i> 修改</a><button type="button" class="btn btn-danger-outline btn-xs" data-delete data-name="電子郵件"><i class="fa fa-trash"></i> 刪除</button></div></td></tr>
+            <tr data-row><td class="num text-muted">6</td><td data-mark>公司地址</td><td data-mark>address</td><td data-mark>台灣某市某區某路一號十樓</td><td><div class="actions"><a href="settings-form.html?id=6" class="btn btn-outline btn-xs"><i class="fa fa-edit"></i> 修改</a><button type="button" class="btn btn-danger-outline btn-xs" data-delete data-name="公司地址"><i class="fa fa-trash"></i> 刪除</button></div></td></tr>
+            <tr data-row><td class="num text-muted">7</td><td data-mark>營業時間</td><td data-mark>business_hours</td><td data-mark>週一至週五 09:00–18:00</td><td><div class="actions"><a href="settings-form.html?id=7" class="btn btn-outline btn-xs"><i class="fa fa-edit"></i> 修改</a><button type="button" class="btn btn-danger-outline btn-xs" data-delete data-name="營業時間"><i class="fa fa-trash"></i> 刪除</button></div></td></tr>
+            <tr data-row><td class="num text-muted">8</td><td data-mark>首頁數字 1：數值</td><td data-mark>home_stat1_num</td><td data-mark>12</td><td><div class="actions"><a href="settings-form.html?id=8" class="btn btn-outline btn-xs"><i class="fa fa-edit"></i> 修改</a><button type="button" class="btn btn-danger-outline btn-xs" data-delete data-name="首頁數字 1：數值"><i class="fa fa-trash"></i> 刪除</button></div></td></tr>
+            <tr data-row><td class="num text-muted">9</td><td data-mark>首頁數字 1：說明</td><td data-mark>home_stat1_label</td><td data-mark>品牌成立年數</td><td><div class="actions"><a href="settings-form.html?id=9" class="btn btn-outline btn-xs"><i class="fa fa-edit"></i> 修改</a><button type="button" class="btn btn-danger-outline btn-xs" data-delete data-name="首頁數字 1：說明"><i class="fa fa-trash"></i> 刪除</button></div></td></tr>
+            <tr data-row><td class="num text-muted">10</td><td data-mark>首頁加入會員說明</td><td data-mark>cta_desc</td><td data-mark>免費註冊，首購享 9 折優惠，並獲得積點回饋與不定期會員專屬活動。</td><td><div class="actions"><a href="settings-form.html?id=10" class="btn btn-outline btn-xs"><i class="fa fa-edit"></i> 修改</a><button type="button" class="btn btn-danger-outline btn-xs" data-delete data-name="首頁加入會員說明"><i class="fa fa-trash"></i> 刪除</button></div></td></tr>
+            <tr data-row><td class="num text-muted">11</td><td data-mark>關於我們標題</td><td data-mark>about_heading</td><td data-mark>我們致力於創造美好生活的每一個細節</td><td><div class="actions"><a href="settings-form.html?id=11" class="btn btn-outline btn-xs"><i class="fa fa-edit"></i> 修改</a><button type="button" class="btn btn-danger-outline btn-xs" data-delete data-name="關於我們標題"><i class="fa fa-trash"></i> 刪除</button></div></td></tr>
+            <tr data-row><td class="num text-muted">12</td><td data-mark>關於我們數字 1：數值</td><td data-mark>about_stat1_num</td><td data-mark>5+</td><td><div class="actions"><a href="settings-form.html?id=12" class="btn btn-outline btn-xs"><i class="fa fa-edit"></i> 修改</a><button type="button" class="btn btn-danger-outline btn-xs" data-delete data-name="關於我們數字 1：數值"><i class="fa fa-trash"></i> 刪除</button></div></td></tr>
+            <tr data-empty class="hidden"><td colspan="5"><div class="empty-state"><i class="fa fa-search"></i><p>找不到符合的資料</p></div></td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div class="admin-table-info">
+          <span>共 <b data-total>12</b> 筆</span>
+          <nav class="pagination">
+            <span class="disabled"><i class="fa fa-chevron-left"></i></span>
+            <span class="active">1</span>
+            <span class="disabled"><i class="fa fa-chevron-right"></i></span>
+          </nav>
+        </div>
+      </div>
+    </main>
+    <footer class="admin-footer">&copy; 2026 品牌名稱 管理系統</footer>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+  <script src="../js/main.js"></script>
+  <script src="../js/admin.js"></script>
+</body>
+</html>

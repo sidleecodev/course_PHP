@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>版型範例 — 品牌名稱</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@300;400;500;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+  <!-- 全站唯一共用 CSS -->
+  <link rel="stylesheet" href="css/style.css" />
+</head>
+<body class="page-layout">
+  <!-- ===== Topbar ===== -->
+  <div id="topbar">
+    <a href="member.html"><i class="fa fa-user-circle"></i> 會員中心</a>
+    <span class="sep">|</span>
+    <a href="login.html"><i class="fa fa-sign-in-alt"></i> 登入</a>
+    <span class="sep">|</span>
+    <a href="register.html"><i class="fa fa-user-plus"></i> 加入會員</a>
+    <span class="sep">|</span>
+    <a href="login.html" onclick="return confirm('確定要登出？')"><i class="fa fa-sign-out-alt"></i> 登出</a>
+  </div>
+
+  <!-- ===== Navbar ===== -->
+  <nav id="navbar">
+    <a href="index.html" class="nav-logo">
+      <div class="logo-box">B</div>
+      <span class="logo-text">品牌名稱</span>
+    </a>
+    <ul class="nav-links">
+      <li>
+        <a href="news-list.html"><i class="fa fa-newspaper"></i> 最新消息</a>
+        <ul class="dropdown">
+          <li><a href="news-list.html?cat=1">公司公告</a></li>
+          <li><a href="news-list.html?cat=2">活動資訊</a></li>
+          <li><a href="news-list.html?cat=3">產品動態</a></li>
+        </ul>
+      </li>
+      <li>
+        <a href="products-list.html"><i class="fa fa-box-open"></i> 產品介紹</a>
+        <ul class="dropdown">
+          <li><a href="products-list.html?cat=1">系列一</a></li>
+          <li><a href="products-list.html?cat=2">系列二</a></li>
+          <li><a href="products-list.html?cat=3">系列三</a></li>
+        </ul>
+      </li>
+      <li><a href="milestone.html"><i class="fa fa-history"></i> 大事記</a></li>
+      <li><a href="about.html"><i class="fa fa-building"></i> 關於我們</a></li>
+      <li><a href="member.html"><i class="fa fa-user"></i> 會員中心</a></li>
+    </ul>
+    <a href="cart.html" class="nav-cart">
+      <i class="fa fa-shopping-cart"></i>
+      <span>購物車</span>
+      <span class="cart-badge" id="cart-badge">3</span>
+    </a>
+    <button class="nav-toggle" onclick="toggleNav()" aria-label="選單"><i class="fa fa-bars"></i></button>
+  </nav>
+
+  <!-- ===== Main Content ===== -->
+  <main id="content-wrap">
+    <!-- 版型範例：各頁內容放在這裡（Laravel 對應 resources/views/layouts/app.blade.php 的 @yield('content')） -->
+    <div class="page-hero">
+      <div class="container">
+        <h1>頁面標題</h1>
+        <div class="breadcrumb">
+          <a href="index.html">首頁</a> <i class="fa fa-chevron-right"></i> 頁面標題
+        </div>
+      </div>
+    </div>
+    <div class="section">
+      <div class="container">
+        <p>此為 layout 範例，實際內容請參考各頁面檔案。所有頁面皆只引用 <code>css/style.css</code> 一個共用樣式檔。</p>
+      </div>
+    </div>
+
+  </main>
+
+  <!-- ===== Footer ===== -->
+  <footer class="site-footer">
+    <div class="footer-grid">
+      <div class="footer-brand">
+        <div class="logo-box">B</div>
+        <p>提供優質產品與服務<br>您的信賴之選</p>
+        <div class="footer-social">
+          <a href="#" aria-label="Facebook"><i class="fab fa-facebook-f"></i></a>
+          <a href="#" aria-label="Instagram"><i class="fab fa-instagram"></i></a>
+          <a href="#" aria-label="LINE"><i class="fab fa-line"></i></a>
+        </div>
+      </div>
+      <div class="footer-col">
+        <h4>快速連結</h4>
+        <ul>
+          <li><a href="about.html">關於我們</a></li>
+          <li><a href="news-list.html">最新消息</a></li>
+          <li><a href="products-list.html">產品介紹</a></li>
+          <li><a href="milestone.html">大事記</a></li>
+        </ul>
+      </div>
+      <div class="footer-col">
+        <h4>會員服務</h4>
+        <ul>
+          <li><a href="login.html">會員登入</a></li>
+          <li><a href="register.html">加入會員</a></li>
+          <li><a href="member.html">會員中心</a></li>
+          <li><a href="cart.html">購物車</a></li>
+        </ul>
+      </div>
+      <div class="footer-col contact">
+        <h4>聯絡資訊</h4>
+        <ul>
+          <li><i class="fa fa-map-marker-alt"></i> 台灣某市某區某路一號</li>
+          <li><i class="fa fa-phone"></i> 02-1234-5678</li>
+          <li><i class="fa fa-envelope"></i> info@example.com</li>
+          <li><i class="fa fa-clock"></i> 週一至週五 09:00–18:00</li>
+        </ul>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <span>&copy; 2025 品牌名稱. All rights reserved.</span>
+      <span>隱私權政策 | 服務條款</span>
+    </div>
+  </footer>
+
+  <button id="back-top" aria-label="回頂端"><i class="fa fa-chevron-up"></i></button>
+  <script src="js/main.js"></script>
+</body>
+</html>

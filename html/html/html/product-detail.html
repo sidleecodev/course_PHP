@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>產品內容 — 品牌名稱</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@300;400;500;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+  <!-- 全站唯一共用 CSS -->
+  <link rel="stylesheet" href="css/style.css" />
+</head>
+<body class="page-product-detail">
+  <!-- ===== Topbar ===== -->
+  <div id="topbar">
+    <a href="member.html"><i class="fa fa-user-circle"></i> 會員中心</a>
+    <span class="sep">|</span>
+    <a href="login.html"><i class="fa fa-sign-in-alt"></i> 登入</a>
+    <span class="sep">|</span>
+    <a href="register.html"><i class="fa fa-user-plus"></i> 加入會員</a>
+    <span class="sep">|</span>
+    <a href="login.html" onclick="return confirm('確定要登出？')"><i class="fa fa-sign-out-alt"></i> 登出</a>
+  </div>
+
+  <!-- ===== Navbar ===== -->
+  <nav id="navbar">
+    <a href="index.html" class="nav-logo">
+      <div class="logo-box">B</div>
+      <span class="logo-text">品牌名稱</span>
+    </a>
+    <ul class="nav-links">
+      <li>
+        <a href="news-list.html"><i class="fa fa-newspaper"></i> 最新消息</a>
+        <ul class="dropdown">
+          <li><a href="news-list.html?cat=1">公司公告</a></li>
+          <li><a href="news-list.html?cat=2">活動資訊</a></li>
+          <li><a href="news-list.html?cat=3">產品動態</a></li>
+        </ul>
+      </li>
+      <li>
+        <a href="products-list.html" class="active"><i class="fa fa-box-open"></i> 產品介紹</a>
+        <ul class="dropdown">
+          <li><a href="products-list.html?cat=1">系列一</a></li>
+          <li><a href="products-list.html?cat=2">系列二</a></li>
+          <li><a href="products-list.html?cat=3">系列三</a></li>
+        </ul>
+      </li>
+      <li><a href="milestone.html"><i class="fa fa-history"></i> 大事記</a></li>
+      <li><a href="about.html"><i class="fa fa-building"></i> 關於我們</a></li>
+      <li><a href="member.html"><i class="fa fa-user"></i> 會員中心</a></li>
+    </ul>
+    <a href="cart.html" class="nav-cart">
+      <i class="fa fa-shopping-cart"></i>
+      <span>購物車</span>
+      <span class="cart-badge" id="cart-badge">3</span>
+    </a>
+    <button class="nav-toggle" onclick="toggleNav()" aria-label="選單"><i class="fa fa-bars"></i></button>
+  </nav>
+
+  <!-- ===== Main Content ===== -->
+  <main id="content-wrap">
+    <div class="page-hero compact">
+      <div class="container">
+        <div class="breadcrumb">
+          <a href="index.html">首頁</a> <i class="fa fa-chevron-right"></i>
+          <a href="products-list.html">產品介紹</a> <i class="fa fa-chevron-right"></i>
+          <a href="products-list.html?cat=1">系列一</a> <i class="fa fa-chevron-right"></i>
+          旗艦系列 A1 精品
+        </div>
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="container">
+        <div class="product-detail">
+          <!-- 圖片區 -->
+          <div class="gallery">
+            <div class="gallery-main ph" id="main-img"><i class="fa fa-cube" id="main-icon"></i></div>
+            <div class="thumbs-wrap">
+              <div class="thumbs">
+                <div class="gallery-thumb ph active" onclick="switchImg(this,'fa-cube','#e8edf7','#d0d8ea')"><i class="fa fa-cube"></i></div>
+                <div class="gallery-thumb ph" onclick="switchImg(this,'fa-gem','#ede8f7','#d8d0ea')"><i class="fa fa-gem"></i></div>
+                <div class="gallery-thumb ph" onclick="switchImg(this,'fa-star','#f7f0e8','#ead8c0')"><i class="fa fa-star"></i></div>
+                <div class="gallery-thumb ph" onclick="switchImg(this,'fa-crown','#f7e8e8','#ead0d0')"><i class="fa fa-crown"></i></div>
+                <div class="gallery-thumb ph" onclick="switchImg(this,'fa-heart','#f7e8f0','#ead0db')"><i class="fa fa-heart"></i></div>
+              </div>
+            </div>
+          </div>
+
+          <!-- 商品資訊 -->
+          <div>
+            <span class="product-cat-tag">系列一</span>
+            <h1 class="product-title-lg">旗艦系列 A1 精品</h1>
+            <p class="product-subtitle">頂級工藝，細膩呈現每一個精緻細節</p>
+            <p class="product-no-lg">商品編號：NO. A-00123</p>
+
+            <div class="price-block">
+              <span class="sale-price">NT$ 2,980</span>
+              <span class="original-price">NT$ 3,600</span>
+            </div>
+
+            <div class="spec-title"><i class="fa fa-list-ul"></i> 產品規格</div>
+            <table class="spec-table">
+              <tr><td>材質</td><td>頂級天然素材，經特殊工藝處理</td></tr>
+              <tr><td>尺寸</td><td>30 × 20 × 10 cm</td></tr>
+              <tr><td>重量</td><td>450 g</td></tr>
+              <tr><td>顏色</td><td>經典藍 / 霧金 / 珍珠白</td></tr>
+              <tr><td>產地</td><td>台灣製造</td></tr>
+              <tr><td>保固</td><td>一年原廠保固</td></tr>
+            </table>
+
+            <div class="qty-cart">
+              <div class="qty-ctrl lg">
+                <button class="qty-btn" onclick="changeQty(-1)"><i class="fa fa-minus"></i></button>
+                <input type="number" class="qty-num" id="qty" value="1" min="1" max="99" />
+                <button class="qty-btn" onclick="changeQty(1)"><i class="fa fa-plus"></i></button>
+              </div>
+              <button class="btn btn-gold btn-lg" onclick="addToCart()"><i class="fa fa-cart-plus"></i> 加入購物車</button>
+              <a href="cart.html" class="btn btn-primary btn-lg"><i class="fa fa-shopping-cart"></i> 直接結帳</a>
+            </div>
+
+            <div class="product-perks">
+              <span><i class="fa fa-truck"></i> 滿 NT$999 免運費</span>
+              <span><i class="fa fa-undo"></i> 七天無理由退換</span>
+              <span><i class="fa fa-shield-alt"></i> 正品保障</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="product-content">
+          <h3>商品說明</h3>
+          <p>本商品採用頂級天然素材精心製作，每一件均經過嚴格品管程序，確保品質達到最高標準。產品融合傳統工藝與現代設計，呈現出獨特的美學風格，適合追求生活品質的您。</p>
+          <p>無論是自用或送禮，本系列商品都是您的絕佳選擇。配以精緻禮盒包裝，更顯誠意。</p>
+          <h3>使用方式</h3>
+          <p>請依照說明書指示使用，避免接觸強酸強鹼物質。清潔時請使用柔軟布料輕輕擦拭，勿以粗糙材質摩擦表面。存放時請置於陰涼乾燥處，避免陽光直射。</p>
+          <h3>注意事項</h3>
+          <p>本商品不含螢光劑，對皮膚敏感者友善。如有任何使用上的問題，歡迎聯繫客服。商品顏色因螢幕顯示差異，實際顏色可能略有不同，敬請見諒。</p>
+        </div>
+      </div>
+    </div>
+
+  </main>
+
+  <!-- ===== Footer ===== -->
+  <footer class="site-footer">
+    <div class="footer-grid">
+      <div class="footer-brand">
+        <div class="logo-box">B</div>
+        <p>提供優質產品與服務<br>您的信賴之選</p>
+        <div class="footer-social">
+          <a href="#" aria-label="Facebook"><i class="fab fa-facebook-f"></i></a>
+          <a href="#" aria-label="Instagram"><i class="fab fa-instagram"></i></a>
+          <a href="#" aria-label="LINE"><i class="fab fa-line"></i></a>
+        </div>
+      </div>
+      <div class="footer-col">
+        <h4>快速連結</h4>
+        <ul>
+          <li><a href="about.html">關於我們</a></li>
+          <li><a href="news-list.html">最新消息</a></li>
+          <li><a href="products-list.html">產品介紹</a></li>
+          <li><a href="milestone.html">大事記</a></li>
+        </ul>
+      </div>
+      <div class="footer-col">
+        <h4>會員服務</h4>
+        <ul>
+          <li><a href="login.html">會員登入</a></li>
+          <li><a href="register.html">加入會員</a></li>
+          <li><a href="member.html">會員中心</a></li>
+          <li><a href="cart.html">購物車</a></li>
+        </ul>
+      </div>
+      <div class="footer-col contact">
+        <h4>聯絡資訊</h4>
+        <ul>
+          <li><i class="fa fa-map-marker-alt"></i> 台灣某市某區某路一號</li>
+          <li><i class="fa fa-phone"></i> 02-1234-5678</li>
+          <li><i class="fa fa-envelope"></i> info@example.com</li>
+          <li><i class="fa fa-clock"></i> 週一至週五 09:00–18:00</li>
+        </ul>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <span>&copy; 2025 品牌名稱. All rights reserved.</span>
+      <span>隱私權政策 | 服務條款</span>
+    </div>
+  </footer>
+
+  <button id="back-top" aria-label="回頂端"><i class="fa fa-chevron-up"></i></button>
+  <script src="js/main.js"></script>
+  <script>
+
+    let cartCount = 3;
+    function switchImg(thumb, icon, c1, c2) {
+      document.querySelectorAll('.gallery-thumb').forEach(t => t.classList.remove('active'));
+      thumb.classList.add('active');
+      document.getElementById('main-img').style.background = `linear-gradient(135deg,${c1},${c2})`;
+      document.getElementById('main-icon').className = 'fa ' + icon;
+    }
+    function changeQty(delta) {
+      const input = document.getElementById('qty');
+      input.value = Math.min(99, Math.max(1, (parseInt(input.value) || 1) + delta));
+    }
+    function addToCart() {
+      cartCount += parseInt(document.getElementById('qty').value) || 1;
+      updateCartBadge(cartCount);
+      showToast('已加入購物車！');
+    }
+  </script>
+</body>
+</html>

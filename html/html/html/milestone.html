@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>大事記 — 品牌名稱</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@300;400;500;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+  <!-- 全站唯一共用 CSS -->
+  <link rel="stylesheet" href="css/style.css" />
+</head>
+<body class="page-milestone">
+  <!-- ===== Topbar ===== -->
+  <div id="topbar">
+    <a href="member.html"><i class="fa fa-user-circle"></i> 會員中心</a>
+    <span class="sep">|</span>
+    <a href="login.html"><i class="fa fa-sign-in-alt"></i> 登入</a>
+    <span class="sep">|</span>
+    <a href="register.html"><i class="fa fa-user-plus"></i> 加入會員</a>
+    <span class="sep">|</span>
+    <a href="login.html" onclick="return confirm('確定要登出？')"><i class="fa fa-sign-out-alt"></i> 登出</a>
+  </div>
+
+  <!-- ===== Navbar ===== -->
+  <nav id="navbar">
+    <a href="index.html" class="nav-logo">
+      <div class="logo-box">B</div>
+      <span class="logo-text">品牌名稱</span>
+    </a>
+    <ul class="nav-links">
+      <li>
+        <a href="news-list.html"><i class="fa fa-newspaper"></i> 最新消息</a>
+        <ul class="dropdown">
+          <li><a href="news-list.html?cat=1">公司公告</a></li>
+          <li><a href="news-list.html?cat=2">活動資訊</a></li>
+          <li><a href="news-list.html?cat=3">產品動態</a></li>
+        </ul>
+      </li>
+      <li>
+        <a href="products-list.html"><i class="fa fa-box-open"></i> 產品介紹</a>
+        <ul class="dropdown">
+          <li><a href="products-list.html?cat=1">系列一</a></li>
+          <li><a href="products-list.html?cat=2">系列二</a></li>
+          <li><a href="products-list.html?cat=3">系列三</a></li>
+        </ul>
+      </li>
+      <li><a href="milestone.html" class="active"><i class="fa fa-history"></i> 大事記</a></li>
+      <li><a href="about.html"><i class="fa fa-building"></i> 關於我們</a></li>
+      <li><a href="member.html"><i class="fa fa-user"></i> 會員中心</a></li>
+    </ul>
+    <a href="cart.html" class="nav-cart">
+      <i class="fa fa-shopping-cart"></i>
+      <span>購物車</span>
+      <span class="cart-badge" id="cart-badge">3</span>
+    </a>
+    <button class="nav-toggle" onclick="toggleNav()" aria-label="選單"><i class="fa fa-bars"></i></button>
+  </nav>
+
+  <!-- ===== Main Content ===== -->
+  <main id="content-wrap">
+    <div class="page-hero">
+      <div class="container container-narrow">
+        <h1><i class="fa fa-history"></i>大事記</h1>
+        <div class="breadcrumb"><a href="index.html">首頁</a> <i class="fa fa-chevron-right"></i> 大事記</div>
+      </div>
+    </div>
+
+    <div class="section-lg">
+      <div class="container container-narrow">
+        <div class="timeline">
+          <div class="year-marker"><div class="year-pill">2025</div></div>
+          <div class="event right">
+            <div class="event-dot highlight"></div>
+            <div class="event-content">
+              <div class="event-month">11 月</div>
+              <div class="event-title">年度客戶感謝活動圓滿落幕</div>
+              <div class="event-desc">五百位貴賓蒞臨，現場展示全新旗艦系列，締造單日業績新高。</div>
+              <span class="event-tag tag-milestone"><i class="fa fa-star"></i> 里程碑</span>
+            </div>
+          </div>
+          <div class="event left">
+            <div class="event-dot"></div>
+            <div class="event-content">
+              <div class="event-month">08 月</div>
+              <div class="event-title">全新秋冬系列產品正式發佈</div>
+              <div class="event-desc">以「自然共生」為設計理念，推出12款環保材質新品。</div>
+              <span class="event-tag tag-product"><i class="fa fa-box-open"></i> 產品</span>
+            </div>
+          </div>
+          <div class="event right">
+            <div class="event-dot"></div>
+            <div class="event-content">
+              <div class="event-month">03 月</div>
+              <div class="event-title">榮獲年度最佳品質獎</div>
+              <div class="event-desc">由台灣優良商品協會評選，連續三年獲此殊榮，再次印證品質承諾。</div>
+              <span class="event-tag tag-award"><i class="fa fa-trophy"></i> 獲獎</span>
+            </div>
+          </div>
+
+          <div class="year-marker"><div class="year-pill">2024</div></div>
+          <div class="event left">
+            <div class="event-dot"></div>
+            <div class="event-content">
+              <div class="event-month">10 月</div>
+              <div class="event-title">電商平台正式上線</div>
+              <div class="event-desc">全新官方購物平台正式啟用，提供更便捷的網路購物體驗，首月訂單逾千筆。</div>
+              <span class="event-tag tag-milestone"><i class="fa fa-globe"></i> 里程碑</span>
+            </div>
+          </div>
+          <div class="event right">
+            <div class="event-dot"></div>
+            <div class="event-content">
+              <div class="event-month">05 月</div>
+              <div class="event-title">進駐台中全新旗艦店</div>
+              <div class="event-desc">台中旗艦展示中心盛大開幕，佔地300坪，提供全系列產品完整體驗。</div>
+              <span class="event-tag tag-milestone"><i class="fa fa-store"></i> 展店</span>
+            </div>
+          </div>
+          <div class="event left">
+            <div class="event-dot"></div>
+            <div class="event-content">
+              <div class="event-month">01 月</div>
+              <div class="event-title">ISO 9001 品質認證通過</div>
+              <div class="event-desc">歷時半年的審核程序圓滿完成，取得國際品質管理系統認證。</div>
+              <span class="event-tag tag-award"><i class="fa fa-certificate"></i> 認證</span>
+            </div>
+          </div>
+
+          <div class="year-marker"><div class="year-pill">2023</div></div>
+          <div class="event right">
+            <div class="event-dot"></div>
+            <div class="event-content">
+              <div class="event-month">09 月</div>
+              <div class="event-title">海外市場首次拓展至日本</div>
+              <div class="event-desc">與日本代理商簽訂合作協議，正式踏入亞洲國際市場，開啟品牌國際化新篇章。</div>
+              <span class="event-tag tag-milestone"><i class="fa fa-flag"></i> 里程碑</span>
+            </div>
+          </div>
+          <div class="event left">
+            <div class="event-dot"></div>
+            <div class="event-content">
+              <div class="event-month">03 月</div>
+              <div class="event-title">第二代旗艦產品系列問世</div>
+              <div class="event-desc">歷時兩年研發，全新旗艦系列導入專利製程，質感與功能大幅提升。</div>
+              <span class="event-tag tag-product"><i class="fa fa-box-open"></i> 產品</span>
+            </div>
+          </div>
+
+          <div class="year-marker"><div class="year-pill">2020</div></div>
+          <div class="event right">
+            <div class="event-dot highlight"></div>
+            <div class="event-content">
+              <div class="event-month">01 月</div>
+              <div class="event-title">公司正式創立</div>
+              <div class="event-desc">由一群對品質充滿熱忱的創業者共同創辦，以「讓每個人都能擁有優質生活」為核心使命，踏出品牌第一步。</div>
+              <span class="event-tag tag-milestone"><i class="fa fa-flag-checkered"></i> 創立</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </main>
+
+  <!-- ===== Footer ===== -->
+  <footer class="site-footer">
+    <div class="footer-grid">
+      <div class="footer-brand">
+        <div class="logo-box">B</div>
+        <p>提供優質產品與服務<br>您的信賴之選</p>
+        <div class="footer-social">
+          <a href="#" aria-label="Facebook"><i class="fab fa-facebook-f"></i></a>
+          <a href="#" aria-label="Instagram"><i class="fab fa-instagram"></i></a>
+          <a href="#" aria-label="LINE"><i class="fab fa-line"></i></a>
+        </div>
+      </div>
+      <div class="footer-col">
+        <h4>快速連結</h4>
+        <ul>
+          <li><a href="about.html">關於我們</a></li>
+          <li><a href="news-list.html">最新消息</a></li>
+          <li><a href="products-list.html">產品介紹</a></li>
+          <li><a href="milestone.html">大事記</a></li>
+        </ul>
+      </div>
+      <div class="footer-col">
+        <h4>會員服務</h4>
+        <ul>
+          <li><a href="login.html">會員登入</a></li>
+          <li><a href="register.html">加入會員</a></li>
+          <li><a href="member.html">會員中心</a></li>
+          <li><a href="cart.html">購物車</a></li>
+        </ul>
+      </div>
+      <div class="footer-col contact">
+        <h4>聯絡資訊</h4>
+        <ul>
+          <li><i class="fa fa-map-marker-alt"></i> 台灣某市某區某路一號</li>
+          <li><i class="fa fa-phone"></i> 02-1234-5678</li>
+          <li><i class="fa fa-envelope"></i> info@example.com</li>
+          <li><i class="fa fa-clock"></i> 週一至週五 09:00–18:00</li>
+        </ul>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <span>&copy; 2025 品牌名稱. All rights reserved.</span>
+      <span>隱私權政策 | 服務條款</span>
+    </div>
+  </footer>
+
+  <button id="back-top" aria-label="回頂端"><i class="fa fa-chevron-up"></i></button>
+  <script src="js/main.js"></script>
+</body>
+</html>

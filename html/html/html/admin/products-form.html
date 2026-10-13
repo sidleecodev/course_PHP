@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>新增產品 — 品牌名稱 管理系統</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@300;400;500;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+  <!-- 前台與後台共用同一份 CSS -->
+  <link rel="stylesheet" href="../css/style.css" />
+</head>
+<body class="admin-body">
+  <!-- ===== 側欄 ===== -->
+  <aside class="admin-sidebar">
+    <a href="index.html" class="admin-brand">
+      <div class="logo-box">B</div>
+      <div><span>品牌名稱</span><small>ADMIN</small></div>
+    </a>
+    <nav class="admin-nav">
+      <div class="nav-group">總覽</div>
+      <a href="index.html"><i class="fa fa-tachometer-alt"></i> 儀表板</a>
+      <div class="nav-group">網站內容</div>
+      <a href="banners.html"><i class="fa fa-images"></i> 首頁輪播</a>
+      <a href="features.html"><i class="fa fa-medal"></i> 特色 / 核心價值</a>
+      <a href="milestones.html"><i class="fa fa-history"></i> 大事記</a>
+      <a href="team-members.html"><i class="fa fa-users"></i> 核心團隊</a>
+      <a href="settings.html"><i class="fa fa-cog"></i> 網站設定</a>
+      <div class="nav-group">最新消息</div>
+      <a href="news.html"><i class="fa fa-newspaper"></i> 消息管理</a>
+      <a href="news-categories.html"><i class="fa fa-folder"></i> 消息分類</a>
+      <div class="nav-group">產品</div>
+      <a href="products.html" class="active"><i class="fa fa-box-open"></i> 產品管理</a>
+      <a href="product-categories.html"><i class="fa fa-folder-open"></i> 產品分類</a>
+      <div class="nav-group">會員與訂單</div>
+      <a href="orders.html"><i class="fa fa-receipt"></i> 訂單管理</a>
+      <a href="members.html"><i class="fa fa-user-friends"></i> 會員管理</a>
+      <a href="addresses.html"><i class="fa fa-map-marker-alt"></i> 會員地址</a>
+      <div class="nav-group">系統</div>
+      <a href="admins.html"><i class="fa fa-user-shield"></i> 管理員</a>
+    </nav>
+  </aside>
+
+  <div class="admin-main">
+    <!-- ===== 頂部列 ===== -->
+    <header class="admin-topbar">
+      <button class="admin-menu-toggle" aria-label="選單"><i class="fa fa-bars"></i></button>
+      <div class="page-name">產品管理</div>
+      <div class="admin-user">
+        <a href="../index.html" target="_blank"><i class="fa fa-external-link-alt"></i> 前台</a>
+        <span><i class="fa fa-user-circle"></i> 系統管理員</span>
+        <a href="login.html" data-logout><i class="fa fa-sign-out-alt"></i> 登出</a>
+      </div>
+    </header>
+
+    <main class="admin-content">
+      <div class="admin-card">
+        <div class="admin-card-header">
+          <h2><i class="fa fa-box-open"></i> <span data-mode-text>新增產品</span></h2>
+          <a href="products.html" class="btn btn-light btn-sm"><i class="fa fa-arrow-left"></i> 返回列表</a>
+        </div>
+        <div class="admin-card-body">
+          <!-- 網址帶 ?id=編號 時為「修改」，會自動帶入資料 -->
+          <form class="admin-form" data-back="products.html" novalidate>
+          <div class="form-row">
+            <div class="form-group">
+              <label class="form-label" for="f_product_category_id">分類 <span class="req">*</span></label>
+              <select id="f_product_category_id" name="product_category_id" class="form-control" required><option value="1">系列一</option><option value="2">系列二</option><option value="3">系列三</option></select>
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="f_product_no">商品編號 <span class="req">*</span></label>
+              <input type="text" id="f_product_no" name="product_no" value="" class="form-control" required placeholder="A-00123">
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="f_title">商品名稱 <span class="req">*</span></label>
+            <input type="text" id="f_title" name="title" value="" class="form-control" required>
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="f_subtitle">副標題</label>
+            <input type="text" id="f_subtitle" name="subtitle" value="" class="form-control">
+          </div>
+          <div class="form-row-3">
+            <div class="form-group">
+              <label class="form-label" for="f_price">售價 <span class="req">*</span></label>
+              <input type="number" id="f_price" name="price" value="" class="form-control" min="0" required>
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="f_original_price">原價（選填）</label>
+              <input type="number" id="f_original_price" name="original_price" value="" class="form-control" min="0">
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="f_stock">庫存</label>
+              <input type="number" id="f_stock" name="stock" value="100" class="form-control" min="0">
+            </div>
+          </div>
+          <div class="form-row">
+            <div class="form-group">
+              <label class="form-label" for="f_badge">標籤</label>
+              <input type="text" id="f_badge" name="badge" value="" class="form-control" placeholder="新品 / 熱銷 / HOT">
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="f_icon">無圖片時的圖示</label>
+              <div class="input-icon-wrap">
+                <i class="fa fa-cube icon" id="f_icon_icon"></i>
+                <input type="text" id="f_icon" name="icon" value="fa-cube" class="form-control" placeholder="fa-star" data-icon-preview="f_icon_icon">
+              </div>
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="f_image">商品圖片</label>
+            <input type="file" id="f_image" name="image" accept="image/*" class="form-control" data-preview="f_image_preview">
+            <img id="f_image_preview" class="img-preview hidden" alt="">
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="f_specs">規格</label>
+            <textarea id="f_specs" name="specs" rows="6" class="form-control"></textarea>
+            <p class="field-hint">一行一筆，格式：名稱|內容，例：材質|天然素材</p>
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="f_content">商品說明</label>
+            <textarea id="f_content" name="content" rows="10" class="form-control font-en"></textarea>
+            <p class="field-hint">可使用 HTML：&lt;h3&gt;小標&lt;/h3&gt;、&lt;p&gt;段落&lt;/p&gt;</p>
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="f_sort">排序</label>
+            <input type="number" id="f_sort" name="sort" value="" class="form-control" min="0">
+          </div>
+          <div class="form-group">
+            <label class="form-check"><input type="checkbox" name="is_featured" value="1"> 首頁精選</label>
+          </div>
+          <div class="form-group">
+            <label class="form-check"><input type="checkbox" name="is_active" value="1" checked> 上架</label>
+          </div>
+
+            <div class="form-actions">
+              <button type="submit" class="btn btn-primary"><i class="fa fa-save"></i> 儲存</button>
+              <a href="products.html" class="btn btn-outline"><i class="fa fa-times"></i> 取消</a>
+            </div>
+          </form>
+        </div>
+      </div>
+
+      <!-- 示範資料（修改時帶入表單用；實際系統由後端提供） -->
+      <script type="application/json" id="records">{"1":{"product_category_id":1,"product_no":"A-00123","title":"旗艦系列 A1 精品","subtitle":"","price":2980,"original_price":3600,"stock":100,"badge":"新品","icon":"fa-cube","specs":"材質|頂級天然素材\n尺寸|30 × 20 × 10 cm\n產地|台灣製造","content":"\u003Ch3\u003E商品說明\u003C/h3\u003E\u003Cp\u003E本商品採用頂級天然素材精心製作。\u003C/p\u003E","sort":1,"is_featured":1,"is_active":1},"2":{"product_category_id":1,"product_no":"A-00124","title":"旗艦系列 A2 進階款","subtitle":"","price":3580,"original_price":null,"stock":100,"badge":"","icon":"fa-gem","specs":"材質|頂級天然素材\n尺寸|30 × 20 × 10 cm\n產地|台灣製造","content":"\u003Ch3\u003E商品說明\u003C/h3\u003E\u003Cp\u003E本商品採用頂級天然素材精心製作。\u003C/p\u003E","sort":2,"is_featured":1,"is_active":1},"3":{"product_category_id":2,"product_no":"B-00205","title":"經典系列 B1 限定版","subtitle":"","price":1880,"original_price":2200,"stock":100,"badge":"熱銷","icon":"fa-star","specs":"材質|頂級天然素材\n尺寸|30 × 20 × 10 cm\n產地|台灣製造","content":"\u003Ch3\u003E商品說明\u003C/h3\u003E\u003Cp\u003E本商品採用頂級天然素材精心製作。\u003C/p\u003E","sort":3,"is_featured":1,"is_active":1},"4":{"product_category_id":2,"product_no":"B-00206","title":"經典系列 B2 標準款","subtitle":"","price":1280,"original_price":null,"stock":100,"badge":"","icon":"fa-award","specs":"材質|頂級天然素材\n尺寸|30 × 20 × 10 cm\n產地|台灣製造","content":"\u003Ch3\u003E商品說明\u003C/h3\u003E\u003Cp\u003E本商品採用頂級天然素材精心製作。\u003C/p\u003E","sort":4,"is_featured":0,"is_active":1},"5":{"product_category_id":3,"product_no":"C-00301","title":"自然系列 C1 環保款","subtitle":"","price":980,"original_price":1200,"stock":100,"badge":"HOT","icon":"fa-leaf","specs":"材質|頂級天然素材\n尺寸|30 × 20 × 10 cm\n產地|台灣製造","content":"\u003Ch3\u003E商品說明\u003C/h3\u003E\u003Cp\u003E本商品採用頂級天然素材精心製作。\u003C/p\u003E","sort":5,"is_featured":1,"is_active":1},"6":{"product_category_id":3,"product_no":"C-00302","title":"自然系列 C2 輕奢款","subtitle":"","price":1480,"original_price":null,"stock":100,"badge":"","icon":"fa-seedling","specs":"材質|頂級天然素材\n尺寸|30 × 20 × 10 cm\n產地|台灣製造","content":"\u003Ch3\u003E商品說明\u003C/h3\u003E\u003Cp\u003E本商品採用頂級天然素材精心製作。\u003C/p\u003E","sort":6,"is_featured":0,"is_active":1},"7":{"product_category_id":1,"product_no":"A-00125","title":"旗艦系列 A3 尊爵款","subtitle":"","price":4980,"original_price":5800,"stock":100,"badge":"","icon":"fa-crown","specs":"材質|頂級天然素材\n尺寸|30 × 20 × 10 cm\n產地|台灣製造","content":"\u003Ch3\u003E商品說明\u003C/h3\u003E\u003Cp\u003E本商品採用頂級天然素材精心製作。\u003C/p\u003E","sort":7,"is_featured":0,"is_active":1},"8":{"product_category_id":2,"product_no":"B-00207","title":"經典系列 B3 禮盒組合","subtitle":"","price":2480,"original_price":null,"stock":100,"badge":"","icon":"fa-heart","specs":"材質|頂級天然素材\n尺寸|30 × 20 × 10 cm\n產地|台灣製造","content":"\u003Ch3\u003E商品說明\u003C/h3\u003E\u003Cp\u003E本商品採用頂級天然素材精心製作。\u003C/p\u003E","sort":8,"is_featured":0,"is_active":1},"9":{"product_category_id":3,"product_no":"C-00303","title":"自然系列 C3 聯名款","subtitle":"","price":4200,"original_price":5000,"stock":100,"badge":"新品","icon":"fa-palette","specs":"材質|頂級天然素材\n尺寸|30 × 20 × 10 cm\n產地|台灣製造","content":"\u003Ch3\u003E商品說明\u003C/h3\u003E\u003Cp\u003E本商品採用頂級天然素材精心製作。\u003C/p\u003E","sort":9,"is_featured":0,"is_active":1}}</script>
+    </main>
+    <footer class="admin-footer">&copy; 2026 品牌名稱 管理系統</footer>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+  <script src="../js/main.js"></script>
+  <script src="../js/admin.js"></script>
+</body>
+</html>

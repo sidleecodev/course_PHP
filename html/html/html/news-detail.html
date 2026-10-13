@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>消息內容 — 品牌名稱</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@300;400;500;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+  <!-- 全站唯一共用 CSS -->
+  <link rel="stylesheet" href="css/style.css" />
+</head>
+<body class="page-news-detail">
+  <!-- ===== Topbar ===== -->
+  <div id="topbar">
+    <a href="member.html"><i class="fa fa-user-circle"></i> 會員中心</a>
+    <span class="sep">|</span>
+    <a href="login.html"><i class="fa fa-sign-in-alt"></i> 登入</a>
+    <span class="sep">|</span>
+    <a href="register.html"><i class="fa fa-user-plus"></i> 加入會員</a>
+    <span class="sep">|</span>
+    <a href="login.html" onclick="return confirm('確定要登出？')"><i class="fa fa-sign-out-alt"></i> 登出</a>
+  </div>
+
+  <!-- ===== Navbar ===== -->
+  <nav id="navbar">
+    <a href="index.html" class="nav-logo">
+      <div class="logo-box">B</div>
+      <span class="logo-text">品牌名稱</span>
+    </a>
+    <ul class="nav-links">
+      <li>
+        <a href="news-list.html" class="active"><i class="fa fa-newspaper"></i> 最新消息</a>
+        <ul class="dropdown">
+          <li><a href="news-list.html?cat=1">公司公告</a></li>
+          <li><a href="news-list.html?cat=2">活動資訊</a></li>
+          <li><a href="news-list.html?cat=3">產品動態</a></li>
+        </ul>
+      </li>
+      <li>
+        <a href="products-list.html"><i class="fa fa-box-open"></i> 產品介紹</a>
+        <ul class="dropdown">
+          <li><a href="products-list.html?cat=1">系列一</a></li>
+          <li><a href="products-list.html?cat=2">系列二</a></li>
+          <li><a href="products-list.html?cat=3">系列三</a></li>
+        </ul>
+      </li>
+      <li><a href="milestone.html"><i class="fa fa-history"></i> 大事記</a></li>
+      <li><a href="about.html"><i class="fa fa-building"></i> 關於我們</a></li>
+      <li><a href="member.html"><i class="fa fa-user"></i> 會員中心</a></li>
+    </ul>
+    <a href="cart.html" class="nav-cart">
+      <i class="fa fa-shopping-cart"></i>
+      <span>購物車</span>
+      <span class="cart-badge" id="cart-badge">3</span>
+    </a>
+    <button class="nav-toggle" onclick="toggleNav()" aria-label="選單"><i class="fa fa-bars"></i></button>
+  </nav>
+
+  <!-- ===== Main Content ===== -->
+  <main id="content-wrap">
+    <div class="page-hero">
+      <div class="container">
+        <h1>2025年度客戶感謝活動圓滿結束，感謝各界支持與參與</h1>
+        <div class="breadcrumb">
+          <a href="index.html">首頁</a> <i class="fa fa-chevron-right"></i>
+          <a href="news-list.html">最新消息</a> <i class="fa fa-chevron-right"></i>
+          公司公告
+        </div>
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="container">
+        <div class="layout-2col">
+          <div>
+            <a href="news-list.html" class="btn btn-light back-btn"><i class="fa fa-arrow-left"></i> 返回列表</a>
+            <div class="article-card">
+              <div class="article-meta">
+                <span class="news-badge">公司公告</span>
+                <span class="article-date"><i class="fa fa-calendar"></i> 2025 年 11 月 18 日</span>
+                <span class="article-date"><i class="fa fa-eye"></i> 1,245 次瀏覽</span>
+              </div>
+              <div class="article-cover ph"><i class="fa fa-newspaper"></i></div>
+              <div class="article-body">
+                <p>2025年度客戶感謝活動已於11月15日圓滿落幕。本次活動以「感謝同行，展望未來」為主題，吸引超過五百位貴賓蒞臨，現場熱鬧非凡，充分展現了客戶對本公司的信任與支持。</p>
+                <h3>活動亮點</h3>
+                <p>活動現場設有多個展示區域，涵蓋本年度全新產品系列展示、互動體驗專區以及限定優惠搶購區。來賓們在輕鬆愉快的氛圍中，深入了解了我們最新推出的產品與服務。</p>
+                <ul>
+                  <li>全新旗艦系列首度公開亮相，獲得熱烈迴響</li>
+                  <li>現場限定優惠吸引大批客戶搶購，業績創歷史新高</li>
+                  <li>互動體驗專區提供個人化產品推薦服務</li>
+                  <li>設有兒童遊樂區，讓攜家帶眷的客戶也能盡興</li>
+                </ul>
+                <h3>致謝</h3>
+                <p>感謝所有到場的客戶朋友，您們的支持是我們持續前進的最大動力。我們將持續精進產品與服務品質，為每一位客戶提供更優質的體驗。</p>
+                <p>活動精彩照片即將上傳至官方網站與社群媒體，敬請期待。如有任何問題，歡迎透過官方管道與我們聯繫。</p>
+              </div>
+              <div class="article-nav">
+                <a href="news-detail.html"><i class="fa fa-chevron-left"></i> 上一則：服務系統升級公告</a>
+                <a href="news-detail.html" class="next">下一則：雙十一購物節優惠活動 <i class="fa fa-chevron-right"></i></a>
+              </div>
+            </div>
+          </div>
+
+          <aside>
+            <div class="sidebar-card">
+              <div class="sidebar-title"><i class="fa fa-list"></i> 消息分類</div>
+              <div class="cat-list-item"><a href="news-list.html?cat=1">公司公告</a><span class="cat-count">12</span></div>
+              <div class="cat-list-item"><a href="news-list.html?cat=2">活動資訊</a><span class="cat-count">8</span></div>
+              <div class="cat-list-item"><a href="news-list.html?cat=3">產品動態</a><span class="cat-count">15</span></div>
+            </div>
+            <div class="sidebar-card">
+              <div class="sidebar-title"><i class="fa fa-clock"></i> 近期消息</div>
+              <div class="recent-item">
+                <div class="recent-thumb ph"><i class="fa fa-newspaper"></i></div>
+                <div class="recent-body"><div class="rt"><a href="news-detail.html">雙十一購物節優惠活動開跑，全館最高享九折</a></div><div class="rd">2025-11-05</div></div>
+              </div>
+              <div class="recent-item">
+                <div class="recent-thumb ph"><i class="fa fa-box-open"></i></div>
+                <div class="recent-body"><div class="rt"><a href="news-detail.html">全新秋冬系列正式上架，注入更多創新設計</a></div><div class="rd">2025-10-22</div></div>
+              </div>
+              <div class="recent-item">
+                <div class="recent-thumb ph"><i class="fa fa-bullhorn"></i></div>
+                <div class="recent-body"><div class="rt"><a href="news-detail.html">服務系統升級公告，10月15日暫停服務</a></div><div class="rd">2025-10-10</div></div>
+              </div>
+            </div>
+          </aside>
+        </div>
+      </div>
+    </div>
+
+  </main>
+
+  <!-- ===== Footer ===== -->
+  <footer class="site-footer">
+    <div class="footer-grid">
+      <div class="footer-brand">
+        <div class="logo-box">B</div>
+        <p>提供優質產品與服務<br>您的信賴之選</p>
+        <div class="footer-social">
+          <a href="#" aria-label="Facebook"><i class="fab fa-facebook-f"></i></a>
+          <a href="#" aria-label="Instagram"><i class="fab fa-instagram"></i></a>
+          <a href="#" aria-label="LINE"><i class="fab fa-line"></i></a>
+        </div>
+      </div>
+      <div class="footer-col">
+        <h4>快速連結</h4>
+        <ul>
+          <li><a href="about.html">關於我們</a></li>
+          <li><a href="news-list.html">最新消息</a></li>
+          <li><a href="products-list.html">產品介紹</a></li>
+          <li><a href="milestone.html">大事記</a></li>
+        </ul>
+      </div>
+      <div class="footer-col">
+        <h4>會員服務</h4>
+        <ul>
+          <li><a href="login.html">會員登入</a></li>
+          <li><a href="register.html">加入會員</a></li>
+          <li><a href="member.html">會員中心</a></li>
+          <li><a href="cart.html">購物車</a></li>
+        </ul>
+      </div>
+      <div class="footer-col contact">
+        <h4>聯絡資訊</h4>
+        <ul>
+          <li><i class="fa fa-map-marker-alt"></i> 台灣某市某區某路一號</li>
+          <li><i class="fa fa-phone"></i> 02-1234-5678</li>
+          <li><i class="fa fa-envelope"></i> info@example.com</li>
+          <li><i class="fa fa-clock"></i> 週一至週五 09:00–18:00</li>
+        </ul>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <span>&copy; 2025 品牌名稱. All rights reserved.</span>
+      <span>隱私權政策 | 服務條款</span>
+    </div>
+  </footer>
+
+  <button id="back-top" aria-label="回頂端"><i class="fa fa-chevron-up"></i></button>
+  <script src="js/main.js"></script>
+</body>
+</html>

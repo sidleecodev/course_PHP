@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>核心團隊 — 品牌名稱 管理系統</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@300;400;500;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+  <!-- 前台與後台共用同一份 CSS -->
+  <link rel="stylesheet" href="../css/style.css" />
+</head>
+<body class="admin-body">
+  <!-- ===== 側欄 ===== -->
+  <aside class="admin-sidebar">
+    <a href="index.html" class="admin-brand">
+      <div class="logo-box">B</div>
+      <div><span>品牌名稱</span><small>ADMIN</small></div>
+    </a>
+    <nav class="admin-nav">
+      <div class="nav-group">總覽</div>
+      <a href="index.html"><i class="fa fa-tachometer-alt"></i> 儀表板</a>
+      <div class="nav-group">網站內容</div>
+      <a href="banners.html"><i class="fa fa-images"></i> 首頁輪播</a>
+      <a href="features.html"><i class="fa fa-medal"></i> 特色 / 核心價值</a>
+      <a href="milestones.html"><i class="fa fa-history"></i> 大事記</a>
+      <a href="team-members.html" class="active"><i class="fa fa-users"></i> 核心團隊</a>
+      <a href="settings.html"><i class="fa fa-cog"></i> 網站設定</a>
+      <div class="nav-group">最新消息</div>
+      <a href="news.html"><i class="fa fa-newspaper"></i> 消息管理</a>
+      <a href="news-categories.html"><i class="fa fa-folder"></i> 消息分類</a>
+      <div class="nav-group">產品</div>
+      <a href="products.html"><i class="fa fa-box-open"></i> 產品管理</a>
+      <a href="product-categories.html"><i class="fa fa-folder-open"></i> 產品分類</a>
+      <div class="nav-group">會員與訂單</div>
+      <a href="orders.html"><i class="fa fa-receipt"></i> 訂單管理</a>
+      <a href="members.html"><i class="fa fa-user-friends"></i> 會員管理</a>
+      <a href="addresses.html"><i class="fa fa-map-marker-alt"></i> 會員地址</a>
+      <div class="nav-group">系統</div>
+      <a href="admins.html"><i class="fa fa-user-shield"></i> 管理員</a>
+    </nav>
+  </aside>
+
+  <div class="admin-main">
+    <!-- ===== 頂部列 ===== -->
+    <header class="admin-topbar">
+      <button class="admin-menu-toggle" aria-label="選單"><i class="fa fa-bars"></i></button>
+      <div class="page-name">核心團隊管理</div>
+      <div class="admin-user">
+        <a href="../index.html" target="_blank"><i class="fa fa-external-link-alt"></i> 前台</a>
+        <span><i class="fa fa-user-circle"></i> 系統管理員</span>
+        <a href="login.html" data-logout><i class="fa fa-sign-out-alt"></i> 登出</a>
+      </div>
+    </header>
+
+    <main class="admin-content">
+      <div class="admin-card" data-crud-list>
+        <div class="admin-card-header">
+          <h2><i class="fa fa-users"></i> 核心團隊列表</h2>
+          <div class="admin-toolbar">
+            <!-- 關鍵字即時查詢：輸入時自動篩選並標示關鍵字 -->
+            <form class="search-box">
+              <i class="fa fa-search"></i>
+              <input type="search" name="keyword" class="form-control" placeholder="搜尋姓名 / 職稱 / 簡介" autocomplete="off" />
+            </form>
+            <button type="button" class="btn btn-light btn-sm" data-clear><i class="fa fa-times"></i> 清除</button>
+            <a href="team-members-form.html" class="btn btn-gold btn-sm"><i class="fa fa-plus"></i> 新增核心團隊</a>
+          </div>
+        </div>
+
+        <div class="table-wrap">
+          <table class="data-table admin-table">
+            <thead><tr><th>#</th><th>照片</th><th>姓名</th><th>職稱</th><th>簡介</th><th>排序</th><th>操作</th></tr></thead>
+            <tbody>
+            <tr data-row><td class="num text-muted">1</td><td><div class="thumb-ph ph"><i class="fa fa-user-tie"></i></div></td><td data-mark>王總經理</td><td data-mark>執行長 CEO</td><td data-mark>擁有20年業界經驗，帶領品牌從本土走向國際。</td><td>1</td><td><div class="actions"><a href="team-members-form.html?id=1" class="btn btn-outline btn-xs"><i class="fa fa-edit"></i> 修改</a><button type="button" class="btn btn-danger-outline btn-xs" data-delete data-name="王總經理"><i class="fa fa-trash"></i> 刪除</button></div></td></tr>
+            <tr data-row><td class="num text-muted">2</td><td><div class="thumb-ph ph"><i class="fa fa-user"></i></div></td><td data-mark>李副總</td><td data-mark>營運長 COO</td><td data-mark>負責整體營運效率優化，打造敏捷高效的組織文化。</td><td>2</td><td><div class="actions"><a href="team-members-form.html?id=2" class="btn btn-outline btn-xs"><i class="fa fa-edit"></i> 修改</a><button type="button" class="btn btn-danger-outline btn-xs" data-delete data-name="李副總"><i class="fa fa-trash"></i> 刪除</button></div></td></tr>
+            <tr data-row><td class="num text-muted">3</td><td><div class="thumb-ph ph"><i class="fa fa-paint-brush"></i></div></td><td data-mark>陳設計總監</td><td data-mark>設計總監 CDO</td><td data-mark>主導產品美學設計，多次獲得國際設計獎項肯定。</td><td>3</td><td><div class="actions"><a href="team-members-form.html?id=3" class="btn btn-outline btn-xs"><i class="fa fa-edit"></i> 修改</a><button type="button" class="btn btn-danger-outline btn-xs" data-delete data-name="陳設計總監"><i class="fa fa-trash"></i> 刪除</button></div></td></tr>
+            <tr data-row><td class="num text-muted">4</td><td><div class="thumb-ph ph"><i class="fa fa-chart-line"></i></div></td><td data-mark>張行銷長</td><td data-mark>行銷長 CMO</td><td data-mark>深耕數位行銷領域，成功將品牌觸及擴展至百萬受眾。</td><td>4</td><td><div class="actions"><a href="team-members-form.html?id=4" class="btn btn-outline btn-xs"><i class="fa fa-edit"></i> 修改</a><button type="button" class="btn btn-danger-outline btn-xs" data-delete data-name="張行銷長"><i class="fa fa-trash"></i> 刪除</button></div></td></tr>
+            <tr data-empty class="hidden"><td colspan="7"><div class="empty-state"><i class="fa fa-search"></i><p>找不到符合的資料</p></div></td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div class="admin-table-info">
+          <span>共 <b data-total>4</b> 筆</span>
+          <nav class="pagination">
+            <span class="disabled"><i class="fa fa-chevron-left"></i></span>
+            <span class="active">1</span>
+            <span class="disabled"><i class="fa fa-chevron-right"></i></span>
+          </nav>
+        </div>
+      </div>
+    </main>
+    <footer class="admin-footer">&copy; 2026 品牌名稱 管理系統</footer>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+  <script src="../js/main.js"></script>
+  <script src="../js/admin.js"></script>
+</body>
+</html>

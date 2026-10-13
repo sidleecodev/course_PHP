@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>新增網站設定 — 品牌名稱 管理系統</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@300;400;500;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+  <!-- 前台與後台共用同一份 CSS -->
+  <link rel="stylesheet" href="../css/style.css" />
+</head>
+<body class="admin-body">
+  <!-- ===== 側欄 ===== -->
+  <aside class="admin-sidebar">
+    <a href="index.html" class="admin-brand">
+      <div class="logo-box">B</div>
+      <div><span>品牌名稱</span><small>ADMIN</small></div>
+    </a>
+    <nav class="admin-nav">
+      <div class="nav-group">總覽</div>
+      <a href="index.html"><i class="fa fa-tachometer-alt"></i> 儀表板</a>
+      <div class="nav-group">網站內容</div>
+      <a href="banners.html"><i class="fa fa-images"></i> 首頁輪播</a>
+      <a href="features.html"><i class="fa fa-medal"></i> 特色 / 核心價值</a>
+      <a href="milestones.html"><i class="fa fa-history"></i> 大事記</a>
+      <a href="team-members.html"><i class="fa fa-users"></i> 核心團隊</a>
+      <a href="settings.html" class="active"><i class="fa fa-cog"></i> 網站設定</a>
+      <div class="nav-group">最新消息</div>
+      <a href="news.html"><i class="fa fa-newspaper"></i> 消息管理</a>
+      <a href="news-categories.html"><i class="fa fa-folder"></i> 消息分類</a>
+      <div class="nav-group">產品</div>
+      <a href="products.html"><i class="fa fa-box-open"></i> 產品管理</a>
+      <a href="product-categories.html"><i class="fa fa-folder-open"></i> 產品分類</a>
+      <div class="nav-group">會員與訂單</div>
+      <a href="orders.html"><i class="fa fa-receipt"></i> 訂單管理</a>
+      <a href="members.html"><i class="fa fa-user-friends"></i> 會員管理</a>
+      <a href="addresses.html"><i class="fa fa-map-marker-alt"></i> 會員地址</a>
+      <div class="nav-group">系統</div>
+      <a href="admins.html"><i class="fa fa-user-shield"></i> 管理員</a>
+    </nav>
+  </aside>
+
+  <div class="admin-main">
+    <!-- ===== 頂部列 ===== -->
+    <header class="admin-topbar">
+      <button class="admin-menu-toggle" aria-label="選單"><i class="fa fa-bars"></i></button>
+      <div class="page-name">網站設定管理</div>
+      <div class="admin-user">
+        <a href="../index.html" target="_blank"><i class="fa fa-external-link-alt"></i> 前台</a>
+        <span><i class="fa fa-user-circle"></i> 系統管理員</span>
+        <a href="login.html" data-logout><i class="fa fa-sign-out-alt"></i> 登出</a>
+      </div>
+    </header>
+
+    <main class="admin-content">
+      <div class="admin-card">
+        <div class="admin-card-header">
+          <h2><i class="fa fa-cog"></i> <span data-mode-text>新增網站設定</span></h2>
+          <a href="settings.html" class="btn btn-light btn-sm"><i class="fa fa-arrow-left"></i> 返回列表</a>
+        </div>
+        <div class="admin-card-body">
+          <!-- 網址帶 ?id=編號 時為「修改」，會自動帶入資料 -->
+          <form class="admin-form" data-back="settings.html" novalidate>
+          <div class="form-row">
+            <div class="form-group">
+              <label class="form-label" for="f_label">項目名稱 <span class="req">*</span></label>
+              <input type="text" id="f_label" name="label" value="" class="form-control" required>
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="f_key">代碼（程式使用） <span class="req">*</span></label>
+              <input type="text" id="f_key" name="key" value="" class="form-control" required data-readonly-on-edit>
+              <p class="field-hint">小寫英文、數字與底線，修改時不可變更</p>
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="f_value">內容</label>
+            <textarea id="f_value" name="value" rows="5" class="form-control"></textarea>
+            <p class="field-hint">可使用 HTML，例如 &lt;br&gt;、&lt;span&gt;</p>
+          </div>
+          <div class="form-row">
+            <div class="form-group">
+              <label class="form-label" for="f_type">欄位類型</label>
+              <select id="f_type" name="type" class="form-control"><option value="text">單行文字</option><option value="textarea">多行文字 / HTML</option></select>
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="f_sort">排序</label>
+              <input type="number" id="f_sort" name="sort" value="" class="form-control" min="0">
+            </div>
+          </div>
+
+            <div class="form-actions">
+              <button type="submit" class="btn btn-primary"><i class="fa fa-save"></i> 儲存</button>
+              <a href="settings.html" class="btn btn-outline"><i class="fa fa-times"></i> 取消</a>
+            </div>
+          </form>
+        </div>
+      </div>
+
+      <!-- 示範資料（修改時帶入表單用；實際系統由後端提供） -->
+      <script type="application/json" id="records">{"1":{"key":"site_name","label":"網站名稱","value":"品牌名稱","type":"text","sort":1},"2":{"key":"site_logo_text","label":"LOGO 文字","value":"B","type":"text","sort":2},"3":{"key":"site_slogan","label":"頁尾標語","value":"提供優質產品與服務\u003Cbr\u003E您的信賴之選","type":"textarea","sort":3},"4":{"key":"phone","label":"聯絡電話","value":"02-1234-5678","type":"text","sort":4},"5":{"key":"email","label":"電子郵件","value":"info@example.com","type":"text","sort":5},"6":{"key":"address","label":"公司地址","value":"台灣某市某區某路一號十樓","type":"text","sort":6},"7":{"key":"business_hours","label":"營業時間","value":"週一至週五 09:00–18:00","type":"text","sort":7},"8":{"key":"home_stat1_num","label":"首頁數字 1：數值","value":"12","type":"text","sort":8},"9":{"key":"home_stat1_label","label":"首頁數字 1：說明","value":"品牌成立年數","type":"text","sort":9},"10":{"key":"cta_desc","label":"首頁加入會員說明","value":"免費註冊，首購享 9 折優惠，並獲得積點回饋與不定期會員專屬活動。","type":"text","sort":10},"11":{"key":"about_heading","label":"關於我們標題","value":"我們致力於\u003Cspan\u003E創造美好生活\u003C/span\u003E\u003Cbr\u003E的每一個細節","type":"textarea","sort":11},"12":{"key":"about_stat1_num","label":"關於我們數字 1：數值","value":"5+","type":"text","sort":12}}</script>
+    </main>
+    <footer class="admin-footer">&copy; 2026 品牌名稱 管理系統</footer>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+  <script src="../js/main.js"></script>
+  <script src="../js/admin.js"></script>
+</body>
+</html>

@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>新增消息 — 品牌名稱 管理系統</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@300;400;500;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+  <!-- 前台與後台共用同一份 CSS -->
+  <link rel="stylesheet" href="../css/style.css" />
+</head>
+<body class="admin-body">
+  <!-- ===== 側欄 ===== -->
+  <aside class="admin-sidebar">
+    <a href="index.html" class="admin-brand">
+      <div class="logo-box">B</div>
+      <div><span>品牌名稱</span><small>ADMIN</small></div>
+    </a>
+    <nav class="admin-nav">
+      <div class="nav-group">總覽</div>
+      <a href="index.html"><i class="fa fa-tachometer-alt"></i> 儀表板</a>
+      <div class="nav-group">網站內容</div>
+      <a href="banners.html"><i class="fa fa-images"></i> 首頁輪播</a>
+      <a href="features.html"><i class="fa fa-medal"></i> 特色 / 核心價值</a>
+      <a href="milestones.html"><i class="fa fa-history"></i> 大事記</a>
+      <a href="team-members.html"><i class="fa fa-users"></i> 核心團隊</a>
+      <a href="settings.html"><i class="fa fa-cog"></i> 網站設定</a>
+      <div class="nav-group">最新消息</div>
+      <a href="news.html" class="active"><i class="fa fa-newspaper"></i> 消息管理</a>
+      <a href="news-categories.html"><i class="fa fa-folder"></i> 消息分類</a>
+      <div class="nav-group">產品</div>
+      <a href="products.html"><i class="fa fa-box-open"></i> 產品管理</a>
+      <a href="product-categories.html"><i class="fa fa-folder-open"></i> 產品分類</a>
+      <div class="nav-group">會員與訂單</div>
+      <a href="orders.html"><i class="fa fa-receipt"></i> 訂單管理</a>
+      <a href="members.html"><i class="fa fa-user-friends"></i> 會員管理</a>
+      <a href="addresses.html"><i class="fa fa-map-marker-alt"></i> 會員地址</a>
+      <div class="nav-group">系統</div>
+      <a href="admins.html"><i class="fa fa-user-shield"></i> 管理員</a>
+    </nav>
+  </aside>
+
+  <div class="admin-main">
+    <!-- ===== 頂部列 ===== -->
+    <header class="admin-topbar">
+      <button class="admin-menu-toggle" aria-label="選單"><i class="fa fa-bars"></i></button>
+      <div class="page-name">消息管理</div>
+      <div class="admin-user">
+        <a href="../index.html" target="_blank"><i class="fa fa-external-link-alt"></i> 前台</a>
+        <span><i class="fa fa-user-circle"></i> 系統管理員</span>
+        <a href="login.html" data-logout><i class="fa fa-sign-out-alt"></i> 登出</a>
+      </div>
+    </header>
+
+    <main class="admin-content">
+      <div class="admin-card">
+        <div class="admin-card-header">
+          <h2><i class="fa fa-newspaper"></i> <span data-mode-text>新增消息</span></h2>
+          <a href="news.html" class="btn btn-light btn-sm"><i class="fa fa-arrow-left"></i> 返回列表</a>
+        </div>
+        <div class="admin-card-body">
+          <!-- 網址帶 ?id=編號 時為「修改」，會自動帶入資料 -->
+          <form class="admin-form" data-back="news.html" novalidate>
+          <div class="form-row">
+            <div class="form-group">
+              <label class="form-label" for="f_news_category_id">分類 <span class="req">*</span></label>
+              <select id="f_news_category_id" name="news_category_id" class="form-control" required><option value="1">公司公告</option><option value="2">活動資訊</option><option value="3">產品動態</option></select>
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="f_published_at">發佈日期 <span class="req">*</span></label>
+              <input type="date" id="f_published_at" name="published_at" value="2026-10-10" class="form-control" required>
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="f_title">標題 <span class="req">*</span></label>
+            <input type="text" id="f_title" name="title" value="" class="form-control" required>
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="f_excerpt">摘要</label>
+            <textarea id="f_excerpt" name="excerpt" rows="2" class="form-control"></textarea>
+            <p class="field-hint">列表頁顯示的簡短說明</p>
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="f_content">內容</label>
+            <textarea id="f_content" name="content" rows="10" class="form-control font-en"></textarea>
+            <p class="field-hint">可使用 HTML：&lt;h3&gt;小標&lt;/h3&gt;、&lt;p&gt;段落&lt;/p&gt;</p>
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="f_cover">封面圖片</label>
+            <input type="file" id="f_cover" name="cover" accept="image/*" class="form-control" data-preview="f_cover_preview">
+            <img id="f_cover_preview" class="img-preview hidden" alt="">
+          </div>
+          <div class="form-row">
+            <div class="form-group">
+              <label class="form-label" for="f_icon">無封面時的圖示</label>
+              <div class="input-icon-wrap">
+                <i class="fa fa-newspaper icon" id="f_icon_icon"></i>
+                <input type="text" id="f_icon" name="icon" value="fa-newspaper" class="form-control" placeholder="fa-star" data-icon-preview="f_icon_icon">
+              </div>
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="f_views">瀏覽次數</label>
+              <input type="number" id="f_views" name="views" value="0" class="form-control" min="0">
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="form-check"><input type="checkbox" name="is_published" value="1" checked> 發佈（取消勾選為草稿）</label>
+          </div>
+
+            <div class="form-actions">
+              <button type="submit" class="btn btn-primary"><i class="fa fa-save"></i> 儲存</button>
+              <a href="news.html" class="btn btn-outline"><i class="fa fa-times"></i> 取消</a>
+            </div>
+          </form>
+        </div>
+      </div>
+
+      <!-- 示範資料（修改時帶入表單用；實際系統由後端提供） -->
+      <script type="application/json" id="records">{"1":{"news_category_id":1,"published_at":"2025-11-18","title":"2025年度客戶感謝活動圓滿結束，感謝各界支持與參與","excerpt":"2025年度客戶感謝活動圓滿結束，感謝各…","content":"\u003Cp\u003E2025年度客戶感謝活動圓滿結束，感謝各界支持與參與\u003C/p\u003E","icon":"fa-newspaper","views":1245,"is_published":1},"2":{"news_category_id":2,"published_at":"2025-11-05","title":"雙十一購物節優惠活動開跑，全館最高享九折優惠","excerpt":"雙十一購物節優惠活動開跑，全館最高享九折…","content":"\u003Cp\u003E雙十一購物節優惠活動開跑，全館最高享九折優惠\u003C/p\u003E","icon":"fa-newspaper","views":860,"is_published":1},"3":{"news_category_id":3,"published_at":"2025-10-22","title":"全新秋冬系列正式上架，注入更多創新設計元素","excerpt":"全新秋冬系列正式上架，注入更多創新設計元…","content":"\u003Cp\u003E全新秋冬系列正式上架，注入更多創新設計元素\u003C/p\u003E","icon":"fa-newspaper","views":532,"is_published":1},"4":{"news_category_id":1,"published_at":"2025-10-10","title":"服務系統升級公告，10月15日凌晨將暫停服務2小時","excerpt":"服務系統升級公告，10月15日凌晨將暫停…","content":"\u003Cp\u003E服務系統升級公告，10月15日凌晨將暫停服務2小時\u003C/p\u003E","icon":"fa-newspaper","views":410,"is_published":1},"5":{"news_category_id":2,"published_at":"2025-09-28","title":"國慶連假特別活動，買二送一限時搶購","excerpt":"國慶連假特別活動，買二送一限時搶購…","content":"\u003Cp\u003E國慶連假特別活動，買二送一限時搶購\u003C/p\u003E","icon":"fa-newspaper","views":388,"is_published":1},"6":{"news_category_id":1,"published_at":"2025-06-01","title":"2025 年下半年新品發布計畫正式公告","excerpt":"2025 年下半年新品發布計畫正式公告…","content":"\u003Cp\u003E2025 年下半年新品發布計畫正式公告\u003C/p\u003E","icon":"fa-newspaper","views":702,"is_published":1},"7":{"news_category_id":2,"published_at":"2025-05-20","title":"夏季會員回饋活動開跑，限時消費享雙倍積點","excerpt":"夏季會員回饋活動開跑，限時消費享雙倍積點…","content":"\u003Cp\u003E夏季會員回饋活動開跑，限時消費享雙倍積點\u003C/p\u003E","icon":"fa-newspaper","views":655,"is_published":1},"8":{"news_category_id":3,"published_at":"2025-05-10","title":"C 系列限量聯名款正式開放預購","excerpt":"C 系列限量聯名款正式開放預購…","content":"\u003Cp\u003EC 系列限量聯名款正式開放預購\u003C/p\u003E","icon":"fa-newspaper","views":590,"is_published":0}}</script>
+    </main>
+    <footer class="admin-footer">&copy; 2026 品牌名稱 管理系統</footer>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+  <script src="../js/main.js"></script>
+  <script src="../js/admin.js"></script>
+</body>
+</html>

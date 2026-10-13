@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>會員管理 — 品牌名稱 管理系統</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@300;400;500;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+  <!-- 前台與後台共用同一份 CSS -->
+  <link rel="stylesheet" href="../css/style.css" />
+</head>
+<body class="admin-body">
+  <!-- ===== 側欄 ===== -->
+  <aside class="admin-sidebar">
+    <a href="index.html" class="admin-brand">
+      <div class="logo-box">B</div>
+      <div><span>品牌名稱</span><small>ADMIN</small></div>
+    </a>
+    <nav class="admin-nav">
+      <div class="nav-group">總覽</div>
+      <a href="index.html"><i class="fa fa-tachometer-alt"></i> 儀表板</a>
+      <div class="nav-group">網站內容</div>
+      <a href="banners.html"><i class="fa fa-images"></i> 首頁輪播</a>
+      <a href="features.html"><i class="fa fa-medal"></i> 特色 / 核心價值</a>
+      <a href="milestones.html"><i class="fa fa-history"></i> 大事記</a>
+      <a href="team-members.html"><i class="fa fa-users"></i> 核心團隊</a>
+      <a href="settings.html"><i class="fa fa-cog"></i> 網站設定</a>
+      <div class="nav-group">最新消息</div>
+      <a href="news.html"><i class="fa fa-newspaper"></i> 消息管理</a>
+      <a href="news-categories.html"><i class="fa fa-folder"></i> 消息分類</a>
+      <div class="nav-group">產品</div>
+      <a href="products.html"><i class="fa fa-box-open"></i> 產品管理</a>
+      <a href="product-categories.html"><i class="fa fa-folder-open"></i> 產品分類</a>
+      <div class="nav-group">會員與訂單</div>
+      <a href="orders.html"><i class="fa fa-receipt"></i> 訂單管理</a>
+      <a href="members.html" class="active"><i class="fa fa-user-friends"></i> 會員管理</a>
+      <a href="addresses.html"><i class="fa fa-map-marker-alt"></i> 會員地址</a>
+      <div class="nav-group">系統</div>
+      <a href="admins.html"><i class="fa fa-user-shield"></i> 管理員</a>
+    </nav>
+  </aside>
+
+  <div class="admin-main">
+    <!-- ===== 頂部列 ===== -->
+    <header class="admin-topbar">
+      <button class="admin-menu-toggle" aria-label="選單"><i class="fa fa-bars"></i></button>
+      <div class="page-name">會員管理</div>
+      <div class="admin-user">
+        <a href="../index.html" target="_blank"><i class="fa fa-external-link-alt"></i> 前台</a>
+        <span><i class="fa fa-user-circle"></i> 系統管理員</span>
+        <a href="login.html" data-logout><i class="fa fa-sign-out-alt"></i> 登出</a>
+      </div>
+    </header>
+
+    <main class="admin-content">
+      <div class="admin-card" data-crud-list>
+        <div class="admin-card-header">
+          <h2><i class="fa fa-user-friends"></i> 會員列表</h2>
+          <div class="admin-toolbar">
+            <!-- 關鍵字即時查詢：輸入時自動篩選並標示關鍵字 -->
+            <form class="search-box">
+              <i class="fa fa-search"></i>
+              <input type="search" name="keyword" class="form-control" placeholder="搜尋姓名 / Email / 手機" autocomplete="off" />
+            </form>
+          <select name="is_active" class="form-control" data-filter><option value="">全部狀態</option><option value="1">啟用</option><option value="0">停用</option></select>
+            <button type="button" class="btn btn-light btn-sm" data-clear><i class="fa fa-times"></i> 清除</button>
+            <a href="members-form.html" class="btn btn-gold btn-sm"><i class="fa fa-plus"></i> 新增會員</a>
+          </div>
+        </div>
+
+        <div class="table-wrap">
+          <table class="data-table admin-table">
+            <thead><tr><th>#</th><th>姓名</th><th>電子郵件</th><th>手機</th><th>訂單數</th><th>加入日期</th><th>狀態</th><th>操作</th></tr></thead>
+            <tbody>
+            <tr data-row data-is_active="1"><td class="num text-muted">1</td><td data-mark>王小明</td><td data-mark>wang@example.com</td><td data-mark>0912-345-678</td><td>4</td><td>2026-10-10</td><td><span class="badge badge-green">啟用</span></td><td><div class="actions"><a href="members-form.html?id=1" class="btn btn-outline btn-xs"><i class="fa fa-edit"></i> 修改</a><button type="button" class="btn btn-danger-outline btn-xs" data-delete data-name="王小明" data-blocked="此會員已有訂單，建議改為「停用」而不是刪除"><i class="fa fa-trash"></i> 刪除</button></div></td></tr>
+            <tr data-row data-is_active="1"><td class="num text-muted">2</td><td data-mark>林美華</td><td data-mark>lin@example.com</td><td data-mark>0922-111-222</td><td>1</td><td>2026-10-10</td><td><span class="badge badge-green">啟用</span></td><td><div class="actions"><a href="members-form.html?id=2" class="btn btn-outline btn-xs"><i class="fa fa-edit"></i> 修改</a><button type="button" class="btn btn-danger-outline btn-xs" data-delete data-name="林美華" data-blocked="此會員已有訂單，建議改為「停用」而不是刪除"><i class="fa fa-trash"></i> 刪除</button></div></td></tr>
+            <tr data-row data-is_active="0"><td class="num text-muted">3</td><td data-mark>陳大同</td><td data-mark>chen@example.com</td><td data-mark>0933-555-666</td><td>0</td><td>2026-10-10</td><td><span class="badge badge-gray">停用</span></td><td><div class="actions"><a href="members-form.html?id=3" class="btn btn-outline btn-xs"><i class="fa fa-edit"></i> 修改</a><button type="button" class="btn btn-danger-outline btn-xs" data-delete data-name="陳大同"><i class="fa fa-trash"></i> 刪除</button></div></td></tr>
+            <tr data-empty class="hidden"><td colspan="8"><div class="empty-state"><i class="fa fa-search"></i><p>找不到符合的資料</p></div></td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div class="admin-table-info">
+          <span>共 <b data-total>3</b> 筆</span>
+          <nav class="pagination">
+            <span class="disabled"><i class="fa fa-chevron-left"></i></span>
+            <span class="active">1</span>
+            <span class="disabled"><i class="fa fa-chevron-right"></i></span>
+          </nav>
+        </div>
+      </div>
+    </main>
+    <footer class="admin-footer">&copy; 2026 品牌名稱 管理系統</footer>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+  <script src="../js/main.js"></script>
+  <script src="../js/admin.js"></script>
+</body>
+</html>

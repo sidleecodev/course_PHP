@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>新增管理員 — 品牌名稱 管理系統</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@300;400;500;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+  <!-- 前台與後台共用同一份 CSS -->
+  <link rel="stylesheet" href="../css/style.css" />
+</head>
+<body class="admin-body">
+  <!-- ===== 側欄 ===== -->
+  <aside class="admin-sidebar">
+    <a href="index.html" class="admin-brand">
+      <div class="logo-box">B</div>
+      <div><span>品牌名稱</span><small>ADMIN</small></div>
+    </a>
+    <nav class="admin-nav">
+      <div class="nav-group">總覽</div>
+      <a href="index.html"><i class="fa fa-tachometer-alt"></i> 儀表板</a>
+      <div class="nav-group">網站內容</div>
+      <a href="banners.html"><i class="fa fa-images"></i> 首頁輪播</a>
+      <a href="features.html"><i class="fa fa-medal"></i> 特色 / 核心價值</a>
+      <a href="milestones.html"><i class="fa fa-history"></i> 大事記</a>
+      <a href="team-members.html"><i class="fa fa-users"></i> 核心團隊</a>
+      <a href="settings.html"><i class="fa fa-cog"></i> 網站設定</a>
+      <div class="nav-group">最新消息</div>
+      <a href="news.html"><i class="fa fa-newspaper"></i> 消息管理</a>
+      <a href="news-categories.html"><i class="fa fa-folder"></i> 消息分類</a>
+      <div class="nav-group">產品</div>
+      <a href="products.html"><i class="fa fa-box-open"></i> 產品管理</a>
+      <a href="product-categories.html"><i class="fa fa-folder-open"></i> 產品分類</a>
+      <div class="nav-group">會員與訂單</div>
+      <a href="orders.html"><i class="fa fa-receipt"></i> 訂單管理</a>
+      <a href="members.html"><i class="fa fa-user-friends"></i> 會員管理</a>
+      <a href="addresses.html"><i class="fa fa-map-marker-alt"></i> 會員地址</a>
+      <div class="nav-group">系統</div>
+      <a href="admins.html" class="active"><i class="fa fa-user-shield"></i> 管理員</a>
+    </nav>
+  </aside>
+
+  <div class="admin-main">
+    <!-- ===== 頂部列 ===== -->
+    <header class="admin-topbar">
+      <button class="admin-menu-toggle" aria-label="選單"><i class="fa fa-bars"></i></button>
+      <div class="page-name">管理員管理</div>
+      <div class="admin-user">
+        <a href="../index.html" target="_blank"><i class="fa fa-external-link-alt"></i> 前台</a>
+        <span><i class="fa fa-user-circle"></i> 系統管理員</span>
+        <a href="login.html" data-logout><i class="fa fa-sign-out-alt"></i> 登出</a>
+      </div>
+    </header>
+
+    <main class="admin-content">
+      <div class="admin-card">
+        <div class="admin-card-header">
+          <h2><i class="fa fa-user-shield"></i> <span data-mode-text>新增管理員</span></h2>
+          <a href="admins.html" class="btn btn-light btn-sm"><i class="fa fa-arrow-left"></i> 返回列表</a>
+        </div>
+        <div class="admin-card-body">
+          <!-- 網址帶 ?id=編號 時為「修改」，會自動帶入資料 -->
+          <form class="admin-form" data-back="admins.html" novalidate>
+          <div class="form-row">
+            <div class="form-group">
+              <label class="form-label" for="f_name">姓名 <span class="req">*</span></label>
+              <input type="text" id="f_name" name="name" value="" class="form-control" required>
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="f_username">登入帳號 <span class="req">*</span></label>
+              <input type="text" id="f_username" name="username" value="" class="form-control" required>
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="f_email">電子郵件</label>
+            <input type="email" id="f_email" name="email" value="" class="form-control">
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="f_password"><span data-password-label>密碼</span> <span class="req">*</span></label>
+            <div class="input-icon-wrap">
+              <i class="fa fa-lock icon"></i>
+              <input type="password" id="f_password" name="password" class="form-control" placeholder="至少 8 個字元" autocomplete="new-password" required data-required-on-create>
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="form-check"><input type="checkbox" name="is_active" value="1" checked> 啟用（自己的帳號無法停用）</label>
+          </div>
+
+            <div class="form-actions">
+              <button type="submit" class="btn btn-primary"><i class="fa fa-save"></i> 儲存</button>
+              <a href="admins.html" class="btn btn-outline"><i class="fa fa-times"></i> 取消</a>
+            </div>
+          </form>
+        </div>
+      </div>
+
+      <!-- 示範資料（修改時帶入表單用；實際系統由後端提供） -->
+      <script type="application/json" id="records">{"1":{"name":"系統管理員","username":"admin","email":"admin@example.com","is_active":1},"2":{"name":"內容編輯","username":"editor","email":"editor@example.com","is_active":1}}</script>
+    </main>
+    <footer class="admin-footer">&copy; 2026 品牌名稱 管理系統</footer>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+  <script src="../js/main.js"></script>
+  <script src="../js/admin.js"></script>
+</body>
+</html>

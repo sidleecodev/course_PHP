@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>會員中心 — 品牌名稱</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@300;400;500;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+  <!-- 全站唯一共用 CSS -->
+  <link rel="stylesheet" href="css/style.css" />
+</head>
+<body class="page-member">
+  <!-- ===== Topbar ===== -->
+  <div id="topbar">
+    <a href="member.html"><i class="fa fa-user-circle"></i> 會員中心</a>
+    <span class="sep">|</span>
+    <a href="login.html"><i class="fa fa-sign-in-alt"></i> 登入</a>
+    <span class="sep">|</span>
+    <a href="register.html"><i class="fa fa-user-plus"></i> 加入會員</a>
+    <span class="sep">|</span>
+    <a href="login.html" onclick="return confirm('確定要登出？')"><i class="fa fa-sign-out-alt"></i> 登出</a>
+  </div>
+
+  <!-- ===== Navbar ===== -->
+  <nav id="navbar">
+    <a href="index.html" class="nav-logo">
+      <div class="logo-box">B</div>
+      <span class="logo-text">品牌名稱</span>
+    </a>
+    <ul class="nav-links">
+      <li>
+        <a href="news-list.html"><i class="fa fa-newspaper"></i> 最新消息</a>
+        <ul class="dropdown">
+          <li><a href="news-list.html?cat=1">公司公告</a></li>
+          <li><a href="news-list.html?cat=2">活動資訊</a></li>
+          <li><a href="news-list.html?cat=3">產品動態</a></li>
+        </ul>
+      </li>
+      <li>
+        <a href="products-list.html"><i class="fa fa-box-open"></i> 產品介紹</a>
+        <ul class="dropdown">
+          <li><a href="products-list.html?cat=1">系列一</a></li>
+          <li><a href="products-list.html?cat=2">系列二</a></li>
+          <li><a href="products-list.html?cat=3">系列三</a></li>
+        </ul>
+      </li>
+      <li><a href="milestone.html"><i class="fa fa-history"></i> 大事記</a></li>
+      <li><a href="about.html"><i class="fa fa-building"></i> 關於我們</a></li>
+      <li><a href="member.html" class="active"><i class="fa fa-user"></i> 會員中心</a></li>
+    </ul>
+    <a href="cart.html" class="nav-cart">
+      <i class="fa fa-shopping-cart"></i>
+      <span>購物車</span>
+      <span class="cart-badge" id="cart-badge">3</span>
+    </a>
+    <button class="nav-toggle" onclick="toggleNav()" aria-label="選單"><i class="fa fa-bars"></i></button>
+  </nav>
+
+  <!-- ===== Main Content ===== -->
+  <main id="content-wrap">
+    <div class="page-hero">
+      <div class="container">
+        <h1><i class="fa fa-user-circle"></i>會員中心</h1>
+        <div class="breadcrumb"><a href="index.html">首頁</a> <i class="fa fa-chevron-right"></i> 會員中心</div>
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="container">
+        <div class="member-layout">
+          <!-- 側欄 -->
+          <div class="member-sidebar">
+            <div class="member-profile">
+              <div class="member-avatar">王</div>
+              <div class="member-name">王小明</div>
+              <div class="member-email">wang@example.com</div>
+            </div>
+            <div class="member-menu">
+              <a href="#" class="active" data-panel="panel-overview"><i class="fa fa-home"></i> 帳戶總覽</a>
+              <a href="#" data-panel="panel-orders"><i class="fa fa-box"></i> 我的訂單</a>
+              <a href="#" data-panel="panel-profile"><i class="fa fa-user-edit"></i> 基本資料</a>
+              <a href="change-password.html"><i class="fa fa-key"></i> 修改密碼</a>
+              <a href="#" data-panel="panel-address"><i class="fa fa-map-marker-alt"></i> 地址管理</a>
+              <a href="login.html" class="logout" onclick="return confirm('確定要登出？')"><i class="fa fa-sign-out-alt"></i> 登出</a>
+            </div>
+          </div>
+
+          <div>
+            <!-- 總覽 -->
+            <div id="panel-overview" class="panel active">
+              <div class="panel-card">
+                <div class="panel-title"><i class="fa fa-home"></i> 帳戶總覽</div>
+                <div class="member-stats">
+                  <div class="stat-card"><div class="num">12</div><div class="lbl">累計訂單</div></div>
+                  <div class="stat-card"><div class="num">2</div><div class="lbl">待出貨</div></div>
+                  <div class="stat-card"><div class="num">NT$ 28,600</div><div class="lbl">累計消費</div></div>
+                </div>
+                <div class="d-flex gap-12 flex-wrap">
+                  <a href="#" class="btn btn-primary" onclick="showPanel('panel-orders');return false;"><i class="fa fa-box"></i> 查看訂單</a>
+                  <a href="#" class="btn btn-outline" onclick="showPanel('panel-profile');return false;"><i class="fa fa-user-edit"></i> 編輯資料</a>
+                  <a href="products-list.html" class="btn btn-gold"><i class="fa fa-shopping-bag"></i> 繼續購物</a>
+                </div>
+              </div>
+            </div>
+
+            <!-- 訂單 -->
+            <div id="panel-orders" class="panel">
+              <div class="panel-card">
+                <div class="panel-title"><i class="fa fa-box"></i> 我的訂單</div>
+                <div class="table-wrap">
+                  <table class="data-table hide-sm-4">
+                    <thead><tr><th>訂單編號</th><th>訂單日期</th><th>金額</th><th>狀態</th><th>操作</th></tr></thead>
+                    <tbody>
+                      <tr><td class="num">#ORD-2025001</td><td>2025-11-18</td><td class="num">NT$ 5,960</td><td><span class="badge badge-blue">出貨中</span></td><td><a href="#" class="btn btn-outline btn-xs"><i class="fa fa-eye"></i> 明細</a></td></tr>
+                      <tr><td class="num">#ORD-2025002</td><td>2025-10-30</td><td class="num">NT$ 3,860</td><td><span class="badge badge-green">已完成</span></td><td><a href="#" class="btn btn-outline btn-xs"><i class="fa fa-eye"></i> 明細</a></td></tr>
+                      <tr><td class="num">#ORD-2025003</td><td>2025-09-15</td><td class="num">NT$ 1,880</td><td><span class="badge badge-green">已完成</span></td><td><a href="#" class="btn btn-outline btn-xs"><i class="fa fa-eye"></i> 明細</a></td></tr>
+                      <tr><td class="num">#ORD-2025004</td><td>2025-08-02</td><td class="num">NT$ 2,480</td><td><span class="badge badge-yellow">處理中</span></td><td><a href="#" class="btn btn-outline btn-xs"><i class="fa fa-eye"></i> 明細</a></td></tr>
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
+
+            <!-- 基本資料 -->
+            <div id="panel-profile" class="panel">
+              <div class="panel-card">
+                <div class="panel-title"><i class="fa fa-user-edit"></i> 基本資料</div>
+                <form onsubmit="event.preventDefault();showToast('資料已儲存')">
+                  <div class="form-row">
+                    <div class="form-group"><label class="form-label">姓名 <span class="req">*</span></label><input type="text" class="form-control" value="王小明" /></div>
+                    <div class="form-group"><label class="form-label">暱稱</label><input type="text" class="form-control" value="小明" /></div>
+                  </div>
+                  <div class="form-group"><label class="form-label">電子郵件</label><input type="email" class="form-control" value="wang@example.com" readonly /></div>
+                  <div class="form-row">
+                    <div class="form-group"><label class="form-label">手機號碼</label><input type="tel" class="form-control" value="0912-345-678" /></div>
+                    <div class="form-group"><label class="form-label">生日</label><input type="date" class="form-control" value="1990-01-01" /></div>
+                  </div>
+                  <div class="form-group">
+                    <label class="form-label">性別</label>
+                    <select class="form-control">
+                      <option value="">不提供</option>
+                      <option value="M" selected>男</option>
+                      <option value="F">女</option>
+                    </select>
+                  </div>
+                  <button type="submit" class="btn btn-primary"><i class="fa fa-save"></i> 儲存變更</button>
+                </form>
+              </div>
+            </div>
+
+            <!-- 地址 -->
+            <div id="panel-address" class="panel">
+              <div class="panel-card">
+                <div class="panel-title between">
+                  <span><i class="fa fa-map-marker-alt text-gold"></i> 地址管理</span>
+                  <button class="btn btn-gold btn-sm"><i class="fa fa-plus"></i> 新增地址</button>
+                </div>
+                <div class="address-card">
+                  <div>
+                    <div class="addr-label"><i class="fa fa-home"></i> 家 <span class="badge badge-solid-gold">預設</span></div>
+                    <div class="addr-line">王小明 ｜ 0912-345-678</div>
+                    <div class="addr-line muted">台灣某市某區某路一號三樓</div>
+                  </div>
+                  <div class="addr-actions">
+                    <button class="btn btn-outline btn-sm"><i class="fa fa-edit"></i> 編輯</button>
+                    <button class="btn btn-danger-outline btn-sm"><i class="fa fa-trash"></i></button>
+                  </div>
+                </div>
+                <div class="address-card">
+                  <div>
+                    <div class="addr-label"><i class="fa fa-building"></i> 公司</div>
+                    <div class="addr-line">王小明 ｜ 02-1234-5678</div>
+                    <div class="addr-line muted">台灣某市某區某路二號十樓</div>
+                  </div>
+                  <div class="addr-actions">
+                    <button class="btn btn-outline btn-sm"><i class="fa fa-edit"></i> 編輯</button>
+                    <button class="btn btn-danger-outline btn-sm"><i class="fa fa-trash"></i></button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </main>
+
+  <!-- ===== Footer ===== -->
+  <footer class="site-footer">
+    <div class="footer-grid">
+      <div class="footer-brand">
+        <div class="logo-box">B</div>
+        <p>提供優質產品與服務<br>您的信賴之選</p>
+        <div class="footer-social">
+          <a href="#" aria-label="Facebook"><i class="fab fa-facebook-f"></i></a>
+          <a href="#" aria-label="Instagram"><i class="fab fa-instagram"></i></a>
+          <a href="#" aria-label="LINE"><i class="fab fa-line"></i></a>
+        </div>
+      </div>
+      <div class="footer-col">
+        <h4>快速連結</h4>
+        <ul>
+          <li><a href="about.html">關於我們</a></li>
+          <li><a href="news-list.html">最新消息</a></li>
+          <li><a href="products-list.html">產品介紹</a></li>
+          <li><a href="milestone.html">大事記</a></li>
+        </ul>
+      </div>
+      <div class="footer-col">
+        <h4>會員服務</h4>
+        <ul>
+          <li><a href="login.html">會員登入</a></li>
+          <li><a href="register.html">加入會員</a></li>
+          <li><a href="member.html">會員中心</a></li>
+          <li><a href="cart.html">購物車</a></li>
+        </ul>
+      </div>
+      <div class="footer-col contact">
+        <h4>聯絡資訊</h4>
+        <ul>
+          <li><i class="fa fa-map-marker-alt"></i> 台灣某市某區某路一號</li>
+          <li><i class="fa fa-phone"></i> 02-1234-5678</li>
+          <li><i class="fa fa-envelope"></i> info@example.com</li>
+          <li><i class="fa fa-clock"></i> 週一至週五 09:00–18:00</li>
+        </ul>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <span>&copy; 2025 品牌名稱. All rights reserved.</span>
+      <span>隱私權政策 | 服務條款</span>
+    </div>
+  </footer>
+
+  <button id="back-top" aria-label="回頂端"><i class="fa fa-chevron-up"></i></button>
+  <script src="js/main.js"></script>
+  <script>
+
+    function showPanel(panelId) {
+      document.querySelectorAll('.panel').forEach(p => p.classList.toggle('active', p.id === panelId));
+      document.querySelectorAll('.member-menu a[data-panel]').forEach(a => a.classList.toggle('active', a.dataset.panel === panelId));
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+    document.querySelectorAll('.member-menu a[data-panel]').forEach(a => {
+      a.addEventListener('click', e => { e.preventDefault(); showPanel(a.dataset.panel); });
+    });
+  </script>
+</body>
+</html>

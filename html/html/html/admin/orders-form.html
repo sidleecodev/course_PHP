@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>新增訂單 — 品牌名稱 管理系統</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@300;400;500;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+  <!-- 前台與後台共用同一份 CSS -->
+  <link rel="stylesheet" href="../css/style.css" />
+</head>
+<body class="admin-body">
+  <!-- ===== 側欄 ===== -->
+  <aside class="admin-sidebar">
+    <a href="index.html" class="admin-brand">
+      <div class="logo-box">B</div>
+      <div><span>品牌名稱</span><small>ADMIN</small></div>
+    </a>
+    <nav class="admin-nav">
+      <div class="nav-group">總覽</div>
+      <a href="index.html"><i class="fa fa-tachometer-alt"></i> 儀表板</a>
+      <div class="nav-group">網站內容</div>
+      <a href="banners.html"><i class="fa fa-images"></i> 首頁輪播</a>
+      <a href="features.html"><i class="fa fa-medal"></i> 特色 / 核心價值</a>
+      <a href="milestones.html"><i class="fa fa-history"></i> 大事記</a>
+      <a href="team-members.html"><i class="fa fa-users"></i> 核心團隊</a>
+      <a href="settings.html"><i class="fa fa-cog"></i> 網站設定</a>
+      <div class="nav-group">最新消息</div>
+      <a href="news.html"><i class="fa fa-newspaper"></i> 消息管理</a>
+      <a href="news-categories.html"><i class="fa fa-folder"></i> 消息分類</a>
+      <div class="nav-group">產品</div>
+      <a href="products.html"><i class="fa fa-box-open"></i> 產品管理</a>
+      <a href="product-categories.html"><i class="fa fa-folder-open"></i> 產品分類</a>
+      <div class="nav-group">會員與訂單</div>
+      <a href="orders.html" class="active"><i class="fa fa-receipt"></i> 訂單管理</a>
+      <a href="members.html"><i class="fa fa-user-friends"></i> 會員管理</a>
+      <a href="addresses.html"><i class="fa fa-map-marker-alt"></i> 會員地址</a>
+      <div class="nav-group">系統</div>
+      <a href="admins.html"><i class="fa fa-user-shield"></i> 管理員</a>
+    </nav>
+  </aside>
+
+  <div class="admin-main">
+    <!-- ===== 頂部列 ===== -->
+    <header class="admin-topbar">
+      <button class="admin-menu-toggle" aria-label="選單"><i class="fa fa-bars"></i></button>
+      <div class="page-name">訂單管理</div>
+      <div class="admin-user">
+        <a href="../index.html" target="_blank"><i class="fa fa-external-link-alt"></i> 前台</a>
+        <span><i class="fa fa-user-circle"></i> 系統管理員</span>
+        <a href="login.html" data-logout><i class="fa fa-sign-out-alt"></i> 登出</a>
+      </div>
+    </header>
+
+    <main class="admin-content">
+      <div class="admin-card">
+        <div class="admin-card-header">
+          <h2><i class="fa fa-receipt"></i> <span data-mode-text>新增訂單</span></h2>
+          <a href="orders.html" class="btn btn-light btn-sm"><i class="fa fa-arrow-left"></i> 返回列表</a>
+        </div>
+        <div class="admin-card-body">
+          <!-- 網址帶 ?id=編號 時為「修改」，會自動帶入資料 -->
+          <form class="admin-form" data-back="orders.html" novalidate>
+          <div class="form-row">
+            <div class="form-group">
+              <label class="form-label" for="f_order_no">訂單編號 <span class="req">*</span></label>
+              <input type="text" id="f_order_no" name="order_no" value="ORD202610100006" class="form-control" required data-readonly-on-edit>
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="f_user_id">會員</label>
+              <select id="f_user_id" name="user_id" class="form-control"><option value="">（非會員）</option><option value="1">王小明</option><option value="2">林美華</option><option value="3">陳大同</option></select>
+            </div>
+          </div>
+          <div class="form-row">
+            <div class="form-group">
+              <label class="form-label" for="f_receiver">收件人 <span class="req">*</span></label>
+              <input type="text" id="f_receiver" name="receiver" value="" class="form-control" required>
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="f_phone">電話 <span class="req">*</span></label>
+              <input type="text" id="f_phone" name="phone" value="" class="form-control" required>
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="f_address">收件地址 <span class="req">*</span></label>
+            <input type="text" id="f_address" name="address" value="" class="form-control" required>
+          </div>
+          <div class="form-row-3">
+            <div class="form-group">
+              <label class="form-label" for="f_subtotal">商品金額</label>
+              <input type="number" id="f_subtotal" name="subtotal" value="0" class="form-control" min="0">
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="f_shipping">運費</label>
+              <input type="number" id="f_shipping" name="shipping" value="0" class="form-control" min="0">
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="f_total">應付金額</label>
+              <input type="number" id="f_total" name="total" value="0" class="form-control" min="0">
+              <p class="field-hint">填 0 = 商品金額 + 運費</p>
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="f_status">訂單狀態</label>
+            <select id="f_status" name="status" class="form-control"><option value="pending">待處理</option><option value="processing">處理中</option><option value="shipping">出貨中</option><option value="completed">已完成</option><option value="cancelled">已取消</option></select>
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="f_note">備註</label>
+            <textarea id="f_note" name="note" rows="3" class="form-control"></textarea>
+          </div>
+
+            <div class="form-actions">
+              <button type="submit" class="btn btn-primary"><i class="fa fa-save"></i> 儲存</button>
+              <a href="orders.html" class="btn btn-outline"><i class="fa fa-times"></i> 取消</a>
+            </div>
+          </form>
+        </div>
+      </div>
+      <!-- 訂單明細（修改時顯示） -->
+      <div class="admin-card" id="order-items">
+        <div class="admin-card-header"><h2><i class="fa fa-list"></i> 訂單明細</h2></div>
+        <div class="table-wrap">
+          <table class="data-table admin-table">
+            <thead><tr><th>商品編號</th><th>商品名稱</th><th>單價</th><th>數量</th><th>小計</th></tr></thead>
+            <tbody>
+              <tr><td class="num">A-00123</td><td>旗艦系列 A1 精品</td><td class="num">NT$ 2,980</td><td class="num">2</td><td class="num">NT$ 5,960</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- 示範資料（修改時帶入表單用；實際系統由後端提供） -->
+      <script type="application/json" id="records">{"1":{"order_no":"ORD202511180001","user_id":1,"receiver":"王小明","phone":"0912-345-678","address":"台灣某市某區某路一號三樓","subtotal":5960,"shipping":0,"total":5960,"status":"shipping","note":"","created":"2025-11-18 10:00"},"2":{"order_no":"ORD202510300002","user_id":1,"receiver":"王小明","phone":"0912-345-678","address":"台灣某市某區某路一號三樓","subtotal":3840,"shipping":0,"total":3840,"status":"completed","note":"","created":"2025-10-30 10:00"},"3":{"order_no":"ORD202509150003","user_id":1,"receiver":"王小明","phone":"0912-345-678","address":"台灣某市某區某路一號三樓","subtotal":1880,"shipping":0,"total":1880,"status":"completed","note":"","created":"2025-09-15 10:00"},"4":{"order_no":"ORD202508020004","user_id":1,"receiver":"王小明","phone":"0912-345-678","address":"台灣某市某區某路一號三樓","subtotal":2480,"shipping":0,"total":2480,"status":"processing","note":"","created":"2025-08-02 10:00"},"5":{"order_no":"ORD202510050005","user_id":2,"receiver":"林美華","phone":"0922-111-222","address":"台灣某市某區某路三號","subtotal":980,"shipping":60,"total":1040,"status":"pending","note":"請於平日送達","created":"2025-10-05 14:20"}}</script>
+    </main>
+    <footer class="admin-footer">&copy; 2026 品牌名稱 管理系統</footer>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+  <script src="../js/main.js"></script>
+  <script src="../js/admin.js"></script>
+  <script>if (!new URLSearchParams(location.search).get('id')) document.getElementById('order-items').classList.add('hidden');</script>
+</body>
+</html>

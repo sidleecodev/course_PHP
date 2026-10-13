@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>購物車 — 品牌名稱</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@300;400;500;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+  <!-- 全站唯一共用 CSS -->
+  <link rel="stylesheet" href="css/style.css" />
+</head>
+<body class="page-cart">
+  <!-- ===== Topbar ===== -->
+  <div id="topbar">
+    <a href="member.html"><i class="fa fa-user-circle"></i> 會員中心</a>
+    <span class="sep">|</span>
+    <a href="login.html"><i class="fa fa-sign-in-alt"></i> 登入</a>
+    <span class="sep">|</span>
+    <a href="register.html"><i class="fa fa-user-plus"></i> 加入會員</a>
+    <span class="sep">|</span>
+    <a href="login.html" onclick="return confirm('確定要登出？')"><i class="fa fa-sign-out-alt"></i> 登出</a>
+  </div>
+
+  <!-- ===== Navbar ===== -->
+  <nav id="navbar">
+    <a href="index.html" class="nav-logo">
+      <div class="logo-box">B</div>
+      <span class="logo-text">品牌名稱</span>
+    </a>
+    <ul class="nav-links">
+      <li>
+        <a href="news-list.html"><i class="fa fa-newspaper"></i> 最新消息</a>
+        <ul class="dropdown">
+          <li><a href="news-list.html?cat=1">公司公告</a></li>
+          <li><a href="news-list.html?cat=2">活動資訊</a></li>
+          <li><a href="news-list.html?cat=3">產品動態</a></li>
+        </ul>
+      </li>
+      <li>
+        <a href="products-list.html"><i class="fa fa-box-open"></i> 產品介紹</a>
+        <ul class="dropdown">
+          <li><a href="products-list.html?cat=1">系列一</a></li>
+          <li><a href="products-list.html?cat=2">系列二</a></li>
+          <li><a href="products-list.html?cat=3">系列三</a></li>
+        </ul>
+      </li>
+      <li><a href="milestone.html"><i class="fa fa-history"></i> 大事記</a></li>
+      <li><a href="about.html"><i class="fa fa-building"></i> 關於我們</a></li>
+      <li><a href="member.html"><i class="fa fa-user"></i> 會員中心</a></li>
+    </ul>
+    <a href="cart.html" class="nav-cart active">
+      <i class="fa fa-shopping-cart"></i>
+      <span>購物車</span>
+      <span class="cart-badge" id="cart-badge">3</span>
+    </a>
+    <button class="nav-toggle" onclick="toggleNav()" aria-label="選單"><i class="fa fa-bars"></i></button>
+  </nav>
+
+  <!-- ===== Main Content ===== -->
+  <main id="content-wrap">
+    <div class="page-hero">
+      <div class="container">
+        <h1><i class="fa fa-shopping-cart"></i>購物車</h1>
+        <div class="breadcrumb"><a href="index.html">首頁</a> <i class="fa fa-chevron-right"></i> 購物車</div>
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="container">
+        <div class="cart-layout" id="cart-layout">
+          <div>
+            <div class="cart-card">
+              <div class="cart-header">
+                <span class="col-name">商品</span><span>單價</span><span>數量</span><span>小計</span><span></span>
+              </div>
+              <div class="cart-row" id="row-1" data-price="2980">
+                <div class="cart-product">
+                  <div class="cart-thumb ph"><i class="fa fa-cube"></i></div>
+                  <div><div class="cart-name">旗艦系列 A1 精品</div><div class="cart-no">NO. A-00123</div></div>
+                </div>
+                <div class="cart-price">NT$ 2,980</div>
+                <div>
+                  <div class="qty-ctrl">
+                    <button class="qty-btn" onclick="changeQty('row-1',-1)"><i class="fa fa-minus"></i></button>
+                    <input type="number" class="qty-num" value="2" min="1" max="99" onchange="changeQty('row-1',0)" />
+                    <button class="qty-btn" onclick="changeQty('row-1',1)"><i class="fa fa-plus"></i></button>
+                  </div>
+                </div>
+                <div class="cart-subtotal">NT$ 5,960</div>
+                <div><button class="btn btn-danger-outline btn-sm" onclick="removeRow('row-1')"><i class="fa fa-trash-alt"></i> 刪除</button></div>
+              </div>
+              <div class="cart-row" id="row-2" data-price="1880">
+                <div class="cart-product">
+                  <div class="cart-thumb ph"><i class="fa fa-star"></i></div>
+                  <div><div class="cart-name">經典系列 B1 限定版</div><div class="cart-no">NO. B-00205</div></div>
+                </div>
+                <div class="cart-price">NT$ 1,880</div>
+                <div>
+                  <div class="qty-ctrl">
+                    <button class="qty-btn" onclick="changeQty('row-2',-1)"><i class="fa fa-minus"></i></button>
+                    <input type="number" class="qty-num" value="1" min="1" max="99" onchange="changeQty('row-2',0)" />
+                    <button class="qty-btn" onclick="changeQty('row-2',1)"><i class="fa fa-plus"></i></button>
+                  </div>
+                </div>
+                <div class="cart-subtotal">NT$ 1,880</div>
+                <div><button class="btn btn-danger-outline btn-sm" onclick="removeRow('row-2')"><i class="fa fa-trash-alt"></i> 刪除</button></div>
+              </div>
+              <div class="cart-row" id="row-3" data-price="980">
+                <div class="cart-product">
+                  <div class="cart-thumb ph"><i class="fa fa-leaf"></i></div>
+                  <div><div class="cart-name">自然系列 C1 環保款</div><div class="cart-no">NO. C-00301</div></div>
+                </div>
+                <div class="cart-price">NT$ 980</div>
+                <div>
+                  <div class="qty-ctrl">
+                    <button class="qty-btn" onclick="changeQty('row-3',-1)"><i class="fa fa-minus"></i></button>
+                    <input type="number" class="qty-num" value="1" min="1" max="99" onchange="changeQty('row-3',0)" />
+                    <button class="qty-btn" onclick="changeQty('row-3',1)"><i class="fa fa-plus"></i></button>
+                  </div>
+                </div>
+                <div class="cart-subtotal">NT$ 980</div>
+                <div><button class="btn btn-danger-outline btn-sm" onclick="removeRow('row-3')"><i class="fa fa-trash-alt"></i> 刪除</button></div>
+              </div>
+            </div>
+            <div class="mt-16">
+              <a href="products-list.html" class="btn btn-outline btn-sm"><i class="fa fa-arrow-left"></i> 繼續購物</a>
+            </div>
+          </div>
+
+          <div>
+            <div class="summary-card">
+              <div class="summary-title"><i class="fa fa-receipt"></i> 訂單摘要</div>
+              <div class="summary-row"><span class="label">商品金額</span><span class="val" id="sum-goods">NT$ 8,820</span></div>
+              <div class="summary-row"><span class="label">運費</span><span class="val text-success" id="sum-ship">免運費</span></div>
+              <div class="summary-row"><span class="label">折扣</span><span class="val">－ NT$ 0</span></div>
+              <div class="summary-total"><span class="label">應付金額</span><span class="val" id="sum-total">NT$ 8,820</span></div>
+              <p class="summary-note">
+                <i class="fa fa-truck"></i> 訂單金額滿 NT$999 享免運費<br>
+                <i class="fa fa-shield-alt"></i> 安全加密付款，保障您的交易
+              </p>
+              <button class="btn btn-gold btn-lg btn-block" onclick="showToast('前往結帳流程（Laravel 版本已串接）')"><i class="fa fa-credit-card"></i> 前往結帳</button>
+            </div>
+          </div>
+        </div>
+
+        <div class="empty-state hidden" id="empty-state">
+          <i class="fa fa-shopping-cart"></i>
+          <p>購物車是空的，快去挑選喜歡的商品吧！</p>
+          <a href="products-list.html" class="btn btn-primary"><i class="fa fa-box-open"></i> 前往購物</a>
+        </div>
+      </div>
+    </div>
+
+  </main>
+
+  <!-- ===== Footer ===== -->
+  <footer class="site-footer">
+    <div class="footer-grid">
+      <div class="footer-brand">
+        <div class="logo-box">B</div>
+        <p>提供優質產品與服務<br>您的信賴之選</p>
+        <div class="footer-social">
+          <a href="#" aria-label="Facebook"><i class="fab fa-facebook-f"></i></a>
+          <a href="#" aria-label="Instagram"><i class="fab fa-instagram"></i></a>
+          <a href="#" aria-label="LINE"><i class="fab fa-line"></i></a>
+        </div>
+      </div>
+      <div class="footer-col">
+        <h4>快速連結</h4>
+        <ul>
+          <li><a href="about.html">關於我們</a></li>
+          <li><a href="news-list.html">最新消息</a></li>
+          <li><a href="products-list.html">產品介紹</a></li>
+          <li><a href="milestone.html">大事記</a></li>
+        </ul>
+      </div>
+      <div class="footer-col">
+        <h4>會員服務</h4>
+        <ul>
+          <li><a href="login.html">會員登入</a></li>
+          <li><a href="register.html">加入會員</a></li>
+          <li><a href="member.html">會員中心</a></li>
+          <li><a href="cart.html">購物車</a></li>
+        </ul>
+      </div>
+      <div class="footer-col contact">
+        <h4>聯絡資訊</h4>
+        <ul>
+          <li><i class="fa fa-map-marker-alt"></i> 台灣某市某區某路一號</li>
+          <li><i class="fa fa-phone"></i> 02-1234-5678</li>
+          <li><i class="fa fa-envelope"></i> info@example.com</li>
+          <li><i class="fa fa-clock"></i> 週一至週五 09:00–18:00</li>
+        </ul>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <span>&copy; 2025 品牌名稱. All rights reserved.</span>
+      <span>隱私權政策 | 服務條款</span>
+    </div>
+  </footer>
+
+  <button id="back-top" aria-label="回頂端"><i class="fa fa-chevron-up"></i></button>
+  <script src="js/main.js"></script>
+  <script>
+
+    const FREE_SHIP = 999, SHIP_FEE = 60;
+    const fmt = n => 'NT$ ' + n.toLocaleString();
+    function changeQty(rowId, delta) {
+      const row = document.getElementById(rowId);
+      const input = row.querySelector('.qty-num');
+      input.value = Math.min(99, Math.max(1, (parseInt(input.value) || 1) + delta));
+      recalcAll();
+    }
+    function removeRow(rowId) {
+      if (!confirm('確定要移除此商品？')) return;
+      document.getElementById(rowId).remove();
+      recalcAll();
+    }
+    function recalcAll() {
+      let goods = 0, count = 0;
+      const rows = document.querySelectorAll('.cart-row');
+      rows.forEach(row => {
+        const q = parseInt(row.querySelector('.qty-num').value) || 1;
+        const sub = parseInt(row.dataset.price) * q;
+        row.querySelector('.cart-subtotal').textContent = fmt(sub);
+        goods += sub; count += q;
+      });
+      const ship = goods >= FREE_SHIP || goods === 0 ? 0 : SHIP_FEE;
+      document.getElementById('sum-goods').textContent = fmt(goods);
+      document.getElementById('sum-ship').textContent = ship ? fmt(ship) : '免運費';
+      document.getElementById('sum-total').textContent = fmt(goods + ship);
+      updateCartBadge(count);
+      if (!rows.length) {
+        document.getElementById('cart-layout').classList.add('hidden');
+        document.getElementById('empty-state').classList.remove('hidden');
+      }
+    }
+  </script>
+</body>
+</html>

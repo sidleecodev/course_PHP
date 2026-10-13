@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>加入會員 — 品牌名稱</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@300;400;500;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+  <!-- 全站唯一共用 CSS -->
+  <link rel="stylesheet" href="css/style.css" />
+</head>
+<body class="auth-page">
+  <div class="auth-card wide">
+    <a href="index.html" class="auth-logo"><div class="logo-box">B</div><span>品牌名稱</span></a>
+    <div class="auth-title">
+      <h2>加入會員</h2>
+      <p>建立您的帳號，開始購物體驗</p>
+    </div>
+
+    <form action="login.html" method="GET">
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label" for="name">姓名 <span class="req">*</span></label>
+          <div class="input-icon-wrap"><i class="fa fa-user icon"></i><input type="text" id="name" name="name" class="form-control" placeholder="請輸入姓名" required /></div>
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="nickname">暱稱</label>
+          <div class="input-icon-wrap"><i class="fa fa-tag icon"></i><input type="text" id="nickname" name="nickname" class="form-control" placeholder="選填" /></div>
+        </div>
+      </div>
+      <div class="form-group">
+        <label class="form-label" for="reg-email">電子郵件 <span class="req">*</span></label>
+        <div class="input-icon-wrap"><i class="fa fa-envelope icon"></i><input type="email" id="reg-email" name="email" class="form-control" placeholder="example@email.com" required /></div>
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label" for="phone">手機號碼</label>
+          <div class="input-icon-wrap"><i class="fa fa-mobile-alt icon"></i><input type="tel" id="phone" name="phone" class="form-control" placeholder="09xx-xxxxxx" /></div>
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="birthday">生日</label>
+          <div class="input-icon-wrap"><i class="fa fa-calendar icon"></i><input type="date" id="birthday" name="birthday" class="form-control" /></div>
+        </div>
+      </div>
+      <div class="form-group">
+        <label class="form-label" for="reg-pw">密碼 <span class="req">*</span></label>
+        <div class="input-icon-wrap">
+          <i class="fa fa-lock icon"></i>
+          <input type="password" id="reg-pw" name="password" class="form-control" placeholder="至少 8 個字元" required oninput="checkStrength(this.value)" />
+          <span class="pw-toggle" onclick="togglePw('reg-pw',this)"><i class="fa fa-eye"></i></span>
+        </div>
+        <div class="pw-strength"><div class="pw-strength-bar" id="pw-bar"></div></div>
+        <p class="field-hint" id="pw-hint">請輸入至少 8 個字元，包含英文與數字</p>
+      </div>
+      <div class="form-group">
+        <label class="form-label" for="reg-pw2">確認密碼 <span class="req">*</span></label>
+        <div class="input-icon-wrap">
+          <i class="fa fa-lock icon"></i>
+          <input type="password" id="reg-pw2" name="password_confirmation" class="form-control" placeholder="再次輸入密碼" required />
+          <span class="pw-toggle" onclick="togglePw('reg-pw2',this)"><i class="fa fa-eye"></i></span>
+        </div>
+        <p class="field-hint" id="match-hint"></p>
+      </div>
+      <div class="agree-row">
+        <input type="checkbox" id="agree" name="agree" required />
+        <label for="agree">我已閱讀並同意 <a href="#">服務條款</a> 及 <a href="#">隱私權政策</a></label>
+      </div>
+      <button type="submit" class="btn btn-primary btn-block"><i class="fa fa-user-plus"></i> 立即加入</button>
+    </form>
+    <div class="auth-footer">已有帳號？<a href="login.html">立即登入</a></div>
+  </div>
+  <a href="index.html" class="auth-back-home"><i class="fa fa-home"></i> 回首頁</a>
+
+  <script src="js/main.js"></script>
+  <script>
+
+    bindPasswordMatch('reg-pw', 'reg-pw2', 'match-hint');
+  </script>
+</body>
+</html>

@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>關於我們 — 品牌名稱</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@300;400;500;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+  <!-- 全站唯一共用 CSS -->
+  <link rel="stylesheet" href="css/style.css" />
+</head>
+<body class="page-about">
+  <!-- ===== Topbar ===== -->
+  <div id="topbar">
+    <a href="member.html"><i class="fa fa-user-circle"></i> 會員中心</a>
+    <span class="sep">|</span>
+    <a href="login.html"><i class="fa fa-sign-in-alt"></i> 登入</a>
+    <span class="sep">|</span>
+    <a href="register.html"><i class="fa fa-user-plus"></i> 加入會員</a>
+    <span class="sep">|</span>
+    <a href="login.html" onclick="return confirm('確定要登出？')"><i class="fa fa-sign-out-alt"></i> 登出</a>
+  </div>
+
+  <!-- ===== Navbar ===== -->
+  <nav id="navbar">
+    <a href="index.html" class="nav-logo">
+      <div class="logo-box">B</div>
+      <span class="logo-text">品牌名稱</span>
+    </a>
+    <ul class="nav-links">
+      <li>
+        <a href="news-list.html"><i class="fa fa-newspaper"></i> 最新消息</a>
+        <ul class="dropdown">
+          <li><a href="news-list.html?cat=1">公司公告</a></li>
+          <li><a href="news-list.html?cat=2">活動資訊</a></li>
+          <li><a href="news-list.html?cat=3">產品動態</a></li>
+        </ul>
+      </li>
+      <li>
+        <a href="products-list.html"><i class="fa fa-box-open"></i> 產品介紹</a>
+        <ul class="dropdown">
+          <li><a href="products-list.html?cat=1">系列一</a></li>
+          <li><a href="products-list.html?cat=2">系列二</a></li>
+          <li><a href="products-list.html?cat=3">系列三</a></li>
+        </ul>
+      </li>
+      <li><a href="milestone.html"><i class="fa fa-history"></i> 大事記</a></li>
+      <li><a href="about.html" class="active"><i class="fa fa-building"></i> 關於我們</a></li>
+      <li><a href="member.html"><i class="fa fa-user"></i> 會員中心</a></li>
+    </ul>
+    <a href="cart.html" class="nav-cart">
+      <i class="fa fa-shopping-cart"></i>
+      <span>購物車</span>
+      <span class="cart-badge" id="cart-badge">3</span>
+    </a>
+    <button class="nav-toggle" onclick="toggleNav()" aria-label="選單"><i class="fa fa-bars"></i></button>
+  </nav>
+
+  <!-- ===== Main Content ===== -->
+  <main id="content-wrap">
+    <div class="page-hero">
+      <div class="container">
+        <h1><i class="fa fa-building"></i>關於我們</h1>
+        <div class="breadcrumb"><a href="index.html">首頁</a> <i class="fa fa-chevron-right"></i> 關於我們</div>
+      </div>
+    </div>
+
+    <!-- 公司簡介 -->
+    <div class="section-lg section-alt">
+      <div class="container">
+        <div class="about-intro">
+          <div class="about-intro-img ph"><i class="fa fa-building"></i></div>
+          <div class="about-intro-text">
+            <div class="gold-line left"></div>
+            <h2>我們致力於<span>創造美好生活</span><br>的每一個細節</h2>
+            <p>自2020年創立以來，我們始終以「品質第一、客戶至上」為核心理念，深耕台灣在地市場，同時積極拓展國際版圖。</p>
+            <p>我們的團隊由一群對品質充滿熱忱的專業人士組成，每一件產品都承載著我們對工藝的堅持與對客戶的承諾。五年來，我們服務超過十萬名客戶，並持續在創新與永續之間尋求最佳平衡。</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 數字 -->
+    <div class="stats-band">
+      <div class="container">
+        <div class="stats-grid">
+          <div class="stat-item"><div class="stat-num">5+</div><div class="stat-label">年深耕經驗</div></div>
+          <div class="stat-item"><div class="stat-num">100K+</div><div class="stat-label">服務客戶數</div></div>
+          <div class="stat-item"><div class="stat-num">200+</div><div class="stat-label">產品品項</div></div>
+          <div class="stat-item"><div class="stat-num">3</div><div class="stat-label">國際市場</div></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 核心價值 -->
+    <div class="section-lg">
+      <div class="container">
+        <div class="section-header">
+          <h2 class="section-title">我們的<span>核心價值</span></h2>
+          <div class="gold-line"></div>
+          <p class="section-desc">每一個決策，都以這四個核心價值為準則</p>
+        </div>
+        <div class="features-grid cols-4">
+          <div class="feature-card"><div class="feature-icon"><i class="fa fa-star"></i></div><div class="feature-title">品質至上</div><p class="feature-desc">嚴格把關每一個生產環節，只有達到最高標準的產品才能到達客戶手中。</p></div>
+          <div class="feature-card"><div class="feature-icon"><i class="fa fa-lightbulb"></i></div><div class="feature-title">持續創新</div><p class="feature-desc">保持對新技術與設計趨勢的敏感度，不斷突破自我，帶來令人驚喜的產品體驗。</p></div>
+          <div class="feature-card"><div class="feature-icon"><i class="fa fa-heart"></i></div><div class="feature-title">客戶優先</div><p class="feature-desc">傾聽每一位客戶的聲音，以同理心理解需求，提供真正貼心的服務。</p></div>
+          <div class="feature-card"><div class="feature-icon"><i class="fa fa-leaf"></i></div><div class="feature-title">永續發展</div><p class="feature-desc">致力於環境友善的生產方式，減少碳足跡，為下一代留下更美好的地球。</p></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 核心團隊 -->
+    <div class="section-lg section-alt">
+      <div class="container">
+        <div class="section-header">
+          <h2 class="section-title">核心<span>團隊</span></h2>
+          <div class="gold-line"></div>
+          <p class="section-desc">每一位成員都是推動品牌前進的重要力量</p>
+        </div>
+        <div class="team-grid">
+          <div class="team-card"><div class="team-photo ph"><i class="fa fa-user-tie"></i></div><div class="team-info"><div class="team-name">王總經理</div><div class="team-role">執行長 CEO</div><p class="team-bio">擁有20年業界經驗，帶領品牌從本土走向國際。</p></div></div>
+          <div class="team-card"><div class="team-photo ph"><i class="fa fa-user"></i></div><div class="team-info"><div class="team-name">李副總</div><div class="team-role">營運長 COO</div><p class="team-bio">負責整體營運效率優化，打造敏捷高效的組織文化。</p></div></div>
+          <div class="team-card"><div class="team-photo ph"><i class="fa fa-paint-brush"></i></div><div class="team-info"><div class="team-name">陳設計總監</div><div class="team-role">設計總監 CDO</div><p class="team-bio">主導產品美學設計，多次獲得國際設計獎項肯定。</p></div></div>
+          <div class="team-card"><div class="team-photo ph"><i class="fa fa-chart-line"></i></div><div class="team-info"><div class="team-name">張行銷長</div><div class="team-role">行銷長 CMO</div><p class="team-bio">深耕數位行銷領域，成功將品牌觸及擴展至百萬受眾。</p></div></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 聯絡我們 -->
+    <div class="section-lg">
+      <div class="container">
+        <div class="section-header">
+          <h2 class="section-title">聯絡<span>我們</span></h2>
+          <div class="gold-line"></div>
+          <p class="section-desc">歡迎透過以下方式與我們聯繫</p>
+        </div>
+        <div class="contact-grid">
+          <div class="contact-card"><div class="contact-icon"><i class="fa fa-map-marker-alt"></i></div><div><div class="contact-label">公司地址</div><div class="contact-val">台灣某市某區某路一號十樓</div></div></div>
+          <div class="contact-card"><div class="contact-icon"><i class="fa fa-phone"></i></div><div><div class="contact-label">聯絡電話</div><div class="contact-val">02-1234-5678</div></div></div>
+          <div class="contact-card"><div class="contact-icon"><i class="fa fa-envelope"></i></div><div><div class="contact-label">電子郵件</div><div class="contact-val">info@example.com</div></div></div>
+        </div>
+      </div>
+    </div>
+
+  </main>
+
+  <!-- ===== Footer ===== -->
+  <footer class="site-footer">
+    <div class="footer-grid">
+      <div class="footer-brand">
+        <div class="logo-box">B</div>
+        <p>提供優質產品與服務<br>您的信賴之選</p>
+        <div class="footer-social">
+          <a href="#" aria-label="Facebook"><i class="fab fa-facebook-f"></i></a>
+          <a href="#" aria-label="Instagram"><i class="fab fa-instagram"></i></a>
+          <a href="#" aria-label="LINE"><i class="fab fa-line"></i></a>
+        </div>
+      </div>
+      <div class="footer-col">
+        <h4>快速連結</h4>
+        <ul>
+          <li><a href="about.html">關於我們</a></li>
+          <li><a href="news-list.html">最新消息</a></li>
+          <li><a href="products-list.html">產品介紹</a></li>
+          <li><a href="milestone.html">大事記</a></li>
+        </ul>
+      </div>
+      <div class="footer-col">
+        <h4>會員服務</h4>
+        <ul>
+          <li><a href="login.html">會員登入</a></li>
+          <li><a href="register.html">加入會員</a></li>
+          <li><a href="member.html">會員中心</a></li>
+          <li><a href="cart.html">購物車</a></li>
+        </ul>
+      </div>
+      <div class="footer-col contact">
+        <h4>聯絡資訊</h4>
+        <ul>
+          <li><i class="fa fa-map-marker-alt"></i> 台灣某市某區某路一號</li>
+          <li><i class="fa fa-phone"></i> 02-1234-5678</li>
+          <li><i class="fa fa-envelope"></i> info@example.com</li>
+          <li><i class="fa fa-clock"></i> 週一至週五 09:00–18:00</li>
+        </ul>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <span>&copy; 2025 品牌名稱. All rights reserved.</span>
+      <span>隱私權政策 | 服務條款</span>
+    </div>
+  </footer>
+
+  <button id="back-top" aria-label="回頂端"><i class="fa fa-chevron-up"></i></button>
+  <script src="js/main.js"></script>
+</body>
+</html>
