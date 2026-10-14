@@ -1,0 +1,318 @@
+1.後臺－－－點左邊的選單，只會更改右邊的畫面
+新增檔案：
+resources\views\admin\menu.blade.php
+resources\views\admin\layout.blade.php
+
+
+2. 
+把resources\views\admin\home.blade.php的內容全部複製貼到layout
+layout當中側欄的部分<aside></aside>剪下貼到menu
+layout被剪掉的部分輸入以下內容：
+<body class="admin-body">
+    <!-- ===== 側欄 =====
+        php的引入檔案方式有4種，include, include_once, require, require_once  
+    -->
+    @include("admin.menu")
+    ...
+    ...
+</body>
+
+
+3.切到不同分頁，右邊標題內容都不一樣，改用變數處理
+
+同一份layout.blade.php
+<body class="admin-body">
+    <!-- ===== 側欄 =====
+        php的引入檔案方式有4種，include, include_once, require, require_once，幾乎都一樣 
+    -->
+    @include("admin.menu")
+
+    <div class="admin-main">
+        <!-- ===== 頂部列 !!主要修改這邊!! ===== -->
+        <header class="admin-topbar">
+            <button class="admin-menu-toggle" aria-label="選單"><i class="fa fa-bars"></i></button>
+            <div class="page-name">@yield("title")</div>
+            <div class="admin-user">
+                <a href="/" target="_blank"><i class="fa fa-external-link-alt"></i> 前台</a>
+                <span><i class="fa fa-user-circle"></i>  {{ session()->get("userId") }}</span>
+                <a href="/admin/logout" data-logout><i class="fa fa-sign-out-alt"></i> 登出</a>
+            </div>
+        </header>
+    ...
+    ...
+</body>
+
+當中有修改到logout路徑（"/admin/logout"），logout還沒製作
+
+
+4.把主要內容(main)套用變數
+
+~~同一份layout.blade.php
+main底下的程式碼剪下貼到home（main外層要保留，只有內容剪下），整份完全覆蓋
+被剪下的部分修改為
+        <main class="admin-content">
+            @yield("content")
+        </main>
+
+~~到home.blade.php做處理
+@extends("admin.layout")
+@section("title", "首頁")
+/* 
+  此語法等同於
+  @section("title")
+  首頁
+  @endsection
+*/
+@section("content")
+(原內容)
+@endsection
+
+
+5.後臺管理員功能設置
+
+終端機 php artisan make:controller Admin/ManagerController
+
+自動生成檔案
+app/Http/Controllers/Admin/ManagerController.php
+
+輸入以下內容：
+（請留意有沒有出現use App\Models\Admin\Manager;）
+<?php
+
+namespace App\Http\Controllers\Admin;
+
+use App\Http\Controllers\Controller;
+use App\Models\Admin\Manager;
+use Illuminate\Http\Request;
+
+class ManagerController extends Controller
+{
+    public function list(){
+        // get: 取得全部資料，也可以用all -> Manager::all();
+        // 將取得的資料以$list變數儲存
+        // 此處Manager是一個資料表，在app\Models\Admin\Manager.php
+ 	$list = Manager::paginate(10);
+	/*
+	    原本是指令是這個，但後續要做分頁(9.)，所以改為上面這個，括號內為幾筆為一頁
+            $list = Manager::get();
+	*/
+        // compact: 將資料渲染到admin.manager.list這個網頁（此時list還沒創建）
+        // compact("list"): 這個list為上一行的$list，兩個名稱要一樣
+        return view("admin.manager.list", compact("list"));
+    }
+}
+
+
+6.新增檔案list
+resources/views/admin/manager/list.blade.php
+輸入以下內容：
+
+@extends("admin.layout")
+@section("title","帳號管理")
+@section("content")
+
+@endsection
+
+中間section部分，就是網頁的設計，這裡抓老師給的admins.html
+中間的<main></main>部分（不包含main外層）複製貼到section之中，即
+
+@extends("admin.layout")
+@section("title","帳號管理")
+@section("content")
+(複製貼上的內容)
+@endsection
+
+同時，menu.blade.php將近最後一行修改為
+<a href="/admin/manager/lsit"><i class="fa fa-user-shield"></i> 帳號管理</a>
+
+
+7.後臺管理功能要新增路由
+routes/web.php
+
+Route::group(["prefix" => "admin"], function () {
+    // 後臺會員登入
+    Route::get("/", [AdminController::class, "index"]);
+    // 表單送到後臺
+    Route::post("login", [AdminController::class, "login"]);
+    // 登入成功跳轉頁面，在跳轉之前先跑一次middleware，確保有登入過才跳轉頁面
+    Route::get("home", [AdminController::class, "home"])->middleware("manager");
+
+    // !!!主要新增這裡!!!
+    Route::middleware("manager")->group(function(){
+        // 網址: /admin/manager
+        Route::prefix("manager")->group(function(){
+            // 網址: /admin/manager/list
+            Route::get("list", [ManagerController::class, "list"]);
+        });
+    });
+});
+
+
+8.
+menu.blade.php
+
+中間儀表板的部分改為
+<!-- 執行?的左邊，如果是就執行class，不是就執行：右邊的部分 -->
+<a href="/admin/home" {!! Request::is('admin/home') ? "class='active'" : ''!!}><i class="fa fa-tachometer-alt"></i> Home</a>
+下面帳號管理改為
+<a href="/admin/manager/list" {!! Request::is('admin/manager/*') ? "class='active'" : '' !!}><i class="fa fa-user-shield"></i> 帳號管理</a>
+
+
+list.blade.php
+
+中間新增管理員部分改為
+<a href="/admin/manager/create" class="btn btn-gold btn-sm"><i class="fa fa-plus"></i> 新增帳號</a>
+
+底下table-wrap介面改為帳號、密碼、操作
+    <div class="table-wrap">
+        <table class="data-table admin-table">
+            <thead>
+                <tr>
+                    <th>帳號</th>
+                    <th>密碼</th>
+                    <th>操作</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach($list as $data)
+                <tr data-row>
+                    <td data-mark>{{ $data->userId }}</td>
+                    <td data-mark>{{ $data->pwd }}</td>
+                    <td>
+                        <div class="actions"><a href="/admin/manager/edit/{{ $list->id }}" class="btn btn-outline btn-xs"><i class="fa fa-edit"></i> 修改</a>
+                        <button type="button" class="btn btn-danger-outline btn-xs" data-delete data-name="系統管理員" data-blocked="不能刪除目前登入中的帳號"><i class="fa fa-trash"></i> 刪除</button></div>
+                    </td>
+                </tr>
+                @endforeach
+            </tbody>
+        </table>
+    </div>
+
+
+
+9.製作分頁（網頁底下有<1 2 3>）
+目前是設定10筆為1頁（在5.那邊）
+
+app/Providers/AppServiceProvider.php
+
+<?php
+
+namespace App\Providers;
+
+use Illuminate\Pagination\Paginator;
+use Illuminate\Support\ServiceProvider;
+
+class AppServiceProvider extends ServiceProvider
+{
+    /**
+     * Register any application services.
+     */
+    public function register(): void
+    {
+        //
+    }
+
+    /**
+     * Bootstrap any application services.
+     */
+
+    // 主要修改這邊
+    public function boot(): void
+    {
+        Paginator::useBootstrap();
+    }
+}
+
+
+list.blade.php最底下修改為
+
+    <div class="admin-table-info">
+        <span>共 <b data-total>2</b> 筆</span>
+        <nav class="pagination">
+            {{ $list->links() }}
+        </nav>
+    </div>
+
+
+~~附加總筆數的功能
+ManagerController.php修改為
+<?php
+
+namespace App\Http\Controllers\Admin;
+
+use App\Http\Controllers\Controller;
+use App\Models\Admin\Manager;
+use Illuminate\Http\Request;
+
+class ManagerController extends Controller
+{
+    public function list(){
+        // get: 取得全部資料，也可以用all -> Manager::all();
+        // 將取得的資料以$list變數儲存
+        // 此處Manager是一個資料表，在app\Models\Admin\Manager.php
+        $list = Manager::paginate(10);
+	// !!主要修改這邊
+        // 計算總筆數
+        $total = Manager::count();
+
+        // compact: 將資料渲染到admin.manager.list這個網頁
+        // compact("list"): 這個list為上一行的$list，兩個名稱要一樣
+        return view("admin.manager.list", compact("list", "total"));
+	// 到這邊!!
+    }
+}
+
+
+10. 創建新增帳號功能
+web.php修改為
+Route::group(["prefix" => "admin"], function () {
+    // 後臺會員登入
+    Route::get("/", [AdminController::class, "index"]);
+    // 表單送到後臺
+    Route::post("login", [AdminController::class, "login"]);
+    // 登入成功跳轉頁面，在跳轉之前先跑一次middleware，確保有登入過才跳轉頁面
+    Route::get("home", [AdminController::class, "home"])->middleware("manager");
+
+    Route::middleware("manager")->group(function(){
+        // 網址: /admin/manager
+        Route::prefix("manager")->group(function(){
+            // 網址: /admin/manager/list
+            Route::get("list", [ManagerController::class, "list"]);
+	    // 主要新增這一行
+            Route::get("create", [ManagerController::class, "create"]);
+        });
+    });
+});
+
+
+在ManagerController新增功能（包含在class ManagerController extends Controller裡）
+    public function create(){
+        return view("admin.manager.create");
+    }
+
+創建檔案resources/views/admin/manager/create.blade.php
+
+輸入以下：
+
+@extends("admin.layout")
+@section("title", "新增帳號")
+@section("content")
+
+@endsection
+
+中間空白同之前，找admins-form中間的main裡面，複製貼到上面的空白
+
+當中修改如下：
+<div class="admin-card">
+        <div class="admin-card-header">
+	  // 主要修改這邊
+          <h2><i class="fa fa-user-shield"></i> <span data-mode-text>新增帳號</span></h2>
+          <a href="/admin/manager/list" class="btn btn-light btn-sm"><i class="fa fa-arrow-left"></i> 返回列表</a>
+        </div>
+        <div class="admin-card-body">
+          <!-- 網址帶 ?id=編號 時為「修改」，會自動帶入資料 -->
+          <form class="admin-form" action="/admin/manager/store" method="post">
+            @csrf
+          <div class="form-row">
+        ...
+</div>
