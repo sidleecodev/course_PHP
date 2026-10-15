@@ -1,0 +1,84 @@
+下載composer
+
+composer用來安裝、更新專案需要的套件，並處理套件之間的相依關係，
+例如安裝 Laravel，以及 Laravel 需要的其他套件
+
+而Laravel提供現成架構與功能，讓你用 PHP 開發網站，
+例如網址路由、資料庫操作、登入驗證
+
+
+
+（於vscode開啟終端機操作）
+*創建新專案*
+>>composer create-project laravel/laravel project1151013
+
+*開機*
+>>php artisan serve
+
+*建立資料庫*
+左邊資料夾中找.env，並進行以下設定
+DB_CONNECTION=mysql
+DB_HOST=127.0.0.1
+DB_PORT=3306
+DB_DATABASE=project1151013 （這是資料庫名稱，自取，MySQL中創建的名稱也要一樣）
+DB_USERNAME=root
+DB_PASSWORD=
+
+SESSION_DRIVER=file
+SESSION_LIFETIME=120
+SESSION_ENCRYPT=false
+SESSION_PATH=/
+SESSION_DOMAIN=null
+
+QUEUE_CONNECTION=file
+
+CACHE_STORE=file
+
+
+左邊資料夾中找config/app.php，並進行以下設定
+'timezone' => 'Asia/Taipei',
+
+
+左邊資料夾中找config/session.php，並進行以下設定
+'lifetime' => (int) env('SESSION_LIFETIME', 120),
+'expire_on_close' => env('SESSION_EXPIRE_ON_CLOSE', true),
+
+電腦裡找XAMPP，開啟Apache、MySQL，網址輸入localhost/phpmyadmin
+自行創建資料庫，名稱與DB_DATABASE要相同
+
+
+
+*測試-如何開啟網頁*（利用前台首頁控制器）
+（vscode安裝Beauty、Auto Close Tag
+Laravel goto view、Laravel goto component、Laravel goto Controller）
+>>php artisan make:controller Front/IndexController
+
+在IndexController輸入：
+class IndexController extends Controller
+{
+    public function index(){
+        return view("front.index");
+    }
+}
+
+*網頁根目錄：resources/views*
+於此創建新的資料夾front，裡面創建index.blade.php
+輸入"首頁"來測試
+
+*設定路由*
+目錄：routes/web.php
+
+<?php
+
+use App\Http\Controllers\Front\IndexController;
+use Illuminate\Support\Facades\Route;
+
+Route::get('/', [IndexController::class, "index"]);
+
+其中'/'是首頁
+
+接著localhost頁面就會出現"首頁"兩個字
+
+
+
+把會用到的css、js資料夾複製到專案資料夾(project1151013/public)
