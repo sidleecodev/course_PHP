@@ -316,3 +316,235 @@ Route::group(["prefix" => "admin"], function () {
           <div class="form-row">
         ...
 </div>
+
+
+!!!底下是後來改用不同模板製作的（一樣在上面的空白處）：
+<!-- 
+  1.路由新增Route::post("/manager/store", [ManagerController::class, "store"]);
+  （老師給的路徑中沒有admin）
+  2.ManagerController新增public function store(Request $req)
+ -->
+<form action="store" method="post">
+  @csrf
+  <table>
+    <tr>
+      <td>帳號</td>
+      <td><input type="text" name="userId" id="userId"></td>
+    </tr>
+    <tr>
+      <td>密碼</td>
+      <td><input type="text" name="pwd"></td>
+    </tr>
+    <tr>
+      <td colspan="2" align="center">
+        <button type="submit">確定</button>
+      </td>
+    </tr>
+  </table>
+</form>
+
+
+**輸入時，用onblur="checkAccount()"偵測是否有已存在帳號：（此為套用模板的版本，本來就會跟上面不一樣；checkAccount()是自定義的js，要額外再寫運作內容）
+          <div class="form-row">
+            <div class="form-group">
+              <label class="form-label" for="f_username">登入帳號 <span class="req">*</span></label>
+              <!-- id改為userId，onblur：當游標離開這個輸入框時，啟動檢查所輸入的帳號是否已存在 -->
+              <input type="text" id="userId" name="userId" value="" class="form-control" required onblur="checkAccount()">
+              <!-- 顯示帳號已存在的訊息 -->
+              <span id="msg"></span>
+            </div>
+          </div>
+
+~~接著要處理怎麼顯示訊息
+網路搜尋jquery cdn找壓縮檔(minified)，複製下來，取網址部分來引入js
+<script src="https://code.jquery.com/jquery-4.0.0.min.js"></script>
+<script>
+    function checkAccount(){
+        // $：jqurey的用法，$("#userId")：取得id="userId"這個欄位的資料
+        // val()：值，$("$userId").val()：取得此資料的值
+        // var可以用let
+        var userId = $("#userId").val();
+        // 先將id="msg"的文字清除，並寫進html
+        $("#msg").html("");
+        // 如果有輸入帳號（非空字串）
+        if (userId != ""){
+            // ajax：非同步傳輸，頁面可以先顯示，再等資料進來
+            $.ajax({
+                // 老師用"/manager/checkAccount"
+                url:"/admin/manager/checkAccount",
+                type:"post",
+                // data：所有要送往後端的資料
+                data:{
+                    // 送到後端的名稱: 所輸入的帳號
+                    userId: userId,
+                    // 加上權杖
+                    _token: "{{ csrf_token() }}"
+                },
+                success: function(msg){
+                    // msg為自取名稱，是後端回傳的資料
+                    // trim():去除左右空白
+                    if(msg.trim() == "exist"){
+                        // 在id="msg"中寫入html語法（前面清除了，這裡寫回來了）
+                        $("#msg").html("<font color='red'>帳號已存在</font>");
+                        $("#userId").focus();
+                    }
+                }
+            });
+        }
+    }
+</script>
+
+設定路由：Route::post("/admin/manager/checkAccount", [ManagerController::class, "checkAccount"]);
+
+Manager.php新增方法：
+    // 可以跟上面的方法整合，現在分開來方便理解
+    public function checkAccount(string $userId){
+        $manager = self::where("userId", $userId)->first();
+        return $manager;
+    }
+
+ManagerController新增方法：
+    public function checkAccount(Request $req){
+        $manager = (new Manager())->checkAccount($req->userId);
+        // 如果取得的資料非空（＝如果有取得資料）
+        if (!empty($manager)){
+            // echo：輸出，php用法
+            // (不須記憶).net用Response.write，java用system.out.print，jsp用out.print
+            echo("exist");
+        }
+    }
+
+防範的部分已經處理完成，不過送到後端時還是要建議再檢查一次
+
+
+（回到新增的功能）
+在ManagerController：
+    public function store(Request $req){
+        // 新增物件
+        $manager = new Manager();
+        // $manager 為manager資料表
+        // $manager->userId 為manager資料表中userId欄位
+        // $req->userId 新增帳號網頁中所輸入的帳號
+        $manager->userId = $req->userId;
+        $manager->pwd = $req->pwd;
+        // 將所輸入的資料存入manager資料表中
+        $manager->save();
+
+        // 通常新增完成要告知使用者已新增完成，這裡為了簡化流程，先暫時不處理
+        // 路徑老師是打"/manager/list"，但我這邊的路徑是"/admin/manager/list"，應該這樣寫才符合我這邊的需求
+        return redirect("/admin/manager/list");
+    }
+
+
+11.新增更新、修改功能
+在list.blade.php，改成（其實不用改，前面已經有改到了）
+	    <tbody>
+                @foreach($list as $data)
+                <tr data-row>
+                    <td data-mark>{{ $data->userId }}</td>
+                    <td data-mark>{{ $data->pwd }}</td>
+                    <td>
+                        <div class="actions"><a href="/admin/manager/edit/{{ $data->id }}" class="btn btn-outline btn-xs"><i class="fa fa-edit"></i> 修改</a>
+                        <button type="button" class="btn btn-danger-outline btn-xs" data-delete data-name="系統管理員" data-blocked="不能刪除目前登入中的帳號"><i class="fa fa-trash"></i> 刪除</button></div>
+                    </td>
+                </tr>
+                @endforeach
+            </tbody>
+
+路由新增Route::get("admin/manager/edit/{id}", [ManagerController::class, "edit"]);
+Route::post("admin/manager/update", [ManagerController::class, "update"]);
+{id}的{}是參數，會帶資料進來，id是變數名稱
+如果是{id?}，表示可能有帶資料，也可能沒帶資料
+
+ManagerController新增public function update(Request $req)跟edit()：
+    // 修改管理帳號
+    public function edit(Request $req){
+        // $req->id 中的id為路由/admin/manager/edit/{id}中的id，兩個名稱要一樣
+        // 在manager資料表中尋找所帶進來的id這筆資料
+        $manager = Manager::find($req->id);
+        return view("admin.manager.edit", compact("manager"));
+    }
+
+    // 更新管理帳號
+    public function update(Request $req){
+        $manager = Manager::find($req->id);
+        $manager->userId = $req->userId;
+        $manager->pwd = $req->pwd;
+        // 也可用$manager->save();
+        // 通常要判斷更新的帳號是否已存在資料表中，這裡先省略
+        $manager->update();
+        return redirect("/admin/manager/list");
+    }
+
+
+新增resources/view/admin/manager/edit.blade.php：
+<form action="/admin/manager/update" method="post">
+    <input type="hidden" name="id" value="{{ $manager->id }}">
+    @csrf
+    <table>
+        <tr>
+            <td>帳號</td>
+            <td><input type="text" name="userId" , value="{{ $manager->userId }}"></td>
+        </tr>
+        <tr>
+            <td>密碼</td>
+            <td><input type="text" name="pwd" , value="{{ $manager->pwd }}"></td>
+        </tr>
+        <tr>
+            <td colspan="2" align="center">
+                <button type="submit">確定</button>
+            </td>
+        </tr>
+    </table>
+</form>
+
+
+12.新增刪除功能
+list.blade.php
+@foreach中新增簡易版刪除鍵
+<td><a href="/admin/manager/delete/{{$data->id}}">刪除</a></td>
+有套版的話，可以用以下模板：
+<button type="button" class="btn btn-danger-outline btn-xs" onclick="doDelete('{{ $data->id }}')"><i class="fa fa-trash"></i> 刪除</button></div>
+
+路由新增Route::get("/admin/manager/delete/{id}", [ManagerController::class, "delete"])
+
+ManagerController新增public function delete(Request $req)
+    public function delete(Request $req){
+        Manager::destroy($req->id);
+        return redirect("/admin/manager/list");
+    }
+
+
+13. 登出
+**web.php添加
+Route::group(["prefix" => "admin"], function () {
+    ...
+    Route::get("logout", [AdminController::class, "logout"])
+});
+
+**清空登入的session，並回到登入頁
+AdminController.php添加function：
+class AdminController extends Controller
+{
+    ...
+    ...
+    public function logout(){
+        // 下面寫法等同於session()->forget("userId")
+        Session::forget("userId");
+        /* 清空所有session:
+           Session::flush();
+        */
+        // 回到登入頁
+        return redirect("/admin");
+    }
+}
+
+**public/js/admin.js最下面改為（這邊是設定彈跳出來的警告視窗，稱作sweetAlert2）
+document.querySelector('[data-logout]')?.addEventListener('click', e => {
+    e.preventDefault();
+    Swal.fire({ icon: 'question', title: '確定要登出後台？', showCancelButton: true, confirmButtonText: '確定', cancelButtonText: '取消', confirmButtonColor: '#1B2E5E' })
+    // 主要修改這邊的路徑
+      .then(r => { if (r.isConfirmed) location.href = '/admin/logout'; });
+  });
+
+（要確定layout.blade.php的登出那邊，路徑是/admin/logout）
