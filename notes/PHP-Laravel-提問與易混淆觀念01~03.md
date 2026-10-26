@@ -6,7 +6,7 @@ aliases:
 
 # PHP／Laravel 提問與易混淆觀念整理
 
-> 整理範圍：本次對話第 1～5 階段的提問與除錯紀錄，截至 2026-10-19。
+> 整理範圍：原第 1～5 階段，加上追加三天的提問、除錯與整合測試，截至 2026-10-26。
 > 以老師的命名與課堂流程為主；「容易混淆」是複習提醒，不代表目前仍不理解。
 > 閱讀方式：先看粗體重點，再依問題查表。這份是觀念對照，不是完整程式碼。
 
@@ -59,7 +59,7 @@ aliases:
 | 後臺首頁 | GET /admin/home | AdminController 的 home() | admin/home.blade.php |
 | 帳號列表 | GET /admin/manager/list | ManagerController 的 list() | admin/manager/list.blade.php |
 | 新增帳號表單 | GET /admin/manager/create | ManagerController 的 create() | admin/manager/create.blade.php |
-| 儲存新增帳號（尚未實作） | POST /admin/manager/store | 預計為 store() | 需另外實作驗證、寫入與回應 |
+| 儲存新增帳號（已完成） | POST /admin/manager/store | store() | 寫入後轉址列表；完整後端驗證尚待補強 |
 
 > 受保護的後臺路由會先經過 CheckManager；登入頁與登入提交不套用這個登入檢查。
 
@@ -76,7 +76,7 @@ aliases:
 | 為什麼登入頁正常，後臺首頁卻跑版？ | 相對資源路徑可能在不同網址深度解析成不同位置 | /admin 與 /admin/home 的相對路徑結果可能不同 |
 | 要建立 public/admin/css 嗎？ | 目前已加上 /css/... 並正常，不需要為此複製一份資源 | 保留 public/css、public/js 即可 |
 | 後臺模板為什麼有 href="/"？ | 按鈕用途是讓管理員開啟前臺；點擊才跳轉 | 不是模板自動離開後臺 |
-| href="/admin/logout" 就完成登出了嗎？ | 沒有；還要有接收路由與清除登入狀態的程式 | 目前只是連結，功能尚未完成 |
+| href="/admin/logout" 就完成登出了嗎？ | 沒有；還要有接收路由與清除登入狀態的程式 | 目前已完成完整登出流程，見第 19 節 |
 | Request::is 為什麼寫 admin/home 而不是 /admin/home？ | 它比對的是 Laravel 整理後、不含前導斜線的請求路徑 | Request::is('admin/home') |
 | 表單 action="/admin/login" 是另一個網站嗎？ | 是同一網站內的處理網址，不是另一個網站或必須存在的 HTML 檔 | 用 POST 把帳密交給後端 |
 | prefix 群組怎麼組成網址？ | 外層與內層前綴依序相加 | admin + manager + list → /admin/manager/list |
@@ -302,7 +302,9 @@ return view("admin.manager.list", compact("list", "total"));
 
 > **本次已確認的修正：移除總數元素的 data-total，避免老師版型 JS 用目前頁面列數改寫總數。**不是所有 data-* 屬性都要移除，也不是 PHP 的 count() 算錯。
 
-## 11. 第五階段：新增表單與實際寫入
+## 11. 第五階段當時：新增表單與尚待實作的寫入
+
+> 本節保留當時的疑問；追加三天已完成 store，參見第 17 節。
 
 | 我提出的問題／理解確認 | 正確理解 | 對照／例子 |
 | --- | --- | --- |
@@ -401,7 +403,7 @@ return view("admin.manager.list", compact("list", "total"));
 
 **五階段目標已完成並通過操作測試；這不等於已完成整套正式後臺。**
 
-**目前尚未完成的功能：**實際新增寫入、修改、刪除、登出，以及正式專案需要的安全補強。畫面上有按鈕或連結，不代表功能已完成。
+**更新：追加三天已完成查重、實際新增、修改、刪除、登出與整合測試。**尚未完成的是正式專案所需的後端驗證、唯一性、權限、雜湊等補強。原第 11 節描述的是第五階段當時的進度，後續結果以第 15～21 節為準。
 
 ## 14. 下次複習的順序
 
@@ -421,3 +423,135 @@ return view("admin.manager.list", compact("list", "total"));
 
 > 不必背全部內容。每次挑一個問題，在自己的專案做一次小修改並預測結果，再用瀏覽器驗證。
 
+
+## 15. 追加三天：AJAX、JSON 與帳號查重
+
+| 我提出的問題／現象 | 精準理解 | 本次處理 |
+| --- | --- | --- |
+| AJAX 是網頁與資料的橋梁嗎？ | 可作初步理解；它讓 JS 向伺服器發出請求、取得回應，不必重新載入整頁 | AJAX 不直接操作資料庫，仍經 Route、Controller、Model |
+| 不能直接查詢後台嗎？ | 目前就是請後端查詢；AJAX 是傳送請求的方式 | 不用 AJAX 也能在表單送出後檢查，但回饋時機不同 |
+| AJAX 與 JSON 是同一個嗎？ | AJAX 是通訊方式，JSON 是資料格式 | 這次回應是純文字 exist，不是 JSON |
+| 離開欄位與按儲存是一回事嗎？ | 是兩次不同請求 | onblur → checkAccount；submit → store |
+| success 表示帳號可以使用嗎？ | 表示請求成功收到回應，業務結果要再判斷 | msg.trim() == "exist" 才是老師約定的重複結果 |
+| JS、Controller、Model 都叫 checkAccount，會自動相連嗎？ | 不會，它們位於不同語言或類別 | JS url → Route 指定 Controller → Controller 呼叫 Model |
+| 檢查帳號需要比對密碼嗎？ | 此功能只確認 userId 是否存在 | 與登入的帳密查詢不同 |
+| Console 顯示中文字，但輸入值是 undefined | 表示程式有執行，但未取得預期值；本次先檢查選取器與 id | id="userId" 對應 $("#userId")，大小寫一致 |
+| 只有 name="userId" 不行嗎？ | 後端依 name 接收，這段前端 JS 則依 id 選取 | id、name 分工不同 |
+| 點密碼框，游標一直跳回帳號 | onblur 送查重，收到 exist 後 .focus() 移回帳號，再離開又檢查 | 既有帳號是老師預期效果，換不存在帳號測試 |
+| 游標跳回但沒有提示 | HTML 缺少 id="msg" 的顯示位置 | 補 span，查詢前清空舊提示 |
+| AJAX 檢查過就保證不重複嗎？ | 不保證；使用者可繞過前端，亦可能有同時送出的請求 | 正式版本要在儲存後端檢查並搭配資料庫 UNIQUE |
+
+## 16. 模板 class、攔截表單與 undefined 轉址
+
+| 我提出的問題／現象 | 原因或正確理解 | 已驗證處理 |
+| --- | --- | --- |
+| 為什麼 class 叫 admin-form？ | 模板作者自行命名，供 CSS／JS 選取，不是 Laravel 指令 | 不會因名稱有 admin 自動連到後台 |
+| class、action、method 差在哪？ | class 用於樣式或 JS；action 決定送往哪裡；method 決定 HTTP 方法 | 三者各有用途 |
+| 出現「已新增」，資料庫卻沒有資料 | 模板直接顯示 Swal 成功，沒有將表單送往 Laravel | 成功提示不等於資料庫寫入成功 |
+| 儲存後到 /admin/manager/undefined | JS 阻止表單送出，再讀取缺少的 form.dataset.back 轉址 | 排查 submit、preventDefault、location.href |
+| 加 data-back 就可以嗎？ | 只修正轉址，仍沒有送出 POST | 不能當成新增成功的解法 |
+| 不想改 JS，有其他方法嗎？ | 本檔使用 form.admin-form 選取表單，可以調整 HTML，讓表單不匹配 | 將 class 移到外層 div，form 移除該 class |
+| 移動後仍失敗 | 外層誤打 admin-from，且 form 的 admin-form 未移除 | 正確拼字，不能兩邊都加 |
+| class 只是外觀嗎？ | 也能被 JS 選取並綁定行為 | 本次移除 form 上的標記，才恢復正常 POST |
+| 會影響 CSS 嗎？ | 視選擇器而定，限定 form 的規則可能受影響 | 保留外層 class，但不保證所有模板都適用同一修法 |
+
+```html
+<!-- 本次成功的結構；欄位與 @csrf 仍保留在 form 裡 -->
+<div class="admin-card-body admin-form">
+    <form action="/admin/manager/store" method="post">
+        <!-- 原表單內容 -->
+    </form>
+</div>
+```
+
+修改頁同理。不要為修正新增表單而移除整份 admin.js，也不要任意刪除所有 data-* 屬性。
+
+## 17. 新增與修改：物件不等於資料庫紀錄
+
+| 我提出的問題／回答 | 精準理解 | 對照 |
+| --- | --- | --- |
+| new Manager() 會多一筆嗎？ | 建立物件本身不會寫入 | 對新物件呼叫 save() 才新增 |
+| 哪一行寫入資料庫？ | 本次 store() 的 $manager->save() | 設定 userId、pwd 時仍在物件中 |
+| $manager->userId = $req->userId | 右邊是請求傳入值；左邊是 Model 上對應欄位的屬性 | 不是直接讓 Request 變成資料表 |
+| 逐欄指定後 save() 受 fillable 限制嗎？ | 這種直接指定屬性的方式不受大量賦值允許清單限制 | fillable 也不負責驗證輸入 |
+| 修改為什麼帶 id？ | 唯一主鍵辨識原紀錄；就算帳號唯一，也可能被修改 | 不靠新帳號或密碼猜原本是哪筆 |
+| 帳號一定可重複嗎？ | 依資料庫限制決定；正式帳號通常需唯一，密碼可相同 | 不要由需要 id 推論帳號應允許重複 |
+| 修改時沒有要新增物件？ | find() 也會取得代表既有紀錄的 Model 物件 | 要區分新紀錄物件與既有紀錄物件 |
+| 為何不用 new Manager() 修改？ | new 準備新紀錄；find 取得既有紀錄 | 新物件 save 會新增；既有物件保存會更新 |
+| update() 怎麼知道哪筆？ | 先用送來的 id find，再對該物件設定欄位與 update | 保留同一 id，總筆數不增加 |
+| hidden id 安全嗎？ | hidden 只是畫面不顯示，仍可被竄改 | 目前是識別用途，正式後端需驗證權限 |
+
+| 階段 | 請求 | id 來源 | 結果 |
+| --- | --- | --- | --- |
+| 開啟修改頁 | GET /admin/manager/edit/3 | 網址 {id} | find → view，回填既有資料 |
+| 儲存修改 | POST /admin/manager/update | hidden name="id" | find → 更新 → redirect |
+
+## 18. 刪除：destroy 與 find 後 delete
+
+| 我提出的問題／現象 | 精準理解 | 對照 |
+| --- | --- | --- |
+| {{ $data->id }} 讓資料庫找到那筆嗎？ | 先由 Blade 把目前那筆 id 放入網址，再由後端接收與刪除 | /admin/manager/delete/5 |
+| destroy(id) 與 find(id)->delete() 都可以嗎？ | 是；destroy 也會在內部取出 Model 再刪除 | 不代表 destroy 完全不查詢資料 |
+| find 後 delete 有何注意？ | find 查不到為 null，不能直接呼叫 delete() | 先判斷非空，或後續學 findOrFail |
+| destroy 找不到 id 呢？ | 不會因對 null 呼叫方法而報同樣錯誤，沒有紀錄可刪 | 仍可能有其他資料庫錯誤，不能當成永不失敗 |
+| data-delete 把列移除就是刪資料嗎？ | 本次模板只操作畫面 | 改用帶 id 的後端刪除連結，並確認資料庫 |
+| 刪除需要 delete.blade.php 嗎？ | 本次不用，刪完直接回列表 | 方法名稱不代表一定有同名 View |
+| 老師用 GET，正式專案也照做嗎？ | 目前沿用課堂；正式改用含 CSRF 配套的 POST／DELETE | 前端連結與路由要一起調整 |
+
+```php
+// 老師版本
+Manager::destroy($req->id);
+
+// 另一種理解方式：先找到，再刪除
+$manager = Manager::find($req->id);
+if (!empty($manager)) {
+    $manager->delete();
+}
+```
+
+## 19. 登出：Session 與 session()
+
+| 我提出的問題／測試 | 精準理解 | 課堂對照 |
+| --- | --- | --- |
+| Session::forget 與 session()->forget 為何相同？ | 不同入口操作同一套 Session 功能 | 本例都移除 userId 鍵 |
+| Session 是什麼？ | Facade 類別入口，用 :: 呼叫並交給背後服務 | 先 use Illuminate\Support\Facades\Session; |
+| session() 是什麼？ | Laravel 輔助函式，無參數時取得 Session 管理物件 | session()->forget("userId")，不需引入 Facade |
+| 差在大小寫嗎？ | 不是；要看類別與函式、:: 與 -> 的使用情境 | 不可只把 Session 改成小寫而省略括號 |
+| forget 與 flush 相同嗎？ | forget 移除指定鍵，flush 清除全部 Session 資料 | 本次只移除登入用 userId |
+| 直接前往 login.html 就登出了嗎？ | 沒有執行清除 Session 的後端流程 | JS 確認後先到 /admin/logout |
+| 登出會刪除帳號嗎？ | 不會，刪除登入狀態與刪資料庫紀錄不同 | 資料庫帳號仍在，已測試 |
+| 為什麼登出後直接開 home 也進不去？ | CheckManager 檢查不到登入 Session，因此轉回登入頁 | 不是單靠隱藏按鈕保護 |
+
+時間順序：點擊連結 → JS 確認 → GET /admin/logout → Route → logout() 清除 Session → redirect /admin → 瀏覽器再次 GET /admin → index() 回傳登入 View。
+
+## 20. MVC 與 redirect：最後一次回答的修正
+
+| 原本的理解 | 修正後 |
+| --- | --- |
+| Route 引導網頁去指定網址 | Route 比對 HTTP 方法與網址路徑，選擇處理者；redirect 才要求瀏覽器前往另一網址 |
+| Controller 執行 function | 還負責協調流程：取輸入、呼叫 Model、決定回傳 View 或轉址 |
+| Model 查詢資料庫並回傳 | 本次還負責新增、修改、刪除；MVC Model 更廣義是資料與相關邏輯，不固定只能是資料庫 |
+| View 產生顯示頁面 | 正確；使用 Controller 傳入的資料產生 HTML，不自行決定資料庫操作 |
+
+修改功能至少包含：GET edit 顯示表單 → POST update 儲存 → redirect 後瀏覽器再 GET list。不是同一次請求直接執行三個頁面。
+
+## 21. 追加三天完成紀錄與複習
+
+| 天數 | 內容 | 結果 |
+| --- | --- | --- |
+| 第 1 天 | onblur、欄位取值、AJAX、帳號查重 | 成功 |
+| 第 2 天 | 新增、模板攔截除錯、edit 回填、update | 成功，id 不變、筆數不增加 |
+| 第 3 天 | 刪除、登出、Middleware、整合測試 | 全部通過 |
+
+另外已確認：列表只顯示 2 筆，是先前 paginate 的每頁數量設定；已自行改成 paginate(10)。不要與 data-total 改寫總數的舊問題混為一談。
+
+整合測試：新增練習帳號 → 查重提示 → 修改密碼 → 新密碼登入 → 換回管理員 → 刪除練習帳號 → 被刪帳號無法登入，全部成功。登出取消、確認、未登入直接開 home 與資料庫帳號保留也全部符合預期。
+
+- [ ] 能說明 AJAX 檢查與表單儲存是兩次請求。
+- [ ] 能分清 class、id、name、action、method。
+- [ ] 看到成功提示，仍知道要確認資料庫與實際 HTTP 請求。
+- [ ] 能說明 new／find 與 save／update／destroy 的差別。
+- [ ] 能沿著連結 → 路由 → Controller → Model → 回應定位問題。
+- [ ] 能說明登出移除 Session，刪除帳號才改變資料庫紀錄。
+
+下一步是拿到小需求，先自行列出要改的檔案、請求方式、網址與方法，再動手寫；不必靠默背全部語法。
