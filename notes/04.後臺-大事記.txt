@@ -1,0 +1,294 @@
+1.製作後臺首頁
+（之前已經製作過了）
+
+
+2.製作"大事記"的後臺頁面
+
+新增Admin/MileStoneController: php artisan make:controller Admin/MileStoneController
+MileStoneController新增function list()：
+
+
+新增路由/admin/milestone/list
+（老師是寫Route::get("/admin/milestone/list", [MileStoneController::class, "list"]）;
+
+新增resources/views/admin/milestone/list.blade.php
+
+
+複製原始網頁admin/milestones.html，貼到list.blade.php
+（我有修改部分內容，自行套用模板了）
+
+
+
+
+****
+新增大事記類別管理控制器
+php artisan make:controller Admin/MileStoneTypeController
+
+**
+MileStoneTypeController新增function list()：
+（注意有沒有use App\Models\Milestone\MileStoneType;）
+// 取出MileStoneType model資料，以便渲染到milestone/types/list.blade.php
+    public function list(){
+        $list = MileStoneType::get();
+        return view("admin.milestone.types.list", compact("list"));
+    }
+
+
+新增路由/admin/milestone/types/list
+（老師是寫Route::get("/admin/milestone/types/list", [MileStoneTypeController::class, "list"]）;
+
+
+新增"大事記類別列表"resources/views/admin/milestone/types/list.blade.php
+使用的網頁是admin/milestones.html，可以直接用上面list.blade.php的模板內容，複製貼上
+左邊menu部分新增"大事記類別"，可以從menu"大事記"那段複製，路徑為/admin/milestone/types/list
+
+@extends("admin.layout")
+@section("title", "大事記類別管理")
+@section("content")
+<div class="admin-card" data-crud-list>
+    <div class="admin-card-header">
+        <h2><i class="fa fa-history"></i> 大事記類別</h2>
+        <div class="admin-toolbar">
+            <!-- 關鍵字即時查詢：輸入時自動篩選並標示關鍵字 -->
+            <form class="search-box">
+                <i class="fa fa-search"></i>
+                <input type="search" name="keyword" class="form-control" placeholder="搜尋標題 / 標籤" autocomplete="off" />
+            </form>
+            <button type="button" class="btn btn-light btn-sm" data-clear>
+                <i class="fa fa-times"></i> 清除
+            </button>
+            <a href="/admin/milestone/types/create" class="btn btn-gold btn-sm">
+                <i class="fa fa-plus"></i> 新增大事記類別
+            </a>
+        </div>
+    </div>
+
+    <div class="table-wrap">
+        <table class="data-table admin-table">
+            <thead>
+                <tr>
+                    <th>標籤</th>
+                    <th>標題</th>
+                    <th>操作</th>
+                </tr>
+            </thead>
+            <tbody>
+                <!-- 保留第一個tr，其餘刪除 -->
+                @foreach($list as $data)
+                <tr data-row>
+                    <td><span class="badge badge-{{ $data->label }}" data-mark>{{ $data->title }}</span></td>
+                    <td data-mark>{{ $data->title }}</td>
+                    <td>
+                        <div class="actions">
+                            <a href="/admin/milestone/types/edit/{{ $data->id }}" class="btn btn-outline btn-xs">
+                                <i class="fa fa-edit"></i> 修改
+                            </a>
+                            <button type="button" class="btn btn-danger-outline btn-xs" onclick="doDelete('{{ $data->id }}')">
+                                <i class="fa fa-trash"></i> 刪除
+                            </button>
+                        </div>
+                    </td>
+                </tr>
+                @endforeach
+            </tbody>
+        </table>
+    </div>
+
+    <div class="admin-table-info">
+        <span>共 <b data-total>8</b> 筆</span>
+        <nav class="pagination">
+            <span class="disabled"><i class="fa fa-chevron-left"></i></span>
+            <span class="active">1</span>
+            <span class="disabled"><i class="fa fa-chevron-right"></i></span>
+        </nav>
+    </div>
+</div>
+@endsection
+
+
+**
+MileStoneTypeController新增function create()：
+    public function create(){
+        return view("admin.milestone.types.create");
+    }
+
+
+新增路由/admin/milestone/types/create
+（老師是寫Route::get("/admin/milestone/types/create", [MileStoneTypeController::class, "create"]）;
+
+
+新增"大事記類別"resources/views/admin/milestone/types/create.blade.php
+（此處借用/amdin/manager/create1的模板修改）
+<!-- 此處借用/amdin/manager/create1的模板修改 -->
+<!-- 我有再根據模板自行修改 -->
+@extends("admin.layout")
+@section("title", "大事記類別管理")
+@section("content")
+<script src="https://code.jquery.com/jquery-4.0.0.min.js"></script>
+
+<div class="admin-card">
+    <div class="admin-card-header">
+        <h2><i class="fa fa-user-shield"></i> <span data-mode-text>新增大事記類別</span></h2>
+        <a href="/admin/milestone/types/list" class="btn btn-light btn-sm"><i class="fa fa-arrow-left"></i> 返回列表</a>
+    </div>
+    <div class="admin-card-body">
+        <form class="admin-form" action="/admin/milestone/types/store" method="post">
+            @csrf
+            <div class="form-row">
+                <div class="form-group">
+                    <label class="form-label" for="label">標籤 <span class="req">*</span></label>
+                    <input type="text" id="label" name="label" class="form-control" required>
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="form-label" for="title">標題 <span class="req">*</span></label>
+                <div class="input-icon-wrap">
+                    <input type="text" id="title" name="title" class="form-control" required>
+                </div>
+            </div>
+            <div class="form-actions">
+                <button type="submit" class="btn btn-primary"><i class="fa fa-save"></i> 儲存</button>
+                <a href="/admin/milestone/types/list" class="btn btn-outline">
+                    <i class="fa fa-times"></i> 取消
+                </a>
+            </div>
+        </form>
+    </div>
+</div>
+@endsection
+
+
+**
+（開始這段之前，請先到最下面建立資料表milestone_type、milestone）
+create.blade.php寫完後，要額外處理"儲存"的部分
+MileStoneTypeController新增store function：
+    public function store(Request $req){
+        // 要先產生MileStoneType物件，才能使用物件的屬性及方法
+        // 確認有沒有use App\Models\Milestone\MileStoneType;
+        $types = new MileStoneType();
+        $types->label = $req->label;
+        $types->title = $req->title;
+        $types->save();
+
+        // 確認有沒有use Illuminate\Support\Facades\Session;
+        // flash：快閃，只會出現一次；message：自己命名的名稱
+        Session::flash("message", "已新增");
+        return redirect("/admin/milestone/types/list");
+    }
+
+
+
+新增路由：
+（老師是寫Route::post(admin/milestone/types/store", [MileStoneTypeController::class, "store"]）;
+
+
+儲存完成需要告知使用者已經新增完成，
+這裡使用sweetalert2，需要在list.blade.php引入sweetalert2的css、javascript
+>>進入sweetalert2，點Installation，點jsDelivr CDN，複製css、javascrip語法
+（這裡我是貼進了layout.blade.php的<head></head>中）
+（sweetalert2的語法一定要放在網頁的<body></body>中，以下我是寫在list.blade.php）
+@if(Session::has("message"))
+<script>
+    Swal.fire({
+        title: "{{ Session::get('message') }}",
+        text: "",
+        icon: "success"
+    });
+</script>
+@endif
+
+
+!!!如果沒有成功，可以查看layout或是list有沒有這段語法：
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="/js/main.js"></script>
+    <script src="/js/admin.js"></script>
+這個含有監聽，會影響彈跳視窗的展示
+
+
+**新增"修改"功能
+MileStoneTypeController新增edit function：
+    public function edit(Request $req){
+        // sql語法為SELECT * FROM milestone_type WHERE id = 傳進來的id，這樣就可以找到要修改的那一筆資料
+        $types = MileStoneType::find($req->id);
+        return view("admin.milestone.types.edit", compact("types"));
+    }
+
+新增路由：
+（老師是寫Route::get("/admin/milestone/types/edit/{id}", [MileStoneTypeController::class, "edit"]);）
+
+
+新增admin/milestone/types/edit.blade.php
+（此處複製admin/milestone/types/create.blade.php來用）
+
+（???此處未完，等待下次上課???）
+
+
+****
+（建議先到最下面建立資料表再來跑這段，比較容易理解）
+新增Milestone類別的Model：
+php artisan make:model Milestone/MileStoneType
+
+以及一般Model：
+php artisan make:model Milestone/MileStone
+
+
+**
+MileStoneType：
+（注意有沒有use Illuminate\Database\Eloquent\Relations\HasMany;）
+// 大事記類別
+class MileStoneType extends Model
+{
+    public $timestamps = false;
+    protected $table = "milestone_type";
+    protected $primaryKey = 'id';
+    protected $fillable = ["id", "label", "title"];
+
+    public function milestone(): HasMany
+    {
+        // 每一個類別可能有多筆大事記
+        return $this->hasMany(
+            MileStone::class,
+            "typeId", // 大事記資料表的外來鍵
+            "id" // milestone_type的主鍵
+        );
+    }
+}
+
+
+**
+MileStone：
+（注意有沒有use Illuminate\Database\Eloquent\Relations\BelongsTo;）
+// 大事記
+class MileStone extends Model
+{
+    public $timestamps = false;
+    protected $table = "milestone";
+    protected $primaryKey = 'id';
+    protected $fillable = ["id", "typeId", "years", "months", "title", "content", "createTime"];
+
+    public function types(): BelongsTo
+    {
+        // typeId：milestone資料表的外來鍵
+        // id：milestone_type的主鍵
+        // 等同於 SELECT a.*, b.* FROM milestone a INNER JOIN milestone_type b ON a.typeId = b.id
+        /*
+        也可以用(DB要use Illuminate\Support\Facades\DB)
+          DB::table("milestone as a")->selectRaw("a.*, b.*")->join("milestone_type as b")->get()
+        或
+          DB::table("milestone as a")->join("milestone_type as b")->selectRaw("a.*, b.*")->get()
+        順序不影響
+        DB：資料庫  table：資料表   join：inner join兩邊都有資料    selectRaw：查詢欄位 get：取全部資料
+        selectRaw("a.*, b.*")也可以改用select("a.*", "b.*")
+        */
+        return $this->belongsTo(MileStoneType::class, "typeId", "id");
+    }
+}
+
+
+****
+新增"大事記類別資料表milestone_type"，欄位(id A_I, label varchar(10), title varchar(10))
+
+以及一般資料表milestone，欄位(id A_I, years char(4), months char(2), title varchar(200),content varchar(500), typeId int, createTime timestamp default: CURRENT_TIMESTAMP)
+
+（可以根據前、後台的網頁、html等等，知道資料表要建立哪些欄位）
+
