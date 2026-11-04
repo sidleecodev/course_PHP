@@ -1,0 +1,17 @@
+****
+1. 新增resources/views/front/milestone/list.blade.php
+（所有前臺網頁都放在front裡面）
+此處複製html/milestones.html中main之間的部分：
+
+
+2. 新增前臺大事記控制器：php artisan make:controller Front/FrontMileStoneController
+加入list function：
+
+
+3. 新增路由：Route::get("milestone", [FrontMileStoneController::class, "list"])
+
+
+4. 新增resources/views/front/layout.blade.php
+此處複製html/index.html：
+
+

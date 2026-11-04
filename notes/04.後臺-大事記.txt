@@ -217,10 +217,124 @@ MileStoneTypeController新增edit function：
 （老師是寫Route::get("/admin/milestone/types/edit/{id}", [MileStoneTypeController::class, "edit"]);）
 
 
-新增admin/milestone/types/edit.blade.php
+新增admin/milestone/types/edit.blade.php：
 （此處複製admin/milestone/types/create.blade.php來用）
 
-（???此處未完，等待下次上課???）
+<!-- 此處借用/amdin/milsestone/types/create的模板修改 -->
+@extends("admin.layout")
+@section("title", "大事記類別管理")
+@section("content")
+<script src="https://code.jquery.com/jquery-4.0.0.min.js"></script>
+
+<div class="admin-card">
+    <div class="admin-card-header">
+        <h2><i class="fa fa-user-shield"></i> <span data-mode-text>修改大事記類別</span></h2>
+        <a href="/admin/milestone/types/list" class="btn btn-light btn-sm"><i class="fa fa-arrow-left"></i> 返回列表</a>
+    </div>
+    <div class="admin-card-body">
+        <!-- action路徑改為update -->
+        <form class="admin-form" action="/admin/milestone/types/update" method="post">
+            @csrf
+            <div class="form-row">
+                <div class="form-group">
+                    <label class="form-label" for="label">標籤 <span class="req">*</span></label>
+                    <input type="text" id="label" name="label" value="{{ $types->label }}" class="form-control" required>
+                    <!-- ↑value="{{ $types->label }} 填入原有資料 -->
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="form-label" for="title">標題 <span class="req">*</span></label>
+                <div class="input-icon-wrap">
+                    <input type="text" id="title" name="title" value="{{ $types->title }}" class="form-control" required>
+                </div>
+            </div>
+            <div class="form-actions">
+                <button type="submit" class="btn btn-primary"><i class="fa fa-save"></i> 儲存</button>
+                <a href="/admin/milestone/types/list" class="btn btn-outline">
+                    <i class="fa fa-times"></i> 取消
+                </a>
+            </div>
+        </form>
+    </div>
+</div>
+@endsection
+
+
+MileStoneTypeController新增update function：
+public function update(Request $req){
+        $types = MileStoneType::find($req->id);
+        $types->label = $req->label;
+        $types->title = $req->title;
+        
+        // 也可以用$types->save();
+        $types->update();
+
+        Session::flash("message", "已修改");
+        return redirect("/admin/milestone/types/list");
+    }
+
+
+新增路由：Route::post("/admin/milestone/types/update, [MileStoneTypeController::class, "update"]")
+
+
+
+**新增"刪除"功能
+新增路由：Route::post("/admin/milestone/types/delete", [MileStoneTypeController::class, "delete"]);
+
+
+（doDelete(id)函式我寫在layout那邊）
+按"刪除"按鈕，會呼叫doDelete(id)這個javascript function
+（list.balde.php那邊我們有設定過，並且多加了this（指定id是這個被點擊按鈕的元素）
+<button type="button" class="btn btn-danger-outline btn-xs" onclick="doDelete('{{ $data->id }}', this)">）
+所以要新增javascript doDelete(id)這個function
+此處會引用sweetalert2，讓使用者確認是否刪除，確認刪除則採用ajax post方式到後端
+記得要引用jquery（搜尋jquery cdn，找4.0 minified來複製<script src="https://code.jquery.com/jquery-4.0.0.min.js"></script>
+<script>
+    // 傳入被點擊的按鈕，刪除成功後移除它所在的資料列
+    function doDelete(id, btn) {
+        Swal.fire({
+            icon: "question",
+            title: "確定刪除？",
+            showDenyButton: true,
+            showCancelButton: false,
+            confirmButtonText: "確定",
+            denyButtonText: "放棄"
+        }).then((result) => {
+            if (result.isConfirmed){
+                // 使用ajax是為了讓資料送到後端執行
+                $.ajax({
+                    // 送去哪裡
+                    url: "/admin/milestone/types/delete",
+                    type: "post",
+                    data: {
+                        // 傳給後端的資料
+                        id: id,
+                        _token: "{{ csrf_token() }}"
+                    },
+                    // msg是接住後端回傳的內容
+                    success: function(msg){
+                        Swal.fire("已刪除!", "", "success");
+                        /* btn: 傳進來的button
+                           closest: 尋找最近符合條件的元素
+                           tr: 表格中的列
+                           [data-row]: 具有data-row屬性
+                           tr[data-row]: 從目前元素(button)開始，往上尋找最近的一個符合條件的<tr>
+                           remove()只會從畫面上移除這列，不會移除資料庫的，資料庫那邊要交由controller移除
+                            */
+                        // 整句意思：從按鈕往上，找到最近一個帶有 data-row 這個 HTML 屬性的 <tr>，並從畫面上移除
+                        $(btn).closest("tr[data-row]").remove();
+                    }
+                });
+            }
+        });
+    }
+</script>
+
+
+MileStoneTypeController新增delete function：
+public function delete(Request $req){
+        MileStoneType::destroy($req->id);
+    }
 
 
 ****
@@ -292,3 +406,262 @@ class MileStone extends Model
 
 （可以根據前、後台的網頁、html等等，知道資料表要建立哪些欄位）
 
+
+****
+套樣板，前面已經套過了，這邊複製menu.blade.php，大多修改連結與高亮
+  <aside class="admin-sidebar">
+      <a href="index.html" class="admin-brand">
+          <div class="logo-box">B</div>
+          <div><span>品牌名稱</span><small>ADMIN</small></div>
+      </a>
+      <nav class="admin-nav">
+          <div class="nav-group">總覽</div>
+          <!-- 執行?的左邊，如果是就執行class，不是就執行：右邊的部分 -->
+          <a href="/admin/home" {!! Request::is('admin/home') ? "class='active'" : '' !!}><i class="fa fa-tachometer-alt"></i> Home</a>
+          <div class="nav-group">網站內容</div>
+          <a href="/admin/banner" {!! Request::is('admin/banner/*') ? "class='active'" : '' !!}><i class="fa fa-images"></i> 首頁輪播</a>
+          <a href="/admin/feature" {!! Request::is('admin/feature/*') ? "class='active'" : '' !!}><i class="fa fa-medal"></i> 特色 / 核心價值</a>
+          <a href="/admin/milestone/list" {!! Request::is('admin/milestone/list/*') ? "class='active'" : '' !!}><i class="fa fa-history"></i> 大事記</a>
+          <a href="/admin/milestone/types/list" {!! Request::is('admin/milestone/types/*') ? "class='active'" : '' !!}><i class="fa fa-history"></i> 大事記類別</a>
+          <a href="/admin/team-member" {!! Request::is('admin/team-member/*') ? "class='active'" : '' !!}><i class="fa fa-users"></i> 核心團隊</a>
+          <a href="/admin/setting" {!! Request::is('admin/setting/*') ? "class='active'" : '' !!}><i class="fa fa-cog"></i> 網站設定</a>
+          <div class="nav-group">最新消息</div>
+          <a href="/admin/news" {!! Request::is('admin/news/*') ? "class='active'" : '' !!}><i class="fa fa-newspaper"></i> 消息管理</a>
+          <a href="/admin/news-category" {!! Request::is('admin/news-category/*') ? "class='active'" : '' !!}><i class="fa fa-folder"></i> 消息分類</a>
+          <div class="nav-group">產品</div>
+          <a href="/admin/product" {!! Request::is('admin/product/*') ? "class='active'" : '' !!}><i class="fa fa-box-open"></i> 產品管理</a>
+          <a href="/admin/product-category" {!! Request::is('admin/product-category/*') ? "class='active'" : '' !!}><i class="fa fa-folder-open"></i> 產品分類</a>
+          <div class="nav-group">會員與訂單</div>
+          <a href="/admin/order" {!! Request::is('admin/order/*') ? "class='active'" : '' !!}><i class="fa fa-receipt"></i> 訂單管理</a>
+          <a href="/admin/member" {!! Request::is('admin/member/*') ? "class='active'" : '' !!}><i class="fa fa-user-friends"></i> 會員管理</a>
+          <a href="/admin/address" {!! Request::is('admin/address/*') ? "class='active'" : '' !!}><i class="fa fa-map-marker-alt"></i> 會員地址</a>
+          <div class="nav-group">系統</div>
+          <a href="/admin/manager/list" {!! Request::is('admin/manager/*') ? "class='active'" : '' !!}><i class="fa fa-user-shield"></i> 帳號管理</a>
+
+        <!-- 帳號管理
+            1.新增ManagerController，並新增public function list()（帳號列表）
+            2.web.php新增/manager/list
+            3.新增resources/views/admin/manager/list.blade.php
+        -->
+      </nav>
+  </aside>
+
+
+**
+web.php群組各種路由，我也已經做過了就跳過，不過還有補上middleware，這邊貼上全部程式碼：
+Route::get('/', [IndexController::class, "index"]);
+Route::group(["prefix" => "admin"], function () {
+    Route::get("/", [AdminController::class, "index"]);
+    Route::post("login", [AdminController::class, "login"]);
+
+    Route::middleware("manager")->group(function () {
+        Route::get("home", [AdminController::class, "home"])->middleware("manager");
+        Route::get("logout", [AdminController::class, "logout"]);
+
+        Route::prefix("manager")->group(function () {
+            Route::get("list", [ManagerController::class, "list"]);
+            Route::get("create", [ManagerController::class, "create"]);
+            Route::post("store", [ManagerController::class, "store"]);
+            Route::get("edit/{id}", [ManagerController::class, "edit"]);
+            Route::post("update", [ManagerController::class, "update"]);
+            Route::get("delete/{id}", [ManagerController::class, "delete"]);
+            Route::post("checkAccount", [ManagerController::class, "checkAccount"]);
+        });
+
+        Route::prefix("milestone")->group(function () {
+            Route::get("list", [MileStoneController::class, "list"]);
+
+            Route::prefix("types")->group(function () {
+                Route::get("list", [MileStoneTypeController::class, "list"]);
+                Route::get("create", [MileStoneTypeController::class, "create"]);
+                Route::post("store", [MileStoneTypeController::class, "store"]);
+                Route::get("edit/{id}", [MileStoneTypeController::class, "edit"]);
+                Route::post("update", [MileStoneTypeController::class, "update"]);
+                Route::post("delete", [MileStoneTypeController::class, "delete"]);
+            });
+        });
+    });
+});
+
+/*
+    加入middleware的寫法：
+    1. 單一一條：路由後加->middelware("manager")
+    2. 多個功能共用登入檢查：
+        Route::middleware("manager")->group(function(){
+            Route::...
+            Route::...
+        });
+    3. 用陣列一起設定middleware、網址前綴等等：
+        Route::group(["middleware" => "manager", "prefix" => "admin"], function(){
+            Route::...
+            Route::...
+        });
+
+    也可用鏈式寫法：
+    Route::prefix("admin")->middleware("manager")->group(function () {
+            Route::...
+            Route::...
+        });
+*/
+
+
+middleware可以前往app/Http/Middleware/CheckManager.php查看（CheckManager是之前php artisan make:middleware CheckManager創建的）
+啟用middleware，要先到app/bootstrap/app.php設定別名：
+    ->withMiddleware(function (Middleware $middleware): void {
+        $middleware->alias([
+            "manager" => CheckManager::class
+        ]);
+    })
+
+
+CheckManager.php裡設定：
+class CheckManager
+{
+    public function handle(Request $request, Closure $next): Response
+    {
+        if(empty(session()->get("userId"))){
+            return redirect("/admin");
+        }
+        return $next($request);
+    }
+}
+Request $request：接收目前使用者的 HTTP 請求
+Closure $next：接收一個可以讓請求繼續往下執行的函式
+: Response：宣告這個方法會回傳 Response 類型的結果
+$request：使用者送來的請求
+$next：檢查通過後，放行到下一個處理階段
+
+
+3.大事記列表
+
+**新增分頁效果
+MileStoneController.php改為：
+class MileStoneController extends Controller
+{
+    // 大事記列表
+    public function list(){
+        /* 開啟app/Providers/AppServiceProvider.php
+            確認boot()有沒有加上 Paginator::useBootstrap();
+            （留意上方有沒有use Illuminate\Pagination\Paginator;）
+        */
+        $list = MileStone::paginate(10);
+        return view("admin.milestone.list", compact("list"));
+    }
+}
+（注意上方有沒有use App\Models\Milestone\MileStone;）
+
+
+admin/milestone/list.blade.php改為：
+@extends("admin.layout")
+@section("title", "大事記列表")
+@section("content")
+<div class="admin-card" data-crud-list>
+    <div class="admin-card-header">
+        <h2><i class="fa fa-history"></i> 大事記列表</h2>
+        <div class="admin-toolbar">
+            <!-- 關鍵字即時查詢：輸入時自動篩選並標示關鍵字 -->
+            <form class="search-box">
+                <i class="fa fa-search"></i>
+                <input type="search" name="keyword" class="form-control" placeholder="搜尋標題 / 說明 / 標籤 / 年份" autocomplete="off" />
+            </form>
+            <select name="tag_type" class="form-control" data-filter>
+                <option value="">全部類型</option>
+                <option value="milestone">里程碑</option>
+                <option value="product">產品</option>
+                <option value="award">獲獎 / 認證</option>
+            </select>
+            <button type="button" class="btn btn-light btn-sm" data-clear><i class="fa fa-times"></i> 清除</button>
+            <!-- 修改路徑，老師是寫add，我這邊寫成create，用絕對路徑，後續controller、路由、view的頁面老師都用add -->
+            <a href="/admin/milestone/create" class="btn btn-gold btn-sm"><i class="fa fa-plus"></i> 新增大事記</a>
+        </div>
+    </div>
+
+    <!-- 修改從這邊開始 -->
+    <div class="table-wrap">
+        <table class="data-table admin-table">
+            <thead>
+                <tr>
+                    <th>年月</th>
+                    <th>標題</th>
+                    <th>類型</th>
+                    <th>標籤文字</th>
+                    <th>操作</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach($list as $data)
+                <tr data-row data-tag_type="milestone">
+                    <td data-mark>{{ $data->years}} / {{ $data->months }}</td>
+                    <td data-mark>{{ $data->title }}</td>
+                    <td><span class="badge badge-{{ $data->types->label }}" data-mark>{{ $data->types->title }}</span></td>
+                    <td data-mark>{{ $data->types->title }}</td>
+                    <td>
+                        <div class="actions"><a href="edit/{{ $data->id }}" class="btn btn-outline btn-xs"><i class="fa fa-edit"></i> 修改</a>
+                        <button type="button" class="btn btn-danger-outline btn-xs" onclick="doDelete('{{ $data->id }}')"><i class="fa fa-trash"></i> 刪除</button></div>
+                    </td>
+                </tr>
+                @endforeach
+            </tbody>
+        </table>
+    </div>
+
+    <div class="admin-table-info">
+        {{ $list->links() }}
+    </div>
+</div>
+@endsection
+
+
+**新增"新增"功能
+MileStoneController加入create function：
+    public function create(){
+        return view("admin.milestone.create");
+    }
+
+再加入store function：
+    public function store(Request $req){
+        $types = new MileStone();
+        $types->label = $req->label;
+        $types->title = $req->title;
+        $types->save();
+
+        // 確認有沒有use Illuminate\Support\Facades\Session;
+        // flash：快閃，只會出現一次；message：自己命名的名稱
+        Session::flash("message", "已新增");
+        return redirect("/admin/milestone/list");
+    }
+
+
+新增路由：Route::get("create", [MileStoneController::class, "create"])
+Route::post("store", [MileStoneController::class, "store"])
+
+
+新增resources/views/admin/milestone/create.blade.php
+此處套用原始網頁admin/milestones-form.html，並且套版：
+
+
+
+**新增"修改"功能
+MileStoneController加入edit function：
+
+
+再加入update function：
+
+
+新增路由：Route::get("edit/{id}", [MileStoneController::class, "edit"])
+Route::post("update", [MileStoneController::class, "update"])
+
+
+新增resources/views/admin/milestone/edit.blade.php
+此處套用create.blade.php：
+
+
+**新增"刪除"功能
+修改layout.blade.php中javasrcipt的doDelete function，讓所有後台共用同一個function
+
+
+MileStoneController加入delete function：
+
+
+新增路由：Route::get("delete", [MileStoneController::class, "delete"])
+（路由之後都不會再詳細描述內容，能自行處理）
