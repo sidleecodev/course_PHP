@@ -6,8 +6,8 @@ aliases:
 
 # PHP／Laravel 提問與易混淆觀念 04
 
-> 範圍：依 [[04.後臺-大事記]] 的四天學習，整理實際提問、回答與理解修正。
-> 整理日期：2026-11-01。以老師原筆記為準，不納入額外工具、測試指令或筆記之外的關聯操作比較。
+> 範圍：原 [[04.後臺-大事記]] 學習，加上新版 [[04.後臺-大事記-更新整理]] 的後臺問答與完成狀態。
+> 更新日期：2026-11-10。以老師原筆記及本輪實作為準；05 前臺暫不整理。不納入額外工具、測試指令、筆記之外的關聯操作比較，以及先前指定排除的模板／表單／選單故障排查。
 > 「容易混淆」是複習提醒，不代表目前仍不理解。本份是觀念整理，不取代完整實作筆記。
 
 ## 先看這次最重要的差別
@@ -282,7 +282,7 @@ public function edit(Request $req){
 | --- | --- |
 | `$types` 有 s，所以是多筆？ | 不是，變數名稱不決定型別；這裡 find() 得到單筆 Model |
 | 點修改就已更新資料？ | 沒有，edit() 只是查詢並回傳修改畫面 |
-| 複製 create View 就完成修改？ | 沒有，原筆記尚未完成更新表單與後端 update |
+| 複製 create View 就完成修改？ | 沒有，還要對應更新路由、帶回 id 並執行 update；本輪已補完並測試 |
 
 ### 6-2. 改成功提示，為什麼不用改 Model？
 
@@ -296,7 +296,9 @@ Session::flash("message", "類別建立成功");
 
 不是「Model 只負責查詢，所以不用改」。Model 也用於新增、修改、刪除；本次只是沒有要更動這些操作。
 
-## 7. 四天範圍與完成狀態
+## 7. 前一輪四天的進度紀錄（歷史）
+
+> 以下保留當時的進度；本輪已補完類別修改與刪除，最新狀態以第 12 節為準。
 
 | 天數 | 老師筆記內的學習內容 | 已確認 |
 | --- | --- | --- |
@@ -305,9 +307,204 @@ Session::flash("message", "類別建立成功");
 | 第 3 天 | create、store、表單送出、save、flash、SweetAlert | 新增成功，提示不重複出現 |
 | 第 4 天 | edit 路由、find、傳入修改頁、回顧資料流 | 可載入指定類別；更新儲存待續 |
 
-原筆記尚未完成的部分：類別更新儲存、類別刪除，以及大事記內容的完整 CRUD。不要把「看得到按鈕或表單」當成後端功能已完成。
+當時待續的是類別更新儲存、類別刪除，以及大事記內容的完整 CRUD。本輪已補齊前兩者；事件新增、修改、刪除仍未完成。不要把「看得到按鈕或表單」當成後端功能已完成。
+
+## 8. 本輪：先分清「類別管理」與「事件管理」
+
+| 我提出的問題／確認 | 精準理解 | 本輪結果 |
+| --- | --- | --- |
+| 上次的新增、修改、刪除做了嗎？ | 必須先說明是哪一組功能，不能把帳號、類別、事件混在一起 | 本輪逐項確認類別實作 |
+| 類別刪除還沒做，修改只做了一點 | 討論過語法不代表已加入程式並通過測試 | 原 Controller 有 edit，沒有 update、delete，先補齊 |
+| 類別與事件是同一張表嗎？ | 不是；類別放分類，事件放實際內容 | milestone_type／milestone |
+| 類別功能完成，代表事件 CRUD 也完成？ | 不代表，使用不同 Model、Controller 與網址 | 分開記錄完成狀態 |
+
+| 功能組 | Controller | Model／資料表 | 網址前綴 |
+| --- | --- | --- | --- |
+| 大事記類別 | MileStoneTypeController | MileStoneType／milestone_type | /admin/milestone/types |
+| 大事記事件 | MileStoneController | MileStone／milestone | /admin/milestone |
+
+本輪採「實際程式＋操作結果」確認進度，不再只因出現方法名稱或曾討論，就標成完成。
+
+## 9. 本輪：類別修改與刪除補完
+
+### 9-1. 開啟修改頁與儲存修改是兩次請求
+
+| 階段 | 請求 | 處理方法 | id 從哪裡來？ | 做什麼 |
+| --- | --- | --- | --- | --- |
+| 點列表的修改 | GET /admin/milestone/types/edit/編號 | edit() | 網址的 {id} | find 原紀錄，傳給 View |
+| 按修改頁的儲存 | POST /admin/milestone/types/update | update() | 表單 name="id" 的隱藏欄位 | find 原紀錄、改欄位並保存 |
+
+```blade
+<input type="hidden" name="id" value="{{ $types->id }}">
+```
+
+```php
+public function update(Request $req)
+{
+    $types = MileStoneType::find($req->id);
+    $types->label = $req->label;
+    $types->title = $req->title;
+    $types->update();
+
+    Session::flash("message", "已修改");
+    return redirect("/admin/milestone/types/list");
+}
+```
+
+**已確認：**修改後回到列表；資料庫原紀錄更新，id 不變，總筆數不增加。實際除錯過程不在本份展開，也不臆測未確認的錯誤根因。
+
+### 9-2. 類別刪除的責任分工
+
+以下只整理老師新版筆記已有的刪除流程與先前相關提問，不加入未教的通用刪除設計。
+
+| 我提出的問題 | 精準理解 | 對照 |
+| --- | --- | --- |
+| doDelete 是未定義的函式嗎？ | 不是內建函式，需要自行定義；較早筆記只有呼叫，新版已補函式 | 按鈕 onclick 呼叫 doDelete |
+| 路由沒有 {id} 可以嗎？ | 可以，把 id 放在 POST 資料中即可；不是不用傳 id | AJAX data 的 id，後端用 $req->id |
+| 為什麼用 AJAX？ | 按鈕觸發 JS，由 AJAX 傳請求並取得回應，接著更新原畫面 | 刪除不一定要用 AJAX，本次沿用老師方式 |
+| AJAX 以前哪裡用過？ | 帳號查重也用過相同結構 | 這次改目的地、傳入資料與回應後動作 |
+| this 是什麼？ | onclick 裡指被點擊的按鈕元素 | 第二個參數傳給 btn |
+| btn 對應 class="btn" 嗎？ | 不是；btn 是自行命名的參數，接住傳入的按鈕 | $(btn) 用變數中的元素；不是用 class 選取 |
+| data-row 是 CSS 屬性嗎？ | 是 HTML 自訂資料屬性；tr[data-row] 是選擇器 | 選取帶該屬性的 tr |
+| remove 會刪資料庫嗎？ | 不會，只有移除目前畫面的 DOM 元素 | 資料庫由 Controller 呼叫 Model 刪除 |
+
+```blade
+onclick="doDelete('{{ $data->id }}', this)"
+```
+
+引號只包住 id 值；this 放在字串外，才是第二個參數。若把 id、逗號與 this 一起包進單引號，只會傳出一個字串。
+
+| AJAX 部分 | 本次用途 |
+| --- | --- |
+| url | /admin/milestone/types/delete |
+| type | post |
+| data 的 id: id | 左邊是傳給後端的名稱，右邊是函式接到的編號 |
+| _token | 傳入 Blade 的 csrf_token() 結果，函式括號不可漏 |
+| success: function(msg) | 成功收到回應後執行；原碼沒有檢查 msg 的業務結果 |
+
+```php
+public function delete(Request $req)
+{
+    MileStoneType::destroy($req->id);
+}
+```
+
+```javascript
+$(btn).closest("tr[data-row]").remove();
+```
+
+| 順序 | 事件 |
+| --- | --- |
+| 1 | 點刪除，傳 id 與按鈕元素給 doDelete |
+| 2 | Swal 詢問，放棄則不送刪除請求 |
+| 3 | 確定後 AJAX POST id 與 CSRF token |
+| 4 | Route 交給 delete()，Model 刪除資料庫紀錄 |
+| 5 | 成功回應後，JS 顯示提示並移除按鈕所在整列 |
+
+**已確認：**放棄時保留；確定時畫面資料列消失；重新整理與 phpMyAdmin 也確認資料已刪除。不能只看提示就當刪除成功。
+
+## 10. 本輪：讀懂 $data->types->title
+
+### 10-1. types 是哪裡的 types？
+
+對應 MileStone.php 裡的關聯方法名稱：
+
+```php
+public function types(): BelongsTo
+{
+    return $this->belongsTo(MileStoneType::class, "typeId", "id");
+}
+```
+
+| 位置 | types／$types 的角色 |
+| --- | --- |
+| Model 的 types() | 定義這筆事件如何找到所屬類別 |
+| $data->types | 依該關聯取得所屬類別的 Model 物件 |
+| Controller 的 $types | 自行取名的 PHP 變數，與關聯名稱不自動相連 |
+| 網址的 /types/ | 路由前綴，不決定 Model 關聯 |
+
+### 10-2. 「data 是物件、types 是方法、title 是欄位」哪裡要修正？
+
+你的理解接近；關鍵是這一串中的 types，**取得的是關聯類別物件**，規則由 types() 定義。後面的 title 是從那個物件讀取對應欄位值。
+
+假設資料如下：
+
+| 表 | id | title | typeId |
+| --- | --- | --- | --- |
+| milestone | 5 | 周年活動 | 2 |
+| milestone_type | 2 | 活動 | 不適用，該表沒有這個欄位 |
+
+| 寫法 | 代表什麼 | 例子 |
+| --- | --- | --- |
+| $data | 目前這筆事件的 MileStone 物件 | 周年活動那筆 |
+| $data->types | 由事件 typeId=2 找到的 MileStoneType 物件 | 活動類別那筆 |
+| $data->types->title | 讀取該類別物件的 title | 活動 |
+
+讀法：**目前事件 → 它所屬的類別 → 類別名稱。**
+
+此處只解釋新版老師列表中實際使用的鏈式取值，不列入額外的關聯方法／屬性操作比較。
+
+### 10-3. 事件標題與類別名稱的來源
+
+| 寫法 | 實際來源 | 本次範例 |
+| --- | --- | --- |
+| $data->years、$data->months | milestone 的年份、月份 | 2026、01 |
+| $data->title | milestone.title | 周年活動 |
+| $data->types->title | milestone_type.title | 活動 |
+| $data->types->label | milestone_type.label | gold，組成 badge-gold |
+
+你的觀念題回答正確：前者 title 來自 milestone，後者 title 來自 milestone_type。
+
+**已驗證：**把練習類別 title 暫改為「活動測試」後，共用該類別的事件都顯示新類別名稱；事件自己的標題不變。測試後改回。
+
+## 11. 本輪：大事記新增目前只做到入口
+
+| 問題／確認 | 正確理解 |
+| --- | --- |
+| 事件 store 寫 label、title 有問題嗎？ | 是，milestone 沒有 label；原碼尚未寫完，不能當完成版 |
+| milestone 沒有 label，只有 typeId | 正確；typeId 記錄所屬類別，再依關聯取得類別的 label、title |
+| 為什麼不每筆事件都存 label？ | 本次資料設計把樣式存於類別，事件只記類別編號，避免重複存同一份分類資訊 |
+| create() 完成，是否代表新增完成？ | 不代表；它目前只是選擇新增畫面，還有表單與 store 待續 |
+
+```text
+milestone.typeId → milestone_type.id → 取得該類別的 label、title
+```
+
+老師目前確定完成的部分：
+
+```php
+public function create()
+{
+    return view("admin.milestone.create");
+}
+```
+
+```php
+// 放在既有 admin → milestone 前綴群組內
+Route::get("create", [MileStoneController::class, "create"]);
+```
+
+事件的 create.blade.php 尚未套版完、store 尚未寫完，修改／刪除也尚未教到。保留缺漏，不以自行補完的程式冒充老師版本。
+
+## 12. 截至 2026-11-10 的後臺進度
+
+| 功能 | 最新狀態 | 完成依據 |
+| --- | --- | --- |
+| 類別列表／新增／成功提示 | 已完成 | 先前操作已確認 |
+| 類別修改 | 本輪補完，已測試 | 更新原紀錄，id 與總筆數不變 |
+| 類別刪除 | 本輪補完，已測試 | 放棄保留、確定後畫面與資料庫都移除 |
+| 大事記動態列表 | 已完成 | 年月、事件標題、所屬類別正確 |
+| 列表讀取關聯類別 | 已完成 | 類別 title 變動會反映在對應事件列表 |
+| 大事記 create() 與路由 | 已完成 | 已加入並確認 |
+| 大事記新增表單與 store | 待續 | 表單尚未完成、store 有欄位缺漏 |
+| 大事記修改／刪除 | 尚未教到 | 不自行擴充、不列入已完成 |
+
+**本輪後臺已教範圍結束，不等於完整大事記 CRUD 已完成。**05 前臺暫不收錄，原計畫天數不作完成依據，不為湊天數加入未教內容。
+
+之後原始筆記出現 **(???)**，統一解讀為「未完成／待老師續課」：整理時保留標記，不當成已教內容、不自行補完，也不拿來考。
 
 ## 複習重點
+
 
 - [ ] 分清 PHP 類別名稱與資料中的分類名稱。
 - [ ] 能從目前 Model 判斷 hasMany／belongsTo 的方向。
@@ -319,4 +516,12 @@ Session::flash("message", "類別建立成功");
 - [ ] 能說明 flash 為何能跨轉址保留提示，及為何重新整理不再顯示。
 - [ ] 分清列表 get()、修改 find()，以及 edit 與真正更新的差別。
 
-> 後續複習與考核以老師筆記及已教的內容為範圍；額外補充不列入考題。
+- [ ] 分清類別管理 CRUD 已完成，與事件 CRUD 尚未完成。
+- [ ] 能說明 edit 顯示表單、update 才寫回原紀錄。
+- [ ] 能分清 POST 傳 id、後端 destroy 與前端 remove 的用途。
+- [ ] 知道 this 傳入按鈕，btn 不是 HTML class 的對應名稱。
+- [ ] 能把 $data->types->title 讀成「事件 → 所屬類別 → 類別名稱」。
+- [ ] 能指出事件標題與類別標題分別來自哪張表。
+- [ ] 知道事件用 typeId 指向類別，而不是直接保存類別 label。
+
+> 後續複習與考核以老師筆記及已教內容為範圍；額外補充、(???) 待續部分與先前指定排除的除錯內容不列入考題。
