@@ -1,0 +1,139 @@
+製作商品頁面、購物頁面
+
+---新增資料表---
+product_type：產品類別
+	id(int)
+	title(VARCHAR 20)
+	
+product_label：產品標籤
+	id(int)
+	label(VARCHAR 10)
+
+product_photo：產品圖片
+	id(int)
+	productId(int)
+	photo(VARCHAR 30)
+	createTime(TIMESTAMP)
+
+product_spec：產品規格
+	id(int)
+	productId(int)
+	title(VARCHAR 30)
+	content(int)
+	createTime(TIMESTAMP)
+
+product：產品
+	id(int)
+	product_name(VARCHAR 100)
+	title(VARCHAR 200)
+	product_no(VARCHAR 30)
+	price(int)
+	sale_price(int)
+	qty(int)
+	content(text)
+	create_time(timestamp)
+	label_id(int)
+	type_id(int)
+
+
+
+php artisan make:model Product/Product
+php artisan make:model Product/ProductPhoto
+php artisan make:model Product/ProductSpec
+php artisan make:model Product/Productlabel
+php artisan make:model Product/ProductType
+
+***
+Product.php：(未完)
+<?php
+
+namespace App\Models\Product;
+
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+
+class Product extends Model
+{
+    public $timestamps = false;
+    protected $table = "product";
+    protected $primaryKey = 'id';
+    protected $fillable = ["id","label_id", "type_id", "product_name", "title", "product_no", "price", "sale_price", "qty", "content", "create_time"];
+
+    public function types(): BelongsTo
+    {
+        return $this->belongsTo(ProductType::class, "typeId", "id");
+    }
+
+    public function labels(): BelongsTo
+    {
+        return $this->belongsTo(ProductLabel::class, "label_id", "id");
+    }
+}
+
+
+***
+ProductLabel.php：(未完)
+<?php
+
+namespace App\Models\Product;
+
+use Illuminate\Database\Eloquent\Model;
+
+class ProductLabel extends Model
+{
+    public $timestamps = false;
+    protected $table = "product_label";
+    protected $primaryKey = 'id';
+    protected $fillable = ["id", "label"];
+}
+
+
+***
+ProductPhoto.php：(未完)
+<?php
+
+namespace App\Models\Product;
+
+use Illuminate\Database\Eloquent\Model;
+
+class ProductPhoto extends Model
+{
+    public $timestamps = false;
+    protected $table = "product_photo";
+    protected $primaryKey = 'id';
+    protected $fillable = ["id", "productId", "photo", "createTime"];
+}
+
+
+***
+ProductSpec.php：(未完)
+<?php
+
+namespace App\Models\Product;
+
+use Illuminate\Database\Eloquent\Model;
+
+class ProductSpec extends Model
+{
+    public $timestamps = false;
+    protected $table = "product_spec";
+    protected $primaryKey = 'id';
+    protected $fillable = ["id", "productId", "title", "content", "createTime"];
+}
+
+
+***
+ProductType.php：(未完)
+<?php
+
+namespace App\Models\Product;
+
+use Illuminate\Database\Eloquent\Model;
+
+class ProductType extends Model
+{
+    public $timestamps = false;
+    protected $table = "product_type";
+    protected $primaryKey = 'id';
+    protected $fillable = ["id", "title"];
+}

@@ -593,7 +593,8 @@ admin/milestone/list.blade.php改為：
                 <tr data-row data-tag_type="milestone">
                     <td data-mark>{{ $data->years}} / {{ $data->months }}</td>
                     <td data-mark>{{ $data->title }}</td>
-                    <td><span class="badge badge-{{ $data->types->label }}" data-mark>{{ $data->types->title }}</span></td>
+                    <td><span class="event-tag tag-{{ $data->types->label }}" data-mark>{{ $data->types->title }}</span></td>
+		    （！！這裡改用event-tag tag-，因為前後台印出標籤的樣式不一樣，為了方便都改成前台標籤樣式）
                     <td data-mark>{{ $data->types->title }}</td>
                     <td>
                         <div class="actions"><a href="edit/{{ $data->id }}" class="btn btn-outline btn-xs"><i class="fa fa-edit"></i> 修改</a>
@@ -612,24 +613,47 @@ admin/milestone/list.blade.php改為：
 @endsection
 
 
+（1151111以下為上課內容）
 **新增"新增"功能
 MileStoneController加入create function：
     public function create(){
-        return view("admin.milestone.create");
+        $types = MileStoneType::get();
+        return view("admin.milestone.create", compact("types"));
     }
 
 再加入store function：
     public function store(Request $req){
-        $types = new MileStone();
-        $types->label = $req->label;
-        $types->title = $req->title;
-        $types->save();
+        $content = $req->content;
+        // 使用者輸入有可能會按enter換行
+        if (!empty($content)){
+            // str_replace(搜尋, 換成替代文字, 主題)
+            // \n:(new line) 輸入框的換行(enter) 
+            // 將輸入框的換行取代為網頁的換行
+            $content = str_replace("\n", "<br/>", $content);
+        }
+        $ms = new MileStone();
+        $ms->typeId = $req->typeId;
+        $ms->years = $req->year;
+        $ms->months = $req->month;
+        $ms->title = $req->title;
+        $ms->content = $content;
+        $ms->point = $req->point;
+        $ms->save();
 
-        // 確認有沒有use Illuminate\Support\Facades\Session;
-        // flash：快閃，只會出現一次；message：自己命名的名稱
         Session::flash("message", "已新增");
         return redirect("/admin/milestone/list");
     }
+（如果沒有跑出sweetalert2，看layout那邊有沒有這段：
+@if(Session::has("message"))
+    <script>
+        Swal.fire({
+            title: "{!! Session::get('message') !!}",
+            text: "",
+            icon: "success"
+        });
+    </script>
+@endif
+）
 
 
 新增路由：Route::get("create", [MileStoneController::class, "create"])
@@ -639,14 +663,106 @@ Route::post("store", [MileStoneController::class, "store"])
 新增resources/views/admin/milestone/create.blade.php
 此處套用原始網頁admin/milestones-form.html，並且套版：
 
+（milestone資料表結構新增point欄位，phpmyadmin那邊要新增、MileStone.php也要新增欄位
+    protected $fillable = ["id", "typeId", "years", "months", "title", "content", "point", "createTime"];）
+
+@extends("admin.layout")
+@section("title", "新增大事記")
+@section("content")
+<div class="admin-card">
+    <div class="admin-card-header">
+        <h2><i class="fa fa-history"></i> <span data-mode-text>新增大事記</span></h2>
+        <a href="/admin/milestone/list" class="btn btn-light btn-sm"><i class="fa fa-arrow-left"></i> 返回列表</a>
+    </div>
+    <div class="admin-card-body">
+        <form class="admin-form" action="store" method="post">
+            @csrf
+            <div class="form-row-3">
+                <div class="form-group">
+                    <label class="form-label" for="f_year">年份 <span class="req">*</span></label>
+                    <select name="year" id="f_year" class="form-control" required>
+                        {{-- date("Y"): 取日期中的年份
+                            range(date("Y")-10, date("Y"))的順序會是由小到大
+                            底下寫法是年份由大到小
+                         --}}
+                        @foreach(range(date("Y"), date("Y")-10) as $year)
+                        <option value="{{ $year }}">{{ $year }}</option>
+                        @endforeach
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label class="form-label" for="f_month">月份</label>
+                    <select id="f_month" name="month" class="form-control">
+                        {{--
+                            str_pad: 將字串補足指定長度
+                            str_pad(原始文字, 指定長度, 要補足的文字, 位置)
+                            STR_PAD_LEFT、STR_PAD_RIGHT、STR_PAD_BOTH
+                        --}}
+                        @foreach(range(1, 12) as $month)
+                        <option value="{{ str_pad($month, 2, '0', STR_PAD_LEFT) }}">{{ $month }}</option>
+                        @endforeach
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label class="form-label" for="f_tag_type">類型</label>
+                    <!-- name="typeId"是對應資料表typeId的欄位 -->
+                    <select id="f_tag_type" name="typeId" class="form-control">
+                        @foreach($types as $data)
+                        <option value="{{ $data->id }}">{{ "$data->title" }}</option>
+                        @endforeach
+                    </select>
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="form-label" for="f_title">標題 <span class="req">*</span></label>
+                <input type="text" id="f_title" name="title" value="" class="form-control" required>
+            </div>
+            <div class="form-group">
+                <label class="form-label" for="f_description">內容</label>
+                <textarea id="f_description" name="content" rows="3" class="form-control"></textarea>
+            </div>
+           
+            <div class="form-group">
+                <label class="form-check"><input type="checkbox" name="point" value="Y"> 重點事件（時間軸顯示金色圓點）</label>
+            </div>
+
+            <div class="form-actions">
+                <button type="submit" class="btn btn-primary"><i class="fa fa-save"></i> 儲存</button>
+                <a href="/admin/milestone/list" class="btn btn-outline"><i class="fa fa-times"></i> 取消</a>
+            </div>
+        </form>
+    </div>
+</div>
+
+@endsection
 
 
 **新增"修改"功能
 MileStoneController加入edit function：
-
+    public function edit(Request $req){
+        $ms = MileStone::find($req->id);
+        $types = MileStoneType::get();
+        return view("admin.milestone.edit", compact("ms", "types"));
+    }
 
 再加入update function：
+    public function update(Request $req){
+        $content = $req->content;
+        if (!empty($content)){
+            $content = str_replace("\n", "<br/>", $content);
+        }
+        $ms = MileStone::find($req->id);
+        $ms->typeId = $req->typeId;
+        $ms->years = $req->year;
+        $ms->months = $req->month;
+        $ms->title = $req->title;
+        $ms->content = $content;
+        $ms->point = $req->point;
+        $ms->save();
 
+        Session::flash("message", "已修改");
+        return redirect("/admin/milestone/list");
+    }
 
 新增路由：Route::get("edit/{id}", [MileStoneController::class, "edit"])
 Route::post("update", [MileStoneController::class, "update"])
@@ -654,14 +770,150 @@ Route::post("update", [MileStoneController::class, "update"])
 
 新增resources/views/admin/milestone/edit.blade.php
 此處套用create.blade.php：
+<!-- 此處複製create.blade.php來修改 -->
+@extends("admin.layout")
+@section("title", "新增大事記")
+@section("content")
+<div class="admin-card">
+    <div class="admin-card-header">
+        <h2><i class="fa fa-history"></i> <span data-mode-text>新增大事記</span></h2>
+        <a href="../list" class="btn btn-light btn-sm"><i class="fa fa-arrow-left"></i> 返回列表</a>
+    </div>
+    <div class="admin-card-body">
+        <!-- action="/admin/milestone/update" -->
+        <form class="admin-form" action="../update" method="post">
+            <input type="hidden" name="id" value="{{ $ms->id }}">
+            @csrf
+            <div class="form-row-3">
+                <div class="form-group">
+                    <label class="form-label" for="f_year">年份 <span class="req">*</span></label>
+                    <select name="year" id="f_year" class="form-control" required>
+                        <option value="">請選擇年份</option>
+                        {{-- date("Y"): 取日期中的年份
+                            range(date("Y")-10, date("Y"))的順序會是由小到大
+                            底下寫法是年份由大到小
+                         --}}
+                        @foreach(range(date("Y"), date("Y")-10) as $year)
+                        <option value="{{ $year }}" {{ $ms->years == $year ? 'selected' : '' }}>{{ $year }}</option>
+                        @endforeach
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label class="form-label" for="f_month">月份</label>
+                    <select id="f_month" name="month" class="form-control">
+                        <option value="">請選擇月份</option>
+                        {{--
+                            str_pad: 將字串補足指定長度
+                            str_pad(原始文字, 指定長度, 要補足的文字, 位置)
+                            STR_PAD_LEFT、STR_PAD_RIGHT、STR_PAD_BOTH
+                        --}}
+                        @foreach(range(1, 12) as $month)
+                        <option value="{{ str_pad($month, 2, '0', STR_PAD_LEFT) }}" {{ $ms->months == $month ? 'selected' : '' }}>{{ $month }}</option>
+                        @endforeach
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label class="form-label" for="f_tag_type">類型</label>
+                    <!-- name="typeId"是對應資料表typeId的欄位 -->
+                    <select id="f_tag_type" name="typeId" class="form-control">
+                        <option value="">請選擇類型</option>
+                        @foreach($types as $data)
+                        <option value="{{ $data->id }}" {{ $ms->typeId == $data->id ? 'selected' : '' }}>{{ "$data->title" }}</option>
+                        @endforeach
+                    </select>
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="form-label" for="f_title">標題 <span class="req">*</span></label>
+                <input type="text" id="f_title" name="title" class="form-control" required value="{{ $ms->title }}">
+            </div>
+            <div class="form-group">
+                <label class="form-label" for="f_description">內容</label>
+                <textarea id="f_description" name="content" rows="3" class="form-control">{!! str_replace("<br/>", "\n", $ms->content) !!}
+                </textarea>
+            </div>
+
+            <div class="form-group">
+                <label class="form-check"><input type="checkbox" name="point" value="Y" {{ $ms->point == "Y" ? "checked" : "" }}> 重點事件（時間軸顯示金色圓點）</label>
+            </div>
+
+            <div class="form-actions">
+                <button type="submit" class="btn btn-primary"><i class="fa fa-save"></i> 儲存</button>
+                <a href="/admin/milestone/list" class="btn btn-outline"><i class="fa fa-times"></i> 取消</a>
+            </div>
+        </form>
+    </div>
+</div>
+
+@endsection
 
 
 **新增"刪除"功能
 修改layout.blade.php中javasrcipt的doDelete function，讓所有後台共用同一個function
 
-
 MileStoneController加入delete function：
-
+public function delete(Request $req){
+        MileStone::destroy($req->id);
+        Session::flash("message", "已刪除");
+        // return redirect("/adimn/milestone/list");
+        // 以下是使用取別名的方式，路徑相同，route那邊要記得先取別名
+	// Route::get("list", [ManagerController::class, "list"])->name("mile");
+        return redirect()->route("mile");
+    }
 
 新增路由：Route::get("delete", [MileStoneController::class, "delete"])
 （路由之後都不會再詳細描述內容，能自行處理）
+
+
+刪除部分改樣板：admin/layout
+主要新增url欄位，改"url: url"
+
+<script>
+        // 傳入被點擊的按鈕，刪除成功後移除它所在的資料列
+        function doDelete(id, btn, url) {
+            Swal.fire({
+                icon: "question",
+                title: "確定刪除？",
+                showDenyButton: true,
+                showCancelButton: false,
+                confirmButtonText: "確定",
+                denyButtonText: "放棄"
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    // 使用ajax是為了讓資料送到後端執行
+                    $.ajax({
+                        // 送去哪裡
+                        url: url,
+                        type: "post",
+                        data: {
+                            // 傳給後端的資料
+                            id: id,
+                            _token: "{{ csrf_token() }}"
+                        },
+                        // msg是接住後端回傳的內容
+                        success: function(msg) {
+                            Swal.fire("已刪除!", "", "success");
+                            /* btn: 傳進來的button
+                                closest: 尋找最近符合條件的元素
+                                tr: 表格中的列
+                                [data-row]: 具有data-row屬性
+                                tr[data-row]: 從目前元素(button)開始，往上尋找最近的一個符合條件的<tr>
+                                remove()只會從畫面上移除這列，不會移除資料庫的，資料庫那邊要交由controller移除
+                            */
+                            // 整句意思：從按鈕往上，找到最近一個帶有 data-row 這個 HTML 屬性的 <tr>，並從畫面上移除
+                            $(btn).closest("tr[data-row]").remove();
+                        }
+                    });
+                }
+            });
+        }
+    </script>
+
+
+types/list也套樣板：
+			    <button type="button" class="btn btn-danger-outline btn-xs" onclick="doDelete('{{ $data->id }}', this, '/admin/milestone/types/delete')">
+                                <i class="fa fa-trash"></i> 刪除
+                            </button>
+
+milestone/list也套樣板：
+<button type="button" class="btn btn-danger-outline btn-xs" onclick="doDelete('{{ $data->id }}', this, '/admin/milestone/delete')"><i class="fa fa-trash"></i> 刪除</button></div>

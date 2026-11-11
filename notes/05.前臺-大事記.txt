@@ -6,12 +6,80 @@
 
 2. 新增前臺大事記控制器：php artisan make:controller Front/FrontMileStoneController
 加入list function：
+    public function list(){
+        // distinct: 去除重複資料
+        // pluck: 取出指定欄位的值
+        // ->orderByDesc("years"): 從大到小，也可以用orderby("years", "desc")
+        $years = MileStone::distinct()->orderByDesc("years")->pluck("years");
+        
+        /* 
+        也可以寫成這樣，這種查詢會包含欄位名稱，取值時要加上->，例如： $years[0]->years
+        如果用pluck，則取值用$years[0]
+        $years = MileStone::selectRaw("years")->distinct()->orderByDesc("years");
 
+        範例
+        foreach($years as $data){
+            echo $data->years;
+            // 如果是用pluck，則直接取值echo $data
+        }
+        */
+
+        $list = MileStone::get();
+        return view("front.milestone.list", compact("list", "years"));
+    }
 
 3. 新增路由：Route::get("milestone", [FrontMileStoneController::class, "list"])
+這裡老師用別名來代替FrontMileStoneController：
+use App\Http\Controllers\Front\FrontMileStoneController as MileStone;
+Route::get("milestone", [MileStone::class, "list"]);
 
 
 4. 新增resources/views/front/layout.blade.php
 此處複製html/index.html：
+@extends("front.layout")
+@section("title", "大事記")
+@section("content")
+<div class="page-hero">
+    <div class="container container-narrow">
+        <h1><i class="fa fa-history"></i>大事記</h1>
+        <div class="breadcrumb"><a href="/">首頁</a> <i class="fa fa-chevron-right"></i> 大事記</div>
+    </div>
+</div>
+
+<div class="section-lg">
+    <div class="container container-narrow">
+        <div class="timeline">
+            <!-- 宣告變數，因為要奇數在左，偶數在右，所以宣告一變數拿來判斷左右 -->
+            {{-- @continue($data->years != $yy)：
+             當年份不等於外圈的years時就跳過 --}}
+            @php
+                $cnt = 0;
+            @endphp
+            @foreach($years as $yy)
+            <div class="year-marker">
+                <div class="year-pill">{{ $yy }}</div>
+            </div>
+                @foreach($list as $data)
+                    @continue($data->years != $yy)
+                    @php
+                        $cnt++;
+                    @endphp
+            <div class="event {{ $cnt % 2 == 1 ? 'right': 'left' }}">
+                <div class="event-dot {{ $data->point == 'Y' ? 'highlight' : '' }}"></div>
+                <div class="event-content">
+                    <div class="event-month">{{ $data->months }} 月</div>
+                    <div class="event-title">{{ $data->title }}</div>
+                    {{-- content前面已經被轉成html的標籤(看MileStoneController的store()那邊)，所以用{!! !!} --}}
+                    <div class="event-desc">{!! $data->content !!}</div>
+                    <span class="event-tag tag-{{ $data->types->label }}"><i class="fa fa-star"></i> {{ $data->types->title }}</span>
+                </div>
+            </div>
+                @endforeach
+            @endforeach
+        </div>
+    </div>
+</div>
+
+@endsection
 
 
