@@ -40,7 +40,7 @@ product：產品
 php artisan make:model Product/Product
 php artisan make:model Product/ProductPhoto
 php artisan make:model Product/ProductSpec
-php artisan make:model Product/Productlabel
+php artisan make:model Product/ProductLabel
 php artisan make:model Product/ProductType
 
 ***
