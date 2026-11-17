@@ -1,5 +1,9 @@
 製作商品頁面、購物頁面
 
+menu.blade.php修改產品分類路徑：
+<a href="/admin/product/types/list" {!! Request::is('admin/product/types/*') ? "class='active'" : '' !!}><i class="fa fa-folder-open"></i> 產品分類</a>
+
+
 ---新增資料表---
 product_type：產品類別
 	id(int)
@@ -40,17 +44,18 @@ product：產品
 php artisan make:model Product/Product
 php artisan make:model Product/ProductPhoto
 php artisan make:model Product/ProductSpec
-php artisan make:model Product/ProductLabel
+php artisan make:model Product/Productlabel
 php artisan make:model Product/ProductType
 
 ***
-Product.php：(未完)
+Product.php：
 <?php
 
 namespace App\Models\Product;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Product extends Model
 {
@@ -61,18 +66,30 @@ class Product extends Model
 
     public function types(): BelongsTo
     {
-        return $this->belongsTo(ProductType::class, "typeId", "id");
+        return $this->belongsTo(ProductType::class, "type_id", "id");
     }
 
     public function labels(): BelongsTo
     {
         return $this->belongsTo(ProductLabel::class, "label_id", "id");
     }
+
+    // 商品圖
+    public function photos(): HasMany
+    {
+        return $this->hasMany(ProductPhoto::class, "productId", "id");
+    }
+
+    // 商品規格
+    public function specs(): HasMany
+    {
+        return $this->hasMany(ProductSpec::class, "productId", "id");
+    }
 }
 
 
 ***
-ProductLabel.php：(未完)
+ProductLabel.php：（未完）
 <?php
 
 namespace App\Models\Product;
@@ -89,7 +106,7 @@ class ProductLabel extends Model
 
 
 ***
-ProductPhoto.php：(未完)
+ProductPhoto.php：（未完）
 <?php
 
 namespace App\Models\Product;
@@ -106,7 +123,7 @@ class ProductPhoto extends Model
 
 
 ***
-ProductSpec.php：(未完)
+ProductSpec.php：（未完）
 <?php
 
 namespace App\Models\Product;
@@ -123,7 +140,7 @@ class ProductSpec extends Model
 
 
 ***
-ProductType.php：(未完)
+ProductType.php：（未完）
 <?php
 
 namespace App\Models\Product;
@@ -137,3 +154,98 @@ class ProductType extends Model
     protected $primaryKey = 'id';
     protected $fillable = ["id", "title"];
 }
+
+
+---Controller---
+****建立controller： php artisan make:controller Admin/Product/ProductTypeController
+<?php
+
+namespace App\Http\Controllers\Admin\Product;
+
+use App\Http\Controllers\Controller;
+use App\Models\Product\ProductType;
+use Illuminate\Http\Request;
+
+class ProductTypeController extends Controller
+{
+    public function list(){
+        $list = ProductType::get();
+        return view("admin.product.types.list", compact("list"));
+    }
+}
+
+
+---路由---
+（老師把路由拆出來了，建立routes/admin/product.php，web.php新增一行include "admin/product.php";）
+<?php
+
+use App\Http\Controllers\Admin\Product\ProductTypeController;
+
+// Route 沒有use無所謂，因為web.php那邊就有use到了
+// （這份是給web那邊include用的）
+
+// 後臺產品
+Route::group(["middleware" => "manager", "prefix" =>"admin/product"], function(){
+    // 產品類別
+    Route::group(["prefix" => "types"], function(){
+        Route::get("list", [ProductTypeController::class, "list"]);
+        Route::get("create", [ProductTypeController::class, "create"]);
+        Route::post("store", [ProductTypeController::class, "store"]);
+        Route::get("edit/{id}", [ProductTypeController::class, "edit"]);
+        Route::post("update", [ProductTypeController::class, "update"]);
+        Route::post("delete", [ProductTypeController::class, "delete"]);
+    });
+});
+
+
+---網頁---
+****建立admin/product/types/list.blade.php
+（沿用admin/product-categories.html）
+（尚未修改完）
+
+@extends("admin.layout")
+@section("title", "產品類別")
+@section("content")
+<div class="admin-card" data-crud-list>
+    <div class="admin-card-header">
+        <h2><i class="fa fa-folder-open"></i> 產品分類列表</h2>
+        <div class="admin-toolbar">
+            <!-- 關鍵字即時查詢：輸入時自動篩選並標示關鍵字 -->
+            <form class="search-box">
+                <i class="fa fa-search"></i>
+                <input type="search" name="keyword" class="form-control" placeholder="搜尋分類名稱" autocomplete="off" />
+            </form>
+            <button type="button" class="btn btn-light btn-sm" data-clear><i class="fa fa-times"></i> 清除</button>
+            <a href="product-categories-form.html" class="btn btn-gold btn-sm"><i class="fa fa-plus"></i> 新增產品分類</a>
+        </div>
+    </div>
+
+    <div class="table-wrap">
+        <table class="data-table admin-table">
+            <thead>
+                <tr>
+                    <th>分類名稱</th>
+                    <th>操作</th>
+                </tr>
+            </thead>
+            <tbody>
+                @if (!empty($list) && sizeof($list)>0)
+                @foreach($list as $data)
+                <tr data-row>
+                    <td data-mark>{{ $data->title }}</td>
+                    <td>
+                        <div class="actions"><a href="edit/{{ $data->id }}" class="btn btn-outline btn-xs"><i class="fa fa-edit"></i> 修改</a>
+                        <button type="button" class="btn btn-danger-outline btn-xs" data-name="{{ $data->title }}" onclick="doDelete('{{ $data->id }}', this, '/admin/product/types/delete')"><i class="fa fa-trash"></i> 刪除</button></div>
+                    </td>
+                </tr>
+                @endforeach
+                @else
+                    <tr>
+                        <td colspan="2" class="text-center text-danger">目前無資料</td>
+                    </tr>
+                @endif
+            </tbody>
+        </table>
+    </div>
+</div>
+@endsection

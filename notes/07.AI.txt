@@ -1,0 +1,293 @@
+-----設定AI-----
+****.env
+
+GROQ_API_KEY=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
+GROQ_MODEL=openai/gpt-oss-120b
+OPENAI_API_KEY=
+OPENAI_MODEL=gpt-4.1-mini
+ANTHROPIC_API_KEY=
+ANTHROPIC_MODEL=claude_opus-5-5
+
+其中API_KEY需要用自己的帳號看／申請（檢視截圖1）
+
+vendor/guzzlehttp/quzzle/src/Handler/CurlFactory.php
+搜尋applyHandlerOptions
+把else的一段true改成false：
+$conf[\CURLOPT_SSL_VERIFYPEER] = false;
+（檢視截圖2）
+（原因跟SSL有關，不經過SSL驗證）
+
+
+****建立model： php artisan make:model AiMileStone
+（本應建立在milestone資料夾裡，但將錯就錯，如果要放在milestone裡，內容要改成namespace App\Models\milestone;）
+<?php
+
+namespace App\Models;
+
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Http;
+
+class AiMileStone extends Model
+{
+    public static function search($keyword){
+        /*
+            openai: https://api.openai.com/v1/chat/completions
+            claude: https://api.anthropic.com.v1/messages
+        */
+
+        // AI訊息回傳會在$res裡面
+        $res = Http::withToken(env("GROQ_API_KEY"))
+            ->timeout(60)
+            ->post("https://api.groq.com/openai/v1/chat/completions", [
+                "model" => env("GROQ_MODEL", "openai/gpt-oss-120b"),
+                "response_format" => ["type" => "json_object"],
+                "messages" => [
+                    [
+                        "role" => "user",
+                        "content" => "請用正體中文列出{$keyword}的10筆重要記事，由新到舊排列，請用台灣用語。"
+                            ."請用json格式:{\"events\":[{\"year\":2026, \"title\":\"標題\", \"content\":\"內容\"}]}"
+                    ],
+                ],
+            ]);
+        /*
+            env(有就用左邊,沒有就用右邊)
+        */
+        
+        // 如果呼叫失敗
+        if ($res->failed()){
+            // 回傳空陣列
+            return [];
+        }
+
+        /*
+            OpenAI的回應大致為:
+            {
+                "choices" : [
+                    {
+                        "message" : { "role": "assistant", "content": "這裡是ai回應內容"}
+                    }
+                ]
+            }
+
+            choices: 回應選項的陣列
+            0: 取第一個陣列資料(陣列的索引值從0開始)
+            message: 回應訊息物件
+            content: ai真正回應的內容
+        */
+        $content = $res->json("choices.0.message.content");
+
+        // json_decode: 將json字串轉成陣列, true:表示轉成陣列而不是物件
+        $data = json_decode($content, true);
+
+        // ??[]: 如果沒有events(在呼叫ai時，請ai回傳的格式), 回傳空陣列
+        return $data["events"] ?? [];
+    }
+}
+
+
+**建立controller： php artisan make:controller Front/AiMileStoneController
+<?php
+
+namespace App\Http\Controllers\Front;
+
+use App\Http\Controllers\Controller;
+use App\Models\AiMileStone;
+use Illuminate\Http\Request;
+
+class AiMileStoneController extends Controller
+{
+    public function index(Request $req){
+        // 傳送過來要查詢的資料
+        $keyword = $req->keyword;
+        // 預設為空陣列
+        $list = [];
+
+        if(!empty($keyword)){
+            // search: 這個function是static，所以不用new AiMileStone即可直接呼叫
+            $list = AiMileStone::search($keyword);
+        }
+
+        return view("front.milestone.ai", compact("keyword", "list"));
+    }
+}
+
+
+**路由： Route::get("ai", [AiMileStoneController::class, "index"]);
+
+
+**建立views/front/milestone/ai.blade.php
+@extends("front.layout")
+@section("title", "AI大事記")
+@section("content")
+<div class="section-lg">
+    <div class="container">
+        <h2><i class="fa fa-robot"></i> AI 大事記</h2>
+        <form method="get" action="/ai" style="margin: 20px 0; display: flex; gap: 10px;">
+            @csrf
+            <input type="text" name="keyword" class="form-control" value="{{ $keyword }}" required autofocus>
+            <button type="submit" class="btn btn-primary">查詢</button>
+        </form>
+
+        {{-- count:計算陣列大小
+             count($list)也可以用empty($list)或is_null($list)
+        --}}
+        @if (!empty($keyword) && count($list) == 0)
+            <div class="alert alert-danger">查無資料，或AI呼叫失敗</div>
+        @endif
+
+        @if (count($list)>0)
+            <h3>{{ $keyword }} 的大事記</h3>
+            <table style="width: 100%; border-collapse: collapse">
+                <tr style="background: #dddddd;">
+                    <th style="width: 10%;">年份</th>
+                    <th style="width: 40%;">標題</th>
+                    <th style="width: 50%;">內容</th>
+                </tr>
+                @foreach($list as $data)
+                    <tr>
+                        <td class="text-center">{{ $data["year"] ?? "" }}</td>
+                        <td class="text-center">{{ $data["title"] ?? "" }}</td>
+                        <td class="text-center">{{ $data["content"] ?? "" }}</td>
+                    </tr>
+                @endforeach
+            </table>
+        @endif
+    </div>
+</div>
+@endsection
+
+
+
+-----讓AI自行寫一個說明手冊-----
+找外掛：(終端機) composer require phpoffice/phpword
+安裝好，會出現vendor/phpoffice
+
+config/services.php加入一段：
+"groq" => [
+        "key" => env("GROQ_API_KEY"),
+    ],
+
+
+**路由： Route::get("ai/word", [AiMileStoneController::class, "word"]);
+
+
+**AiMileStoneController.php加入word()：
+
+use App\Http\Controllers\Controller;
+use App\Models\AiMileStone;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Http;
+use PhpOffice\PhpWord\IOFactory;
+use PhpOffice\PhpWord\PhpWord;
+use PhpOffice\PhpWord\Settings;
+
+    public function word()
+    {
+        // Http::withToken(env("GROQ_API_KEY"))
+        $res = Http::withToken(config("services.groq.key"))
+            ->timeout(300)
+            ->post("https://api.groq.com/openai/v1/chat/completions", [
+                "model" => env("GROQ_MODEL", "openai/gpt-oss-120b"),
+                "messages" => [
+                    [
+                        "role" => "system",
+                        "content" => "你是撰寫文件的助手，請用正體中文回答，請用台灣用語，不要使用Markdown符號"
+                    ],
+                    [
+                        "role" => "user",
+                        "content" => "請產出一份[如何用Laravel呼叫AI api]的說明文件，格式為word"
+                    ],
+                ],
+            ]);
+
+        $content = $res->json("choices.0.message.content") ?? "AI沒有回應";
+
+        // 回傳的文字有特殊字，例如：<、>、&等等，設定特定符號自動轉換
+        Settings::setOutputEscapingEnabled(true);
+        $word = new PhpWord();
+        // 在word中建立一個分節，標題、文字、表格要在分節中
+        $section = $word->addSection();
+        // 建立標題，1: 標題1(最大的標題)，如果用2，則為標題2
+        $section->addTitle("AI 說明文件", 1);
+
+        /*
+            explode: 分割字串，字串分割後會存成陣列
+        */
+        foreach(explode("\n", $content) as $line){
+            // 將每一行寫入word
+            $section->addText($line, ['name' => "標楷體", 'size' => 12]);
+        }
+
+        // 儲存的資料夾及檔名，storage_path: 在Laravel專案的storage資料夾
+        $path = storage_path("app/ai_doc.docx");
+        // createWriter: 寫入檔案
+        // Word2007: 輸出成.docx格式(Word2007以後的格式)
+        IOFactory::createWriter($word, "Word2007")->save($path);
+        // deleteFileAfterSend: 傳送給使用者後刪除（否則檔案越積越多）
+        return response()->download($path)->deleteFileAfterSend(true);
+    }
+
+
+-----請AI幫忙檢查程式有無問題（符不符合公司規範）-----
+終端機： php artisan make:command CodeReview
+會出現app/Console/Commands/CodeReview.php
+
+<?php
+
+namespace App\Console\Commands;
+
+use Illuminate\Console\Command;
+use Illuminate\Support\Facades\File;
+use Illuminate\Support\Facades\Http;
+
+class CodeReview extends Command
+{
+    // 終端機下指令就可以用code:review
+    protected $signature = "code:review {path=app/Http/Controllers}";
+    protected $description = "用 AI 來檢查程式碼";
+
+    public function handle()
+    {
+        $files = File::allFiles(base_path($this->argument("path")));
+        $report = "";
+
+        foreach($files as $file){
+            // getExtension: 取得副檔名，如果副檔名不是php則跳過不處理
+            if ($file->getExtension() !== "php") continue;
+            // getRelativePathname: 相對路徑，例如Admin/AdminController.php
+            $this->info("檢查中:" . $file->getRelativePathname());
+            // getRealPath: 完整路徑，例如D:\php\laravel\project1151013\app\http\Controllers\Admin\AdminController.php
+            $code = File::get($file->getRealPath());
+
+            $res = Http::withToken(config("services.groq.key"))
+            ->timeout(120)
+            ->post("https://api.groq.com/openai/v1/chat/completions", [
+                "model" => env("GROQ_MODEL", "openai/gpt-oss-120b"),
+                "messages" => [
+                    [
+                        "role" => "system",
+                        "content" => "你是資深Laravel工程師，審查所有程式碼，用正體中文列出：1.問題(含行號) 2.安全性風險"
+                            ."3.修改建議與範例程式碼。如果沒有問題也要回答沒問題，請用台灣用語。",
+                    ],
+                    [
+                        "role" => "user",
+                        "content" => "檔案:{$file->getRelativePathname()}\n\n{$code}",
+                    ],
+                ],
+            ]);
+
+            $content = $res->json("choices.0.message.content") ?? "AI沒回應";
+            $report .= "##{$file->getRelativePathname()}\n\n{$content}\n\n";
+            // 休息兩秒，避免誤認為駭客入侵，被輸入大量資料
+            sleep(2);
+
+            File::put(storage_path("app/code_review.md"), $report);
+            $this->info("檢查完成，檔案位置：storage/app/code_review.md");
+        }
+    }
+}
+
+
+用這個指令檢查有沒有成功(終端機)： php artisan code:review
+也可以指定位置：php artisan code:review app/Models
+它輸出的檔案在storage/app/code_review.md
