@@ -558,7 +558,7 @@ Route::group(["middleware" => "manager", "prefix" =>"admin/product"], function()
             <div class="form-row">
                 <div class="form-group">
                     <label class="form-label" for="f_name">標籤名稱 <span class="req">*</span></label>
-                    <input type="text" id="f_name" name="label" value="{{ $label->title }}" class="form-control" required>
+                    <input type="text" id="f_name" name="label" value="{{ $label->label }}" class="form-control" required>
                 </div>
             </div>
 
