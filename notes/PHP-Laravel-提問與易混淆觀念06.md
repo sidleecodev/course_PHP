@@ -1,5 +1,6 @@
 # PHP／Laravel 提問與易混淆觀念 06
 
+> 更新：2026-11-18。
 > 範圍：[[06.產品]]。整理前一輪第 4 天保留的產品問答，以及這次的後臺分類列表與圖片、規格關聯練習。
 
 ## 1. 從網址追到畫面
@@ -28,3 +29,45 @@
 | 第 7 號產品應該有圖片，但 `$product->photos` 是空集合，先查哪裡？ | 先在 `product_photo` 查 `productId = 7`。若資料存在，再核對 `photos()` 的第二個參數是否為 `productId`。規格同理，改查 `product_spec`。 |
 
 值得練熟的是兩條查找路徑：**頁面不通時，從網址追到路由、Middleware、Controller、Model 和 Blade；關聯查錯時，先確認手上的 ID 代表誰，再確認拿它去比對哪張表的哪個欄位。**
+
+
+## 4. 分類、標籤 CRUD：這輪問答
+
+| 問題或回答中的混淆 | 正確理解 |
+| --- | --- |
+| 輸入框改成 `name="category"`，Controller 還讀 `$req->title`？ | 接不到那個值作為 `title`。可以把 name 改回 title，或改後端讀 category；兩邊要一致，Model 寫入欄位仍是 title。 |
+| update 裡把 find 改成 new，只是建立新物件嗎？ | 是，但後面仍用 `update()` 時，不會更新原資料，也不會因此自動新增。`new` 配 `save()` 才會嘗試新增。 |
+| 刪分類前要查產品哪個欄位？ | 查 `product.type_id` 是否仍有該分類編號。產品不會自動轉到其他類別。 |
+| `$label->label = $req->label` 的兩邊？ | 左邊是 Model 的 label 欄位；右邊讀表單 name 為 label 的值。`save()` 或 `update()` 才寫入資料庫。 |
+| 修改頁錯用 `$label->title`，輸入框空白代表資料被清空嗎？ | 不代表。只是沒有正確帶入值，載入修改頁還沒更新資料。應改成 `$label->label`。 |
+| doDelete 的 id 決定用哪個 Controller 嗎？ | 不是。第三個參數 url 經路由決定 Controller；id 指定該處理方法要找哪筆。分類與標籤可能都有 id=7。 |
+| 標籤按鈕誤傳分類刪除網址？ | 會交給分類 Controller，嘗試刪除同編號的分類。必須核對網址與編號兩者。 |
+
+## 5. get、with 與分頁
+
+| 寫法 | 接收的名稱 | 結果 |
+| --- | --- | --- |
+| `Product::get(["product_no", "product_name"])` | product 表的欄位名 | 取產品編號與名稱 |
+| `Product::with(["types", "labels", "photos"])->get()` | Product 裡的關聯方法名 | 取產品，預載分類、標籤、圖片 |
+| `Product::with(["types", "labels", "photos"])->orderByDesc("id")->paginate(10)` | 關聯名、排序欄位與每頁筆數 | 產品 id 由大到小，每頁最多 10 筆 |
+
+「為什麼不用 `Product::get(["types", "labels", "photos"])`？」因為這三個是關聯名稱，不是 product 表的欄位。with 預載關聯資料；get 或 paginate 才執行主查詢。老師最後使用 paginate，就不再接 get。
+
+## 6. firstPhoto() 已取第一張，為什麼還要 ->photo？
+
+假設目前產品 id=7，第一筆圖片資料如下：
+
+| 圖片 id | productId | photo |
+| --- | --- | --- |
+| 20 | 7 | ball.jpg |
+
+| 程式 | 取得什麼 |
+| --- | --- |
+| `$data` | 目前產品的 Model 物件 |
+| `$data->firstPhoto()` | 圖片 20 的整筆 Model 物件 |
+| `$data->firstPhoto()->photo` | 物件的 photo 欄位值：ball.jpg |
+| `/product/S/ball.jpg` | 組成瀏覽器要載入的圖片網址 |
+
+沒有圖片時，firstPhoto() 回傳 null；**取得 null 本身不是錯誤，接著讀取 ->photo 才會報錯**。所以模板先用 @if 判斷；無圖時改顯示預設圖示。
+
+本輪已驗收分類／標籤 CRUD，以及產品列表的名稱、分類、標籤和有圖／無圖。產品列表尚未接好的項目與產品本身 CRUD 留待老師續課。
