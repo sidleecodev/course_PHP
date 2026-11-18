@@ -1,8 +1,12 @@
 製作商品頁面、購物頁面
 
-menu.blade.php修改產品分類路徑：
-<a href="/admin/product/types/list" {!! Request::is('admin/product/types/*') ? "class='active'" : '' !!}><i class="fa fa-folder-open"></i> 產品分類</a>
+XAMPP的Apache點Config→php.ini，搜尋=gd，把該行前面的;去除
+（似乎跟圖形有關）
 
+menu.blade.php修改產品分類路徑：
+<a href="/admin/product/product/list" {!! Request::is('admin/product/product/*') ? "class='active'" : '' !!}><i class="fa fa-box-open"></i> 產品管理</a>
+<a href="/admin/product/types/list" {!! Request::is('admin/product/types/*') ? "class='active'" : '' !!}><i class="fa fa-folder-open"></i> 產品分類</a>
+<a href="/admin/product/label/list" {!! Request::is('admin/product/label/*') ? "class='active'" : '' !!}><i class="fa fa-folder-open"></i> 產品標籤</a>
 
 ---新增資料表---
 product_type：產品類別
@@ -85,6 +89,12 @@ class Product extends Model
     {
         return $this->hasMany(ProductSpec::class, "productId", "id");
     }
+
+    // 一個商品有多張圖，要取第一張圖出來當封面
+    public function firstPhoto()
+    {
+        return $this->photos->first();
+    }
 }
 
 
@@ -157,7 +167,7 @@ class ProductType extends Model
 
 
 ---Controller---
-****建立controller： php artisan make:controller Admin/Product/ProductTypeController
+****建立ProductTypeController： php artisan make:controller Admin/Product/ProductTypeController
 <?php
 
 namespace App\Http\Controllers\Admin\Product;
@@ -165,12 +175,126 @@ namespace App\Http\Controllers\Admin\Product;
 use App\Http\Controllers\Controller;
 use App\Models\Product\ProductType;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Session;
 
 class ProductTypeController extends Controller
 {
     public function list(){
         $list = ProductType::get();
         return view("admin.product.types.list", compact("list"));
+    }
+
+    public function create(){
+        return view("admin.product.types.create");
+    }
+
+    public function store(Request $req){
+        $types = new ProductType();
+        $types->title = $req->title;
+        $types->save();
+
+        Session::flash("message", "已新增");
+        return redirect("/admin/product/types/list");
+    }
+
+    public function edit(Request $req){
+        $types = ProductType::find($req->id);
+        return view("admin.product.types.edit", compact("types"));
+    }
+
+    public function update(Request $req){
+        $types = ProductType::find($req->id);
+        $types->title = $req->title;
+        $types->update();
+
+        Session::flash("message", "已修改");
+        return redirect("/admin/product/types/list");
+    }
+
+    public function delete(Request $req){
+        ProductType::destroy($req->id);
+        Session::flash("message", "已刪除");
+        return redirect("/admin/product/types/list");
+    }
+}
+
+
+****建立ProductLabelController： php artisan make:controller Admin/Product/ProductLabelController
+（基本上就是複製ProductTypeController的內容稍作修改）
+<?php
+
+namespace App\Http\Controllers\Admin\Product;
+
+use App\Http\Controllers\Controller;
+use App\Models\Product\ProductLabel;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Session;
+
+class ProductLabelController extends Controller
+{
+    public function list(){
+        $list = ProductLabel::all();
+        return view("admin.product.label.list", compact("list"));
+    }
+
+    public function create(){
+        return view("admin.product.label.create");
+    }
+
+    public function store(Request $req){
+        $label = new ProductLabel();
+        $label->label = $req->label;
+        $label->save();
+
+        Session::flash("message", "已新增");
+        return redirect("/admin/product/label/list");
+    }
+
+    public function edit(Request $req){
+        $label = ProductLabel::find($req->id);
+        return view("admin.product.label.edit", compact("label"));
+    }
+
+    public function update(Request $req){
+        $label = ProductLabel::find($req->id);
+        $label->label = $req->label;
+        $label->update();
+
+        Session::flash("message", "已修改");
+        return redirect("/admin/product/label/list");
+    }
+
+    public function delete(Request $req){
+        ProductLabel::destroy($req->id);
+        Session::flash("message", "已刪除");
+        return redirect("/admin/product/label/list");
+    }
+}
+
+
+****建立ProductController： php artisan make:controller Admin/Product/AdminProductController
+<?php
+
+namespace App\Http\Controllers\Admin\Product;
+
+use App\Http\Controllers\Controller;
+use App\Models\Product\Product;
+use App\Models\Product\ProductLabel;
+use App\Models\Product\ProductType;
+use Illuminate\Http\Request;
+
+class AdminProductController extends Controller
+{
+    public function list(){
+        $types = ProductType::get();
+        $list = Product::with(["types", "labels", "photos"])->orderByDesc("id")->paginate(10);
+        return view("admin.product.product.list", compact("types", "list"));
+    }
+
+    public function create(){
+        $types = ProductType::get();
+        $labels = ProductLabel::get();
+        return view("admin.product.product.create", compact("types", "labels"));
     }
 }
 
@@ -195,11 +319,32 @@ Route::group(["middleware" => "manager", "prefix" =>"admin/product"], function()
         Route::post("update", [ProductTypeController::class, "update"]);
         Route::post("delete", [ProductTypeController::class, "delete"]);
     });
+
+    // 產品標籤
+    Route::group(["prefix" => "label"], function(){
+        Route::get("list", [ProductLabelController::class, "list"]);
+        Route::get("create", [ProductLabelController::class, "create"]);
+        Route::post("store", [ProductLabelController::class, "store"]);
+        Route::get("edit/{id}", [ProductLabelController::class, "edit"]);
+        Route::post("update", [ProductLabelController::class, "update"]);
+        Route::post("delete", [ProductLabelController::class, "delete"]);
+    });
+
+    // 產品
+    Route::group(["prefix" => "product"], function () {
+        Route::get("list", [AdminProductController::class, "list"]);
+        Route::get("create", [AdminProductController::class, "create"]);
+        Route::post("store", [AdminProductController::class, "store"]);
+        Route::get("edit/{id}", [AdminProductController::class, "edit"]);
+        Route::post("update", [AdminProductController::class, "update"]);
+        Route::post("delete", [AdminProductController::class, "delete"]);
+    });
 });
 
 
 ---網頁---
-****建立admin/product/types/list.blade.php
+****ProductType****
+**建立admin/product/types/list.blade.php
 （沿用admin/product-categories.html）
 （尚未修改完）
 
@@ -216,7 +361,7 @@ Route::group(["middleware" => "manager", "prefix" =>"admin/product"], function()
                 <input type="search" name="keyword" class="form-control" placeholder="搜尋分類名稱" autocomplete="off" />
             </form>
             <button type="button" class="btn btn-light btn-sm" data-clear><i class="fa fa-times"></i> 清除</button>
-            <a href="product-categories-form.html" class="btn btn-gold btn-sm"><i class="fa fa-plus"></i> 新增產品分類</a>
+            <a href="create" class="btn btn-gold btn-sm"><i class="fa fa-plus"></i> 新增產品分類</a>
         </div>
     </div>
 
@@ -249,3 +394,282 @@ Route::group(["middleware" => "manager", "prefix" =>"admin/product"], function()
     </div>
 </div>
 @endsection
+
+
+**建立admin/product/types/create.blade.php
+（沿用admin/product-categories-form.html）
+@extends("admin.layout")
+@section("title", "新增產品分類")
+@section("content")
+<div class="admin-card">
+    <div class="admin-card-header">
+        <h2><i class="fa fa-folder-open"></i> <span data-mode-text>新增產品分類</span></h2>
+        <a href="list" class="btn btn-light btn-sm"><i class="fa fa-arrow-left"></i> 返回列表</a>
+    </div>
+    <div class="admin-card-body">
+        <!-- 網址帶 ?id=編號 時為「修改」，會自動帶入資料 -->
+        <form class="admin-form" method="post" action="store">
+            @csrf
+            <div class="form-row">
+                <div class="form-group">
+                    <label class="form-label" for="f_name">分類名稱 <span class="req">*</span></label>
+                    <input type="text" id="f_name" name="title" value="" class="form-control" required>
+                </div>
+            </div>
+
+            <div class="form-actions">
+                <button type="submit" class="btn btn-primary"><i class="fa fa-save"></i> 儲存</button>
+                <a href="list" class="btn btn-outline"><i class="fa fa-times"></i> 取消</a>
+            </div>
+        </form>
+    </div>
+</div>
+@endsection
+
+
+**建立admin/product/types/edit.blade.php
+（沿用admin/product/types/create.blade.php）
+@extends("admin.layout")
+@section("title", "修改產品分類")
+@section("content")
+<div class="admin-card">
+    <div class="admin-card-header">
+        <h2><i class="fa fa-folder-open"></i> <span data-mode-text>修改產品分類</span></h2>
+        <a href="../list" class="btn btn-light btn-sm"><i class="fa fa-arrow-left"></i> 返回列表</a>
+    </div>
+    <div class="admin-card-body">
+        <form class="admin-form" method="post" action="../update">
+            <input type="hidden" name="id" value="{{ $types->id }}">
+            @csrf
+            <div class="form-row">
+                <div class="form-group">
+                    <label class="form-label" for="f_name">分類名稱 <span class="req">*</span></label>
+                    <input type="text" id="f_name" name="title" value="{{ $types->title }}" class="form-control" required>
+                </div>
+            </div>
+
+            <div class="form-actions">
+                <button type="submit" class="btn btn-primary"><i class="fa fa-save"></i> 儲存</button>
+                <a href="../list" class="btn btn-outline"><i class="fa fa-times"></i> 取消</a>
+            </div>
+        </form>
+    </div>
+</div>
+@endsection
+
+（至此ProductType的CRUD都已完成）
+
+
+****ProductLabel****
+**建立admin/product/label/list.blade.php
+（沿用admin/product/types/list.blade.php）
+@extends("admin.layout")
+@section("title", "產品標籤")
+@section("content")
+<div class="admin-card" data-crud-list>
+    <div class="admin-card-header">
+        <h2><i class="fa fa-folder-open"></i> 產品標籤</h2>
+        <div class="admin-toolbar">
+            <!-- 關鍵字即時查詢：輸入時自動篩選並標示關鍵字 -->
+            <form class="search-box">
+                <i class="fa fa-search"></i>
+                <input type="search" name="keyword" class="form-control" placeholder="搜尋分類名稱" autocomplete="off" />
+            </form>
+            <button type="button" class="btn btn-light btn-sm" data-clear><i class="fa fa-times"></i> 清除</button>
+            <a href="create" class="btn btn-gold btn-sm"><i class="fa fa-plus"></i> 新增產品標籤</a>
+        </div>
+    </div>
+
+    <div class="table-wrap">
+        <table class="data-table admin-table">
+            <thead>
+                <tr>
+                    <th>分類標籤</th>
+                    <th>操作</th>
+                </tr>
+            </thead>
+            <tbody>
+                @if (!empty($list) && sizeof($list)>0)
+                @foreach($list as $data)
+                <tr data-row>
+                    <td data-mark>{{ $data->label }}</td>
+                    <td>
+                        <div class="actions"><a href="edit/{{ $data->id }}" class="btn btn-outline btn-xs"><i class="fa fa-edit"></i> 修改</a>
+                        <button type="button" class="btn btn-danger-outline btn-xs" data-name="{{ $data->label }}" onclick="doDelete('{{ $data->id }}', this, '/admin/product/label/delete')"><i class="fa fa-trash"></i> 刪除</button></div>
+                    </td>
+                </tr>
+                @endforeach
+                @else
+                    <tr>
+                        <td colspan="2" class="text-center text-danger">目前無資料</td>
+                    </tr>
+                @endif
+            </tbody>
+        </table>
+    </div>
+</div>
+@endsection
+
+
+**建立admin/product/label/create.blade.php
+（沿用admin/product/types/create.blade.php）
+@extends("admin.layout")
+@section("title", "新增產品標籤")
+@section("content")
+<div class="admin-card">
+    <div class="admin-card-header">
+        <h2><i class="fa fa-folder-open"></i> <span data-mode-text>新增產品標籤</span></h2>
+        <a href="list" class="btn btn-light btn-sm"><i class="fa fa-arrow-left"></i> 返回列表</a>
+    </div>
+    <div class="admin-card-body">
+        <!-- 網址帶 ?id=編號 時為「修改」，會自動帶入資料 -->
+        <form class="admin-form" method="post" action="store">
+            @csrf
+            <div class="form-row">
+                <div class="form-group">
+                    <label class="form-label" for="f_name">標籤名稱 <span class="req">*</span></label>
+                    <input type="text" id="f_name" name="label" value="" class="form-control" required>
+                </div>
+            </div>
+
+            <div class="form-actions">
+                <button type="submit" class="btn btn-primary"><i class="fa fa-save"></i> 儲存</button>
+                <a href="list" class="btn btn-outline"><i class="fa fa-times"></i> 取消</a>
+            </div>
+        </form>
+    </div>
+</div>
+@endsection
+
+
+**建立admin/product/label/edit.blade.php
+（沿用admin/product/types/edit.blade.php）
+@extends("admin.layout")
+@section("title", "修改產品標籤")
+@section("content")
+<div class="admin-card">
+    <div class="admin-card-header">
+        <h2><i class="fa fa-folder-open"></i> <span data-mode-text>修改產品標籤</span></h2>
+        <a href="../list" class="btn btn-light btn-sm"><i class="fa fa-arrow-left"></i> 返回列表</a>
+    </div>
+    <div class="admin-card-body">
+        <form class="admin-form" method="post" action="../update">
+            <input type="hidden" name="id" value="{{ $label->id }}">
+            @csrf
+            <div class="form-row">
+                <div class="form-group">
+                    <label class="form-label" for="f_name">標籤名稱 <span class="req">*</span></label>
+                    <input type="text" id="f_name" name="label" value="{{ $label->title }}" class="form-control" required>
+                </div>
+            </div>
+
+            <div class="form-actions">
+                <button type="submit" class="btn btn-primary"><i class="fa fa-save"></i> 儲存</button>
+                <a href="../list" class="btn btn-outline"><i class="fa fa-times"></i> 取消</a>
+            </div>
+        </form>
+    </div>
+</div>
+@endsection
+
+
+****Product****
+**建立admin/product/product/list.blade.php（未完）
+（沿用admin/products.html）
+@extends("admin.layout")
+@section("title", "產品管理")
+@section("content")
+<div class="admin-card" data-crud-list>
+    <div class="admin-card-header">
+        <h2><i class="fa fa-box-open"></i> 產品列表</h2>
+        <div class="admin-toolbar">
+            <!-- 關鍵字即時查詢：輸入時自動篩選並標示關鍵字 -->
+            <form class="search-box">
+                <i class="fa fa-search"></i>
+                <input type="search" name="keyword" class="form-control" placeholder="搜尋名稱 / 編號 / 分類" autocomplete="off" />
+            </form>
+            <select name="product_category_id" class="form-control" data-filter>
+                <option value="">全部分類</option>
+                @foreach($types as $data)
+                <option value="{{ $data->id }}">{{ $data->title }}</option>
+                @endforeach
+            </select>
+            <select name="is_active" class="form-control" data-filter>
+                <option value="">全部狀態</option>
+                <option value="1">上架</option>
+                <option value="0">下架</option>
+            </select>
+            <button type="button" class="btn btn-light btn-sm" data-clear><i class="fa fa-times"></i> 清除</button>
+            <a href="create" class="btn btn-gold btn-sm"><i class="fa fa-plus"></i> 新增產品</a>
+        </div>
+    </div>
+
+    <div class="table-wrap">
+        <table class="data-table admin-table">
+            <thead>
+                <tr>
+                    <th>圖片</th>
+                    <th>編號</th>
+                    <th>名稱</th>
+                    <th>分類</th>
+                    <th>售價</th>
+                    <th>庫存</th>
+                    <th>標籤</th>
+                    <th>狀態</th>
+                    <th>操作</th>
+                </tr>
+            </thead>
+            <tbody>
+                @if (!empty($list) && sizeof($list)>0)
+                @foreach($list as $data)
+                <tr data-row data-product_category_id="1" data-is_active="1">
+                    <td>
+                        @if($data->firstPhoto())
+                            <img src="/product/S/{{ $data->firstPhoto()->photo }}">
+                        @else
+                        <div class="thumb-ph ph"><i class="fa fa-cube"></i></div>
+                        @endif
+                    </td>
+                    <td data-mark>{{ $data->product_no }}</td>
+                    <td data-mark>{{ $data->product_name }}</td>
+                    <td><span class="badge badge-brand" data-mark>{{ $data->types->title }}</span></td>
+                    <td class="num">NT$ {{ $data->sale_price }}</td>
+                    <td>{{ $data->qty }}</td>
+                    <td><span class="badge badge-green">{{ $data->labels->label }}</span></td>
+                    <td><span class="badge badge-green">上架</span></td>
+                    <td>
+                        <div class="actions"><a href="products-form.html?id=1" class="btn btn-outline btn-xs"><i class="fa fa-edit"></i> 修改</a><button type="button" class="btn btn-danger-outline btn-xs" data-delete data-name="旗艦系列 A1 精品"><i class="fa fa-trash"></i> 刪除</button></div>
+                    </td>
+                </tr>
+                @endforeach
+                @else
+                <tr data-empty class="hidden">
+                    <td colspan="9">
+                        <div class="empty-state"><i class="fa fa-search"></i>
+                            <p>找不到符合的資料</p>
+                        </div>
+                    </td>
+                </tr>
+                @endif
+            </tbody>
+        </table>
+    </div>
+
+    <div class="admin-table-info">
+        <span>共 <b data-total>9</b> 筆</span>
+        <nav class="pagination">
+            <span class="disabled"><i class="fa fa-chevron-left"></i></span>
+            <span class="active">1</span>
+            <span class="disabled"><i class="fa fa-chevron-right"></i></span>
+        </nav>
+    </div>
+</div>
+@endsection
+
+**建立admin/product/product/create.blade.php（未完）
+（沿用）
+
+
+**建立admin/product/product/edit.blade.php（未完）
+（沿用admin/product/product/create.blade.php）
+

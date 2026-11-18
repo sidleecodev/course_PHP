@@ -1,0 +1,34 @@
+先確認有無安裝node.js
+
+powershell以系統管理員身分執行
+Set-ExecutionPolicy RemoteSigned →輸入Y
+
+cmd輸入npm install -g @vue/cli
+
+安裝好後，自己建立新的資料夾放vue
+（D:\course_PHP\vue）
+vue create project1151118
+
+會跑出npm config get registry頁面，出現3.0、2.0，要選下面的手動
+接著選取
+Babel
+Progressive Web App (PWA) Support
+Router
+Vuex
+Linter / Formatter
+
+→3.x
+→Y
+→ESLint + Prettier
+→Lint on save
+→In package.json
+→Y
+→enter
+
+接著cmd進入該專案
+啟動伺服器：npm run serve
+網頁：http://localhost:8080/
+
+
+-------------------------------------------------------------------------
+
