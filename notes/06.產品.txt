@@ -50,6 +50,8 @@ php artisan make:model Product/ProductPhoto
 php artisan make:model Product/ProductSpec
 php artisan make:model Product/Productlabel
 php artisan make:model Product/ProductType
+php artisan make:model Product/AiProduct
+
 
 ***
 Product.php：
@@ -99,7 +101,7 @@ class Product extends Model
 
 
 ***
-ProductLabel.php：（未完）
+ProductLabel.php：
 <?php
 
 namespace App\Models\Product;
@@ -116,7 +118,7 @@ class ProductLabel extends Model
 
 
 ***
-ProductPhoto.php：（未完）
+ProductPhoto.php：
 <?php
 
 namespace App\Models\Product;
@@ -129,6 +131,24 @@ class ProductPhoto extends Model
     protected $table = "product_photo";
     protected $primaryKey = 'id';
     protected $fillable = ["id", "productId", "photo", "createTime"];
+
+    // 商品圖資料夾
+    const path = "product";
+
+    // 大圖
+    public function big(){
+        return "/" . self::path . "/" . $this->photo;
+    }
+
+    // 小圖
+    public function small(){
+        return "/" . self::path . "/S/" . $this->photo;
+    }
+
+    // 產品圖屬於哪個產品
+    public function product(): BelongsTo{
+        return $this->belongsTo(Product::class, "productId", "id");
+    }
 }
 
 
@@ -150,7 +170,7 @@ class ProductSpec extends Model
 
 
 ***
-ProductType.php：（未完）
+ProductType.php：
 <?php
 
 namespace App\Models\Product;
@@ -164,6 +184,62 @@ class ProductType extends Model
     protected $primaryKey = 'id';
     protected $fillable = ["id", "title"];
 }
+
+
+***AiProduct.php：
+<?php
+
+namespace App\Models\Product;
+
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Http;
+
+class AiProduct extends Model
+{
+    public static function suggest($product_name, $title, $content)
+    {
+        $prompt = "你是一個電商商品人員。請依照下列產品資料，用繁體中文（台灣用語）建議更吸引人的產品標題及內容。\n"
+            . "規則：\n"
+            . "1.標題：一句話，30字以內，請說出產品最大的賣點。\n"
+            . "2.內容：150到300字，分2到4段，段落之間用換行分開，不要用html或Markdown符號。\n"
+            . "3.只能根據提供的資料潤飾，不要捏造規格、數字或認證。\n"
+            . "4.只回傳json格式：{\"title\": \"建議標題\", \"content\": \"建議內容\"}\n\n"
+            . "產品名稱：{$product_name}\n"
+            . "目前標題：{$title}\n"
+            . "目前內容：{$content}";
+
+        $res = Http::withToken(env("GROQ_API_KEY"))
+            ->timeout(60)
+            ->post("https://api.groq.com/openai/v1/chat/completions", [
+                "model" => env("GROQ_MODEL", "openai/gpt-oss-120b"),
+                "response_format" => ["type" => "json_object"],
+                "messages" => [
+                    [
+                        "role" => "user",
+                        "content" => $prompt
+                    ],
+                ],
+            ]);
+
+        // 回傳的名稱要跟form.blade.php的success的error一致
+        if ($res->failed()) {
+            return ["error" => "AI 呼叫失敗(" . $res->status() . ")，請稍後再試"];
+        }
+
+        $text = $res->json("choices.0.message.content");
+        $data = json_decode($text, true);
+
+        if(!empty($data["title"]) && empty($data["content"])){
+            return ["error" => "AI 回傳資料無法解析，請再試一次"];
+        }
+
+        return [
+            "title" => $data["title"] ?? "",
+            "content" => $data["content"] ?? ""
+        ];
+    }
+}
+
 
 
 ---Controller---
@@ -272,7 +348,7 @@ class ProductLabelController extends Controller
 }
 
 
-****建立ProductController： php artisan make:controller Admin/Product/AdminProductController
+****建立AdminProductController： php artisan make:controller Admin/Product/AdminProductController
 <?php
 
 namespace App\Http\Controllers\Admin\Product;
@@ -295,6 +371,56 @@ class AdminProductController extends Controller
         $types = ProductType::get();
         $labels = ProductLabel::get();
         return view("admin.product.product.create", compact("types", "labels"));
+    }
+
+    public function doAI(Request $req){
+        if (empty($req->product_name) && empty($req->title) && empty($req->content)){
+            return response()->json(["error" => "請輸入產品名稱、標題或內容，AI才知道要提供什麼文案！！"]);
+        }
+
+        $result = AiProduct::suggest($req->product_name, $req->title, $req->content);
+        return response()->json($result);
+    }
+
+    public function fill(Product $product, Request $req){
+        $content = $req->content;
+        if (!empty($content)){
+            $content = str_replace("\n", "<br/>", $content);
+        }
+        $product->label_id = $req->label_id;
+        $product->type_id = $req->type_id;
+        $product->product_name = $req->product_name;
+        $product->title = $req->title;
+        $product->product_no = $req->product_no;
+        $product->price = $req->price;
+        $product->sale_price = $req->sale_price ?? $req->price; //如果沒有售價，就用原始價格
+        $product->qty = $req->qty ?? null;
+        $product->content = $content;
+    }
+
+    public function store(Request $req){
+        $product = new Product();
+        $this->fill($product, $req);
+        $product->save();
+
+        Session::flash("message", "已新增，可以繼續上傳產品圖及建立產品規格");
+        return redirect("/admin/product/photo/list" . $product->id);
+    }
+}
+
+
+****建立ProductPhotoController：php artisan make:controller Admin/Product/ProductPhotoController（未完）
+<?php
+
+namespace App\Http\Controllers\Admin\Product;
+
+use App\Http\Controllers\Controller;
+use Illuminate\Http\Request;
+
+class ProductPhotoController extends Controller
+{
+    public function list(Request $req){
+        
     }
 }
 
@@ -338,6 +464,18 @@ Route::group(["middleware" => "manager", "prefix" =>"admin/product"], function()
         Route::get("edit/{id}", [AdminProductController::class, "edit"]);
         Route::post("update", [AdminProductController::class, "update"]);
         Route::post("delete", [AdminProductController::class, "delete"]);
+	Route::post("doAI", [AdminProductController::class, "doAI"]);
+    });
+
+    // 產品圖
+    Route::group(["prefix" => "photo"], function () {
+	// productId?：表示不一定會有productId這個參數
+        Route::get("list/{productId?}", [ProductPhotoController::class, "list"]);
+        Route::get("create", [ProductPhotoController::class, "create"]);
+        Route::post("store", [ProductPhotoController::class, "store"]);
+        Route::get("edit/{id}", [ProductPhotoController::class, "edit"]);
+        Route::post("update", [ProductPhotoController::class, "update"]);
+        Route::post("delete", [ProductPhotoController::class, "delete"]);
     });
 });
 
@@ -346,6 +484,7 @@ Route::group(["middleware" => "manager", "prefix" =>"admin/product"], function()
 ****ProductType****
 **建立admin/product/types/list.blade.php
 （沿用admin/product-categories.html）
+（尚未修改完）
 
 @extends("admin.layout")
 @section("title", "產品類別")
@@ -558,7 +697,7 @@ Route::group(["middleware" => "manager", "prefix" =>"admin/product"], function()
             <div class="form-row">
                 <div class="form-group">
                     <label class="form-label" for="f_name">標籤名稱 <span class="req">*</span></label>
-                    <input type="text" id="f_name" name="label" value="{{ $label->label }}" class="form-control" required>
+                    <input type="text" id="f_name" name="label" value="{{ $label->title }}" class="form-control" required>
                 </div>
             </div>
 
@@ -624,7 +763,8 @@ Route::group(["middleware" => "manager", "prefix" =>"admin/product"], function()
                 <tr data-row data-product_category_id="1" data-is_active="1">
                     <td>
                         @if($data->firstPhoto())
-                            <img src="/product/S/{{ $data->firstPhoto()->photo }}">
+			    （!!1151119這裡有修改，配合productPhoto.php改動）
+                            <img src="{{ $data->firstPhoto()->small() }}">
                         @else
                         <div class="thumb-ph ph"><i class="fa fa-cube"></i></div>
                         @endif
@@ -665,8 +805,152 @@ Route::group(["middleware" => "manager", "prefix" =>"admin/product"], function()
 </div>
 @endsection
 
-**建立admin/product/product/create.blade.php（未完）
-（沿用）
+**建立admin/product/product/create.blade.php
+（因為新增跟修改表單的部分都一樣，所以include("admin.product.form")）
+@extends("admin.layout")
+@section("title", "新增產品")
+@section("content")
+<div class="admin-card">
+    <div class="admin-card-header">
+        <h2><i class="fa fa-box-open"></i> 新增產品</h2>
+        <a href="list" class="btn btn-light btn-sm"><i class="fa fa-arrow-left"></i> 返回列表</a>
+    </div>
+    <div class="admin-card-body">
+        <form class="admin-form" action="store" method="post">
+            @csrf
+            @include("admin.product.product.form")
+        </form>
+    </div>
+</div>
+@endsection
+
+
+**建立admin/product/product/form.blade.php
+（沿用admin/products-form.html）
+<div class="form-row">
+    <div class="form-group">
+        <label class="form-label" for="f_product_category_id">分類 <span class="req">*</span></label>
+        <select id="f_product_category_id" name="type_id" class="form-control" required>
+            <option value="">請選擇分類</option>
+            @foreach($types as $data)
+            <option value="{{ $data->id }}">{{ $data->title }}</option>
+            @endforeach
+        </select>
+    </div>
+
+    <div class="form-group">
+        <label class="form-label" for="f_product_category_id">標籤 <span class="req">*</span></label>
+        <select id="f_product_category_id" name="label_id" class="form-control">
+            <option value="">無</option>
+            @foreach($labels as $data)
+            <option value="{{ $data->id }}">{{ $data->label }}</option>
+            @endforeach
+        </select>
+    </div>
+
+    <div class="form-group">
+        <label class="form-label" for="f_product_no">商品編號 <span class="req">*</span></label>
+        <input type="text" id="f_product_no" name="product_no" value="" class="form-control" required placeholder="A-00123">
+    </div>
+</div>
+<div class="form-group">
+    <label class="form-label" for="f_title">商品名稱 <span class="req">*</span></label>
+    <input type="text" id="product_name" name="product_name" value="" class="form-control" required>
+</div>
+<div class="form-group">
+    <label class="form-label" for="f_subtitle">標題</label>
+    <input type="text" id="title" name="title" value="" class="form-control">
+</div>
+<div class="form-row-3">
+    <div class="form-group">
+        <label class="form-label" for="f_price">售價 <span class="req">*</span></label>
+        <input type="number" id="f_price" name="sale_price" value="" class="form-control" min="0" required>
+    </div>
+    <div class="form-group">
+        <label class="form-label" for="f_original_price">原價</label>
+        <input type="number" id="f_original_price" name="price" value="" class="form-control" min="0" required>
+    </div>
+    <div class="form-group">
+        <label class="form-label" for="f_stock">庫存</label>
+        <input type="number" id="f_stock" name="qty" class="form-control" min="0">
+    </div>
+</div>
+
+<div class="form-group">
+    <label class="form-label" for="f_content">商品內容</label>
+    <textarea id="content" name="content" rows="10" class="form-control font-en"></textarea>
+    <p class="field-hint">可使用 HTML：&lt;h3&gt;小標&lt;/h3&gt;、&lt;p&gt;段落&lt;/p&gt;</p>
+</div>
+
+<!-- AI 建議標題及內容 -->
+<div class="form-group">
+    <button type="button" class="btn btn-gold btn-sm" id="aibtn" onclick="doAI()">
+        <i class="fa fa-magic"></i> AI 建議標題及內容
+    </button>
+    <span class="field-hint">依上面輸入的產品名稱、標題、內容，請 AI 建議寫法（內容由 AI 產生，請自行調整及確認）</span>
+</div>
+<!-- AI 建議結果，先隱藏，有結果才顯示 -->
+<div class="alert alert-into hidden" id="aibox">
+    <div style="width: 100%">
+        <div style="margin-bottom: 8px;"><b>建議標題</b>
+            <div id="aiTitle"></div>
+        </div>
+        <!-- white-space: pre-line;： 保留換行符號，合併連續空格 -->
+        <div style="margin-bottom: 12px;"><b>建議內容</b>
+            <div id="aiContent" style="white-space: pre-line;"></div>
+        </div>
+        <button type="button" class="btn btn-success" onclick="useAI('title')">套用標題</button>
+        <button type="button" class="btn btn-success" onclick="useAI('content')">套用內容</button>
+        <button type="button" class="btn btn-success" onclick="useAI('title');useAI('content')">全部套用</button>
+    </div>
+</div>
+
+<div class="form-actions">
+    <button type="submit" class="btn btn-primary"><i class="fa fa-save"></i> 儲存</button>
+    <a href="products.html" class="btn btn-outline"><i class="fa fa-times"></i> 取消</a>
+</div>
+
+<script>
+    function doAI() {
+        const btn = $("#aibtn");
+        btn.prop("disabled", true).html("<i class='fa fa-spinner fa-spin'></i> AI 思考中...");
+        $.ajax({
+            url: "/admin/product/product/doAI",
+            type: "post",
+            data: {
+                product_name: $("#product_name").val(),
+                title: $("#title").val(),
+                content: $("#content").val(),
+                _token: "{{ csrf_token() }}"
+            },
+            success: function(msg) {
+                if (msg.error) {
+                    Swal.fire(msg.error, "", "error");
+                    return;
+                }
+                $("#aiTitle").text(msg.title);
+                $("#aiContent").text(msg.content);
+                $("#aibox").removeClass("hidden");
+            },
+            error: function() {
+                Swal.fire("AI 呼叫失敗，請稍後再試", "", "error");
+            },
+            complete: function() {
+                btn.prop("disabled", false).html("<i class='fa fa-magic'></i> AI 建議標題及內容 ")
+            }
+        });
+    }
+
+    function useAI(msg) {
+        if (msg == "title") {
+            $("#title").val($("#aiTitle").text());
+        }
+
+        if (msg == "content") {
+            $("#content").val($("#aiContent").text());
+        }
+    }
+</script>
 
 
 **建立admin/product/product/edit.blade.php（未完）
